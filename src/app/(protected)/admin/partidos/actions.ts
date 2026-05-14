@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { revalidatePath } from 'next/cache'
 import { MatchStatus } from '@prisma/client'
 import { z } from 'zod'
+import { scoreMatch } from '@/lib/scoring'
 
 async function requireSuperAdmin() {
   const session = await auth()
@@ -42,6 +43,10 @@ export async function updateMatchResult(formData: FormData) {
     where: { id: matchId },
     data: { homeScore, awayScore, status: status as MatchStatus, winnerId },
   })
+
+  if (status === 'FINISHED') {
+    await scoreMatch(matchId)
+  }
 
   revalidatePath('/admin/partidos')
   revalidatePath('/torneo')
