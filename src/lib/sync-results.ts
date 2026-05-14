@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db'
-import { fetchWorldCupFixtures, type ApiFixture } from '@/lib/football-api'
+import { fetchWorldCupFixtures } from '@/lib/football-api'
 import { MatchStatus } from '@prisma/client'
 
 export function mapApiStatusToMatchStatus(apiStatus: string): MatchStatus {

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect } from 'vitest'
 import { determineWinnerId, mapApiStatusToMatchStatus } from '@/lib/sync-results'
 
 describe('mapApiStatusToMatchStatus', () => {
