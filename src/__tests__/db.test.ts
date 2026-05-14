@@ -1,28 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-
-// Mock PrismaClient before any module under test loads it
-vi.mock('@/generated/prisma/client', () => {
-  class MockPrismaClient {}
-  return { PrismaClient: MockPrismaClient }
-})
-
-// Reset the singleton between tests
-beforeEach(() => {
-  const g = globalThis as { prisma?: unknown }
-  delete g.prisma
-  vi.resetModules()
-})
+// @vitest-environment node
+import { describe, it, expect } from 'vitest'
+import { prisma } from '@/lib/db'
+import { PrismaClient } from '@prisma/client'
 
 describe('prisma client singleton', () => {
-  it('exporta una instancia de PrismaClient', async () => {
-    const { prisma } = await import('@/lib/db')
-    const { PrismaClient } = await import('@/generated/prisma/client')
-    expect(prisma).toBeInstanceOf(PrismaClient)
+  it('exporta una instancia de PrismaClient', () => {
+    expect(prisma.constructor).toBe(PrismaClient)
   })
 
-  it('en desarrollo, guarda la instancia en globalThis para evitar múltiples conexiones', async () => {
-    const { prisma } = await import('@/lib/db')
-    const g = globalThis as { prisma?: unknown }
+  it('en desarrollo, guarda la instancia en globalThis para evitar múltiples conexiones', () => {
+    const g = globalThis as { prisma?: PrismaClient }
     if (process.env.NODE_ENV !== 'production') {
       expect(g.prisma).toBe(prisma)
     }
