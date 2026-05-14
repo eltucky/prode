@@ -1,0 +1,44 @@
+import Link from 'next/link'
+import { auth, signOut } from '@/auth'
+
+export default async function Navbar() {
+  const session = await auth()
+
+  return (
+    <nav className="border-b bg-white px-4 py-3 flex items-center justify-between">
+      <Link href="/dashboard" className="font-bold text-lg flex items-center gap-2">
+        <span>⚽</span>
+        <span>Prode 2026</span>
+      </Link>
+
+      {session?.user && (
+        <div className="flex items-center gap-4">
+          {session.user.image && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={session.user.image}
+              alt={session.user.name ?? ''}
+              className="w-8 h-8 rounded-full"
+            />
+          )}
+          <span className="text-sm text-gray-600 hidden sm:block">
+            {session.user.name}
+          </span>
+          <form
+            action={async () => {
+              'use server'
+              await signOut({ redirectTo: '/login' })
+            }}
+          >
+            <button
+              type="submit"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              Salir
+            </button>
+          </form>
+        </div>
+      )}
+    </nav>
+  )
+}
