@@ -1,7 +1,7 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
-import { updateMatchResult, triggerSync } from './actions'
+import { updateMatchResult, triggerSyncAction } from './actions'
 import { MatchStage } from '@prisma/client'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
@@ -27,7 +27,7 @@ export default async function AdminPartidosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Admin — Partidos</h1>
-        <form action={triggerSync}>
+        <form action={triggerSyncAction}>
           <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
             🔄 Sincronizar resultados
           </button>

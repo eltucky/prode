@@ -55,3 +55,7 @@ export async function triggerSync(): Promise<{ updated: number; linked: number }
   revalidatePath('/torneo')
   return result
 }
+
+export async function triggerSyncAction(_formData: FormData): Promise<void> {
+  await triggerSync()
+}
