@@ -9,6 +9,6 @@ declare module 'next-auth' {
   }
 
   interface User extends DefaultUser {
-    isSuperAdmin: boolean
+    isSuperAdmin?: boolean
   }
 }
