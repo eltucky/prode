@@ -1,5 +1,7 @@
+import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage, MatchStatus } from '@prisma/client'
+import { savePrediction } from './actions'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -19,12 +21,21 @@ const STATUS_BADGE: Record<MatchStatus, { label: string; class: string }> = {
   CANCELLED:   { label: 'Cancelado',  class: 'bg-red-200 text-red-800' },
 }
 
+const KNOCKOUT_STAGES: MatchStage[] = [
+  'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
+]
+
+function isLocked(scheduledAt: Date): boolean {
+  return Date.now() >= scheduledAt.getTime() - 60 * 1000
+}
+
 export default async function TorneoPage({
   searchParams,
 }: {
   searchParams: Promise<{ etapa?: string }>
 }) {
   const { etapa } = await searchParams
+  const session = await auth()
   const stageFilter = etapa as MatchStage | undefined
 
   const matches = await prisma.match.findMany({
@@ -33,7 +44,14 @@ export default async function TorneoPage({
     orderBy: [{ scheduledAt: 'asc' }, { matchNumber: 'asc' }],
   })
 
-  // Group by stage
+  const predictions = await prisma.prediction.findMany({
+    where: {
+      userId: session!.user!.id,
+      matchId: { in: matches.map(m => m.id) },
+    },
+  })
+  const predMap = new Map(predictions.map(p => [p.matchId, p]))
+
   const byStage = matches.reduce<Record<string, typeof matches>>((acc, match) => {
     const key = match.stage
     if (!acc[key]) acc[key] = []
@@ -41,7 +59,9 @@ export default async function TorneoPage({
     return acc
   }, {})
 
-  const stageOrder: MatchStage[] = ['GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL']
+  const stageOrder: MatchStage[] = [
+    'GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
+  ]
 
   return (
     <div className="space-y-8">
@@ -69,36 +89,114 @@ export default async function TorneoPage({
           <div className="space-y-2">
             {byStage[stage].map(match => {
               const badge = STATUS_BADGE[match.status]
+              const locked = isLocked(match.scheduledAt)
+              const prediction = predMap.get(match.id)
+              const isKnockout = KNOCKOUT_STAGES.includes(match.stage)
+
               return (
-                <div key={match.id} className="bg-white border rounded-xl px-4 py-3 flex items-center justify-between gap-4">
-                  <div className="flex flex-col min-w-0">
-                    {match.groupName && (
-                      <span className="text-xs text-gray-400 mb-0.5">Grupo {match.groupName}</span>
-                    )}
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium truncate">
-                        {match.homeTeam ? `${match.homeTeam.flag} ${match.homeTeam.name}` : 'TBD'}
+                <div key={match.id} className="bg-white border rounded-xl px-4 py-3 space-y-2">
+                  {/* Match header */}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex flex-col min-w-0">
+                      {match.groupName && (
+                        <span className="text-xs text-gray-400 mb-0.5">Grupo {match.groupName}</span>
+                      )}
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-medium truncate">
+                          {match.homeTeam ? `${match.homeTeam.flag} ${match.homeTeam.name}` : 'TBD'}
+                        </span>
+                        <span className="text-sm font-bold tabular-nums text-gray-700 shrink-0">
+                          {match.status === 'FINISHED'
+                            ? `${match.homeScore} - ${match.awayScore}`
+                            : 'vs'}
+                        </span>
+                        <span className="text-sm font-medium truncate">
+                          {match.awayTeam ? `${match.awayTeam.flag} ${match.awayTeam.name}` : 'TBD'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end shrink-0 gap-1">
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${badge.class}`}>
+                        {badge.label}
                       </span>
-                      <span className="text-sm font-bold tabular-nums text-gray-700 shrink-0">
-                        {match.status === 'FINISHED'
-                          ? `${match.homeScore} - ${match.awayScore}`
-                          : 'vs'}
-                      </span>
-                      <span className="text-sm font-medium truncate">
-                        {match.awayTeam ? `${match.awayTeam.flag} ${match.awayTeam.name}` : 'TBD'}
+                      <span className="text-xs text-gray-400">
+                        {match.scheduledAt.toLocaleDateString('es-AR', {
+                          day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
+                        })}
                       </span>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end shrink-0 gap-1">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${badge.class}`}>
-                      {badge.label}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {match.scheduledAt.toLocaleDateString('es-AR', {
-                        day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
-                      })}
-                    </span>
-                  </div>
+
+                  {/* Prediction area */}
+                  {match.status === 'CANCELLED' ? null : locked ? (
+                    prediction ? (
+                      <div className="flex items-center gap-2 text-sm border-t pt-2 flex-wrap">
+                        <span className="text-gray-400 text-xs">Tu pronóstico:</span>
+                        <span className="font-mono font-medium">
+                          {prediction.homeScore} - {prediction.awayScore}
+                        </span>
+                        {isKnockout && prediction.predictedWinnerId && (
+                          <span className="text-xs text-gray-500">
+                            {'(ganador: '}
+                            {prediction.predictedWinnerId === match.homeTeamId
+                              ? match.homeTeam?.name
+                              : match.awayTeam?.name}
+                            {')'}
+                          </span>
+                        )}
+                        {prediction.points !== null && (
+                          <span className={`ml-auto text-xs font-semibold px-2 py-0.5 rounded-full ${prediction.points > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                            {prediction.points} pts
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-400 border-t pt-2">Sin pronóstico</div>
+                    )
+                  ) : (
+                    <form action={savePrediction} className="flex items-center gap-2 border-t pt-2 flex-wrap">
+                      <input type="hidden" name="matchId" value={match.id} />
+                      <span className="text-xs text-gray-400 shrink-0">Tu pronóstico:</span>
+                      <input
+                        type="number"
+                        name="homeScore"
+                        defaultValue={prediction?.homeScore ?? ''}
+                        min="0"
+                        max="99"
+                        required
+                        placeholder="L"
+                        className="w-12 border rounded px-1 py-0.5 text-center text-sm"
+                      />
+                      <span className="text-gray-400">-</span>
+                      <input
+                        type="number"
+                        name="awayScore"
+                        defaultValue={prediction?.awayScore ?? ''}
+                        min="0"
+                        max="99"
+                        required
+                        placeholder="V"
+                        className="w-12 border rounded px-1 py-0.5 text-center text-sm"
+                      />
+                      {isKnockout && match.homeTeam && match.awayTeam && (
+                        <select
+                          name="predictedWinnerId"
+                          defaultValue={prediction?.predictedWinnerId ?? ''}
+                          className="border rounded px-1 py-0.5 text-xs"
+                        >
+                          <option value="">Ganador...</option>
+                          <option value={match.homeTeamId!}>{match.homeTeam.flag} {match.homeTeam.name}</option>
+                          <option value={match.awayTeamId!}>{match.awayTeam.flag} {match.awayTeam.name}</option>
+                        </select>
+                      )}
+                      <button
+                        type="submit"
+                        className="bg-gray-900 text-white px-3 py-0.5 rounded text-xs hover:bg-gray-700 shrink-0"
+                      >
+                        {prediction ? 'Actualizar' : 'Guardar'}
+                      </button>
+                    </form>
+                  )}
                 </div>
               )
             })}
