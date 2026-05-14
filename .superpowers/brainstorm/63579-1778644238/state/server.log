@@ -1,0 +1,5 @@
+{"type":"server-started","port":59008,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:59008","screen_dir":"/Users/mariano/Work/prode/.superpowers/brainstorm/63579-1778644238/content","state_dir":"/Users/mariano/Work/prode/.superpowers/brainstorm/63579-1778644238/state"}
+{"type":"screen-added","file":"/Users/mariano/Work/prode/.superpowers/brainstorm/63579-1778644238/content/main-screens.html"}
+{"type":"screen-added","file":"/Users/mariano/Work/prode/.superpowers/brainstorm/63579-1778644238/content/tournament-view.html"}
+{"type":"screen-added","file":"/Users/mariano/Work/prode/.superpowers/brainstorm/63579-1778644238/content/waiting.html"}
+{"type":"server-stopped","reason":"idle timeout"}
