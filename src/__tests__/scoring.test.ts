@@ -7,8 +7,6 @@ const baseMatch = {
   awayScore: 1,
   winnerId: 'home-id',
   stage: 'GROUP' as MatchStage,
-  homeTeamId: 'home-id',
-  awayTeamId: 'away-id',
 }
 
 describe('calculatePoints — fase de grupos', () => {
@@ -41,9 +39,15 @@ describe('calculatePoints — fase de grupos', () => {
   })
 
   it('retorna 3 si el resultado es correcto y un marcador coincide', () => {
-    // Predicted: 2-0, Actual: 2-1 — home score matches
     expect(calculatePoints(
       { homeScore: 2, awayScore: 0, predictedWinnerId: null },
+      { ...baseMatch, homeScore: 2, awayScore: 1, winnerId: 'home-id' }
+    )).toBe(3)
+  })
+
+  it('retorna 3 si el resultado es correcto y solo el marcador visitante coincide', () => {
+    expect(calculatePoints(
+      { homeScore: 3, awayScore: 1, predictedWinnerId: null },
       { ...baseMatch, homeScore: 2, awayScore: 1, winnerId: 'home-id' }
     )).toBe(3)
   })

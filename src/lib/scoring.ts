@@ -20,8 +20,6 @@ export function calculatePoints(
     awayScore: number | null
     winnerId: string | null
     stage: MatchStage
-    homeTeamId: string | null
-    awayTeamId: string | null
   }
 ): number | null {
   if (match.homeScore === null || match.awayScore === null) return null
@@ -31,16 +29,11 @@ export function calculatePoints(
 
   if (actualOutcome !== predictedOutcome) return 0
 
-  const isExact = prediction.homeScore === match.homeScore && prediction.awayScore === match.awayScore
-
-  let points: number
-  if (isExact) {
-    points = 5
-  } else {
-    const homeBonus = prediction.homeScore === match.homeScore ? 1 : 0
-    const awayBonus = prediction.awayScore === match.awayScore ? 1 : 0
-    points = 2 + homeBonus + awayBonus
-  }
+  const homeBonus = prediction.homeScore === match.homeScore ? 1 : 0
+  const awayBonus = prediction.awayScore === match.awayScore ? 1 : 0
+  const isExact = homeBonus === 1 && awayBonus === 1
+  const base = isExact ? 3 : 2
+  let points = base + homeBonus + awayBonus
 
   if (
     KNOCKOUT_STAGES.includes(match.stage) &&
@@ -61,8 +54,6 @@ export async function scoreMatch(matchId: string): Promise<void> {
       awayScore: true,
       winnerId: true,
       stage: true,
-      homeTeamId: true,
-      awayTeamId: true,
       status: true,
     },
   })
@@ -71,13 +62,16 @@ export async function scoreMatch(matchId: string): Promise<void> {
 
   const predictions = await prisma.prediction.findMany({ where: { matchId } })
 
-  for (const prediction of predictions) {
-    const points = calculatePoints(prediction, match)
-    if (points !== null) {
-      await prisma.prediction.update({
-        where: { id: prediction.id },
-        data: { points },
+  await prisma.$transaction(
+    predictions
+      .map(prediction => {
+        const points = calculatePoints(prediction, match)
+        if (points === null) return null
+        return prisma.prediction.update({
+          where: { id: prediction.id },
+          data: { points },
+        })
       })
-    }
-  }
+      .filter((op): op is NonNullable<typeof op> => op !== null)
+  )
 }
