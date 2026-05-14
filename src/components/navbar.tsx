@@ -14,6 +14,9 @@ export default async function Navbar() {
 
       {session?.user && (
         <div className="flex items-center gap-4">
+          <Link href="/torneo" className="text-sm text-gray-600 hover:text-gray-900">
+            Torneo
+          </Link>
           {session.user.isSuperAdmin && (
             <Link href="/admin/partidos" className="text-sm text-red-600 hover:text-red-800">
               Admin
