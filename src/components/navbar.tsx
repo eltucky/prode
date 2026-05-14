@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { auth, signOut } from '@/auth'
 
 export default async function Navbar() {
@@ -14,11 +15,12 @@ export default async function Navbar() {
       {session?.user && (
         <div className="flex items-center gap-4">
           {session.user.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={session.user.image}
               alt={session.user.name ?? ''}
-              className="w-8 h-8 rounded-full"
+              width={32}
+              height={32}
+              className="rounded-full"
             />
           )}
           <span className="text-sm text-gray-600 hidden sm:block">
