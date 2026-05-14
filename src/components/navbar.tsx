@@ -14,6 +14,11 @@ export default async function Navbar() {
 
       {session?.user && (
         <div className="flex items-center gap-4">
+          {session.user.isSuperAdmin && (
+            <Link href="/admin/partidos" className="text-sm text-red-600 hover:text-red-800">
+              Admin
+            </Link>
+          )}
           {session.user.image && (
             <Image
               src={session.user.image}
