@@ -36,7 +36,12 @@ export default async function TorneoPage({
 }) {
   const { etapa } = await searchParams
   const session = await auth()
-  const stageFilter = etapa as MatchStage | undefined
+
+  const stageOrder: MatchStage[] = [
+    'GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
+  ]
+  const VALID_STAGES = new Set<string>(stageOrder)
+  const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
 
   const matches = await prisma.match.findMany({
     where: stageFilter ? { stage: stageFilter } : undefined,
@@ -58,10 +63,6 @@ export default async function TorneoPage({
     acc[key].push(match)
     return acc
   }, {})
-
-  const stageOrder: MatchStage[] = [
-    'GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
-  ]
 
   return (
     <div className="space-y-8">
@@ -95,7 +96,6 @@ export default async function TorneoPage({
 
               return (
                 <div key={match.id} className="bg-white border rounded-xl px-4 py-3 space-y-2">
-                  {/* Match header */}
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex flex-col min-w-0">
                       {match.groupName && (
@@ -120,14 +120,13 @@ export default async function TorneoPage({
                         {badge.label}
                       </span>
                       <span className="text-xs text-gray-400">
-                        {match.scheduledAt.toLocaleDateString('es-AR', {
+                        {match.scheduledAt.toLocaleString('es-AR', {
                           day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
                         })}
                       </span>
                     </div>
                   </div>
 
-                  {/* Prediction area */}
                   {match.status === 'CANCELLED' ? null : locked ? (
                     prediction ? (
                       <div className="flex items-center gap-2 text-sm border-t pt-2 flex-wrap">
