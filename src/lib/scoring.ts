@@ -38,7 +38,8 @@ export function calculatePoints(
     points = 5
   } else {
     const homeBonus = prediction.homeScore === match.homeScore ? 1 : 0
-    points = 2 + homeBonus
+    const awayBonus = prediction.awayScore === match.awayScore ? 1 : 0
+    points = 2 + homeBonus + awayBonus
   }
 
   if (

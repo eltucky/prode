@@ -36,7 +36,7 @@ describe('calculatePoints — fase de grupos', () => {
   it('retorna 2 si el resultado es correcto pero no exacto', () => {
     expect(calculatePoints(
       { homeScore: 1, awayScore: 0, predictedWinnerId: null },
-      { ...baseMatch, homeScore: 2, awayScore: 0, winnerId: 'home-id' }
+      { ...baseMatch, homeScore: 2, awayScore: 1, winnerId: 'home-id' }
     )).toBe(2)
   })
 
