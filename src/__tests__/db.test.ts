@@ -8,10 +8,8 @@ describe('prisma client singleton', () => {
     expect(prisma.constructor).toBe(PrismaClient)
   })
 
-  it('en desarrollo, guarda la instancia en globalThis para evitar múltiples conexiones', () => {
-    const g = globalThis as { prisma?: PrismaClient }
-    if (process.env.NODE_ENV !== 'production') {
-      expect(g.prisma).toBe(prisma)
-    }
+  it('guarda la instancia en globalThis para reutilizarla entre hot reloads', () => {
+    const g = globalThis as { prisma?: unknown }
+    expect(g.prisma).toBe(prisma)
   })
 })
