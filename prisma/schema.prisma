@@ -10,14 +10,15 @@ datasource db {
 // ─── NextAuth / Auth.js required models ─────────────────────────────────────
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  emailVerified DateTime?
-  name          String?
-  image         String?
-  isSuperAdmin  Boolean   @default(false)
-  isBlocked     Boolean   @default(false)
-  createdAt     DateTime  @default(now())
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  emailVerified      DateTime?
+  name               String?
+  image              String?
+  isSuperAdmin       Boolean   @default(false)
+  isBlocked          Boolean   @default(false)
+  emailNotifications Boolean   @default(false)
+  createdAt          DateTime  @default(now())
 
   accounts    Account[]
   sessions    Session[]
