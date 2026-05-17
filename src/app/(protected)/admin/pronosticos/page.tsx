@@ -60,7 +60,6 @@ export default async function AdminPronosticosPage({
     <div className="space-y-8">
       <h1 className="text-2xl font-bold">Pronósticos</h1>
 
-      {/* Match selector */}
       <div className="bg-white border rounded-xl p-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">Seleccioná un partido</label>
         <form method="GET">
@@ -82,7 +81,6 @@ export default async function AdminPronosticosPage({
         </form>
       </div>
 
-      {/* Predictions for selected match */}
       {selectedMatch && (
         <div className="space-y-3">
           <h2 className="font-semibold text-gray-700">
@@ -135,8 +133,8 @@ export default async function AdminPronosticosPage({
                             {isKnockout && (
                               <select name="predictedWinnerId" defaultValue={p.predictedWinnerId ?? ''} className="border rounded px-1 py-0.5 text-xs">
                                 <option value="">Sin ganador</option>
-                                {selectedMatch.homeTeam && <option value={selectedMatch.homeTeamId!}>{selectedMatch.homeTeam.name}</option>}
-                                {selectedMatch.awayTeam && <option value={selectedMatch.awayTeamId!}>{selectedMatch.awayTeam.name}</option>}
+                                {selectedMatch.homeTeam && <option value={selectedMatch.homeTeam.id}>{selectedMatch.homeTeam.name}</option>}
+                                {selectedMatch.awayTeam && <option value={selectedMatch.awayTeam.id}>{selectedMatch.awayTeam.name}</option>}
                               </select>
                             )}
                             <button type="submit" className="text-xs bg-gray-800 text-white px-2 py-0.5 rounded hover:bg-gray-600">
@@ -160,7 +158,6 @@ export default async function AdminPronosticosPage({
         </div>
       )}
 
-      {/* Global ranking */}
       <div className="space-y-3">
         <h2 className="font-semibold text-gray-700">Ranking global</h2>
         {ranking.length === 0 ? (

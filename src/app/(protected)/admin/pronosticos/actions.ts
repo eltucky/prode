@@ -41,7 +41,8 @@ export async function editPrediction(formData: FormData) {
     where: { id: prediction.matchId },
     select: { status: true },
   })
-  if (match?.status === 'FINISHED') {
+  if (!match) throw new Error('Partido no encontrado')
+  if (match.status === 'FINISHED') {
     await scoreMatch(prediction.matchId)
   }
 
