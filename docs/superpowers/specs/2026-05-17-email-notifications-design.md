@@ -80,6 +80,8 @@ Misma autenticación que `sync-results`: header `Authorization: Bearer CRON_SECR
 
 **Lógica en cada corrida:**
 
+0. **Guard de inicio de torneo:** Si no existe ningún partido con `scheduledAt <= now`, el cron termina sin hacer nada. Esto evita procesamiento innecesario antes del inicio del Mundial.
+
 1. **Recordatorios:** Busca partidos con `status = SCHEDULED` y `scheduledAt` en la ventana `[now + 90min, now + 150min]`. Para cada partido, busca usuarios con `emailNotifications: true` y sin `Prediction` para ese partido. Agrupa los partidos por usuario y envía un único email por usuario con todos sus partidos pendientes en la ventana.
 
 2. **Resumen diario:** Solo ejecuta si la hora UTC actual es 22. Busca partidos con `status = FINISHED` y `scheduledAt` dentro del día UTC actual. Para cada usuario con `emailNotifications: true` que tenga al menos una predicción con `points` asignados en esos partidos: arma el resumen con sus predicciones del día + posición actual en cada grupo. Envía un email por usuario.
