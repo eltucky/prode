@@ -31,9 +31,9 @@ export default async function Navbar() {
               className="rounded-full"
             />
           )}
-          <span className="text-sm text-gray-600 hidden sm:block">
+          <Link href="/perfil" className="text-sm text-gray-600 hover:text-gray-900 hidden sm:block">
             {session.user.name}
-          </span>
+          </Link>
           <form
             action={async () => {
               'use server'
