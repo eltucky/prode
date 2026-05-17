@@ -7,7 +7,8 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const secret = process.env.CRON_SECRET
+  if (!secret || authHeader !== `Bearer ${secret}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -24,8 +25,6 @@ export async function GET(req: NextRequest) {
   let remindersSent = 0
   let summariesSent = 0
   const errors: string[] = []
-
-  // ── Recordatorios ────────────────────────────────────────────────────────
 
   const windowStart = new Date(now.getTime() + 90 * 60 * 1000)
   const windowEnd = new Date(now.getTime() + 150 * 60 * 1000)
@@ -68,8 +67,6 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  // ── Resumen diario (solo a las 22:00 UTC) ────────────────────────────────
-
   if (now.getUTCHours() === 22) {
     const todayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()))
     const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000)
@@ -109,17 +106,22 @@ export async function GET(req: NextRequest) {
         },
       })
 
+      const finishedTodayMap = new Map(finishedToday.map(m => [m.id, m]))
+
       for (const user of usersToSummarize) {
-        const predictionsToday = user.predictions.map(p => {
-          const match = finishedToday.find(m => m.id === p.matchId)!
-          return {
-            homeTeam: match.homeTeam?.name ?? 'TBD',
-            awayTeam: match.awayTeam?.name ?? 'TBD',
-            homeScore: p.homeScore,
-            awayScore: p.awayScore,
-            points: p.points ?? 0,
-          }
-        })
+        const predictionsToday = user.predictions
+          .map(p => {
+            const match = finishedTodayMap.get(p.matchId)
+            if (!match) return null
+            return {
+              homeTeam: match.homeTeam?.name ?? 'TBD',
+              awayTeam: match.awayTeam?.name ?? 'TBD',
+              homeScore: p.homeScore,
+              awayScore: p.awayScore,
+              points: p.points ?? 0,
+            }
+          })
+          .filter((p): p is Exclude<typeof p, null> => p !== null)
 
         const groups: SummaryData['groups'] = []
         for (const { group } of user.memberships) {
