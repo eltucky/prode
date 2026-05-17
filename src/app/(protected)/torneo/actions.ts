@@ -2,6 +2,7 @@
 
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
+import { assertNotBlocked } from '@/lib/admin'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
@@ -15,6 +16,9 @@ const predictionSchema = z.object({
 export async function savePrediction(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) throw new Error('No autenticado')
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { isBlocked: true } })
+  assertNotBlocked(user?.isBlocked ?? false)
 
   const parsed = predictionSchema.safeParse({
     matchId: formData.get('matchId'),

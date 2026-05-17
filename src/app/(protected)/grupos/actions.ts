@@ -3,12 +3,16 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { validateGroupName, validateInviteCode } from '@/lib/grupos'
+import { assertNotBlocked } from '@/lib/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function createGroup(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) throw new Error('No autenticado')
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { isBlocked: true } })
+  assertNotBlocked(user?.isBlocked ?? false)
 
   const name = validateGroupName(formData.get('name'))
 
@@ -29,6 +33,9 @@ export async function createGroup(formData: FormData) {
 export async function joinGroup(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) throw new Error('No autenticado')
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { isBlocked: true } })
+  assertNotBlocked(user?.isBlocked ?? false)
 
   const code = validateInviteCode(formData.get('inviteCode'))
 
