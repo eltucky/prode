@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/db'
 import Image from 'next/image'
-import { editPrediction, deletePrediction } from './actions'
 import { MatchStage } from '@prisma/client'
+import { AdminPredictionRow } from '@/components/admin-prediction-row'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Grupos',
@@ -124,30 +124,13 @@ export default async function AdminPronosticosPage({
                         ) : '—'}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <form action={editPrediction} className="flex items-center gap-1">
-                            <input type="hidden" name="predictionId" value={p.id} />
-                            <input type="number" name="homeScore" defaultValue={p.homeScore} min="0" max="99" className="w-10 border rounded px-1 py-0.5 text-center text-xs" />
-                            <span className="text-gray-400 text-xs">-</span>
-                            <input type="number" name="awayScore" defaultValue={p.awayScore} min="0" max="99" className="w-10 border rounded px-1 py-0.5 text-center text-xs" />
-                            {isKnockout && (
-                              <select name="predictedWinnerId" defaultValue={p.predictedWinnerId ?? ''} className="border rounded px-1 py-0.5 text-xs">
-                                <option value="">Sin ganador</option>
-                                {selectedMatch.homeTeam && <option value={selectedMatch.homeTeam.id}>{selectedMatch.homeTeam.name}</option>}
-                                {selectedMatch.awayTeam && <option value={selectedMatch.awayTeam.id}>{selectedMatch.awayTeam.name}</option>}
-                              </select>
-                            )}
-                            <button type="submit" className="text-xs bg-gray-800 text-white px-2 py-0.5 rounded hover:bg-gray-600">
-                              ✓
-                            </button>
-                          </form>
-                          <form action={deletePrediction}>
-                            <input type="hidden" name="predictionId" value={p.id} />
-                            <button type="submit" className="text-xs text-red-500 hover:text-red-700">
-                              ✕
-                            </button>
-                          </form>
-                        </div>
+                        <AdminPredictionRow
+                          key={p.id}
+                          prediction={{ id: p.id, homeScore: p.homeScore, awayScore: p.awayScore, predictedWinnerId: p.predictedWinnerId }}
+                          homeTeam={selectedMatch.homeTeam}
+                          awayTeam={selectedMatch.awayTeam}
+                          isKnockout={!!isKnockout}
+                        />
                       </td>
                     </tr>
                   ))}
