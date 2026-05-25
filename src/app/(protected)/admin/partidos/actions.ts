@@ -16,8 +16,8 @@ async function requireSuperAdmin() {
 
 const updateResultSchema = z.object({
   matchId: z.string().cuid(),
-  homeScore: z.coerce.number().int().min(0),
-  awayScore: z.coerce.number().int().min(0),
+  homeScore: z.preprocess(v => (v === '' || v === null ? null : Number(v)), z.number().int().min(0).nullable()),
+  awayScore: z.preprocess(v => (v === '' || v === null ? null : Number(v)), z.number().int().min(0).nullable()),
   status: z.enum(['FINISHED', 'SCHEDULED', 'POSTPONED', 'CANCELLED', 'IN_PROGRESS']),
   winnerId: z.string().cuid().optional().nullable(),
 })

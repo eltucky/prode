@@ -1,9 +1,10 @@
 import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
-import { updateMatchResult, triggerSyncAction } from './actions'
+import { triggerSyncAction } from './actions'
 import { MatchStage } from '@prisma/client'
 import { ClientDate } from '@/components/client-date'
+import { AdminMatchResultRow } from '@/components/admin-match-result-row'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -72,24 +73,13 @@ export default async function AdminPartidosPage() {
                   }`}>{match.status}</span>
                 </td>
                 <td className="px-4 py-2">
-                  <form action={updateMatchResult}>
-                    <input type="hidden" name="matchId" value={match.id} />
-                    <div className="flex items-center gap-1">
-                      <input type="number" name="homeScore" defaultValue={match.homeScore ?? ''} min="0" className="w-12 border rounded px-1 py-0.5 text-center text-sm" placeholder="L" />
-                      <span>-</span>
-                      <input type="number" name="awayScore" defaultValue={match.awayScore ?? ''} min="0" className="w-12 border rounded px-1 py-0.5 text-center text-sm" placeholder="V" />
-                      <select name="status" defaultValue={match.status} className="border rounded px-1 py-0.5 text-xs">
-                        <option value="SCHEDULED">SCHED</option>
-                        <option value="IN_PROGRESS">LIVE</option>
-                        <option value="FINISHED">FIN</option>
-                        <option value="POSTPONED">POST</option>
-                        <option value="CANCELLED">CANC</option>
-                      </select>
-                      <button type="submit" className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs hover:bg-gray-700">
-                        ✓
-                      </button>
-                    </div>
-                  </form>
+                  <AdminMatchResultRow
+                    key={match.id}
+                    matchId={match.id}
+                    homeScore={match.homeScore}
+                    awayScore={match.awayScore}
+                    status={match.status}
+                  />
                 </td>
               </tr>
             ))}
