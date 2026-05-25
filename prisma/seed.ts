@@ -23,8 +23,8 @@ async function main() {
 
   console.log('🌱 Seeding matches...')
   for (const match of matches) {
-    const homeTeamId = match.homeTeamCode ? codeToId[match.homeTeamCode] : undefined
-    const awayTeamId = match.awayTeamCode ? codeToId[match.awayTeamCode] : undefined
+    const homeTeamId = match.homeTeamCode ? codeToId[match.homeTeamCode] : null
+    const awayTeamId = match.awayTeamCode ? codeToId[match.awayTeamCode] : null
 
     if (match.homeTeamCode && !homeTeamId) {
       throw new Error(`Team not found: ${match.homeTeamCode}`)
@@ -36,10 +36,12 @@ async function main() {
     await prisma.match.upsert({
       where: { matchNumber: match.matchNumber },
       update: {
+        stage: match.stage,
+        groupName: match.groupName ?? null,
         scheduledAt: match.scheduledAt,
         venue: match.venue,
-        ...(homeTeamId && { homeTeamId }),
-        ...(awayTeamId && { awayTeamId }),
+        homeTeamId: homeTeamId,
+        awayTeamId: awayTeamId,
       },
       create: {
         matchNumber: match.matchNumber,
@@ -47,13 +49,17 @@ async function main() {
         groupName: match.groupName ?? null,
         scheduledAt: match.scheduledAt,
         venue: match.venue,
-        homeTeamId: homeTeamId ?? null,
-        awayTeamId: awayTeamId ?? null,
+        homeTeamId: homeTeamId,
+        awayTeamId: awayTeamId,
         status: 'SCHEDULED',
       },
     })
   }
   console.log(`✓ ${matches.length} matches upserted`)
+
+  const activeCodes = teams.map(t => t.code)
+  const deleted = await prisma.team.deleteMany({ where: { code: { notIn: activeCodes } } })
+  if (deleted.count > 0) console.log(`✓ ${deleted.count} equipos obsoletos eliminados`)
 }
 
 main()

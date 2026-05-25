@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { updateMatchResult, triggerSyncAction } from './actions'
 import { MatchStage } from '@prisma/client'
+import { ClientDate } from '@/components/client-date'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -57,7 +58,7 @@ export default async function AdminPartidosPage() {
                   </div>
                 </td>
                 <td className="px-4 py-2 text-gray-500 text-xs">
-                  {match.scheduledAt.toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  <ClientDate iso={match.scheduledAt.toISOString()} />
                 </td>
                 <td className="px-4 py-2">
                   {match.homeScore !== null ? `${match.homeScore} - ${match.awayScore}` : '—'}

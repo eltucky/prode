@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage, MatchStatus } from '@prisma/client'
 import { savePrediction } from './actions'
+import { ClientDate } from '@/components/client-date'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -120,9 +121,7 @@ export default async function TorneoPage({
                         {badge.label}
                       </span>
                       <span className="text-xs text-gray-400">
-                        {match.scheduledAt.toLocaleString('es-AR', {
-                          day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit',
-                        })}
+                        <ClientDate iso={match.scheduledAt.toISOString()} />
                       </span>
                     </div>
                   </div>

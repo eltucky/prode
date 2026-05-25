@@ -1,0 +1,105 @@
+grupo,fase,fecha,hora_arg,partido,sede
+GRUPO A,Fecha 1,11/06/2026,16:00,México vs. Sudáfrica,Estadio Ciudad de México
+GRUPO A,Fecha 1,11/06/2026,23:00,Corea del Sur vs. Europa D,Estadio Guadalajara
+GRUPO A,Fecha 2,18/06/2026,13:00,Europa D vs. Sudáfrica,Atlanta Stadium
+GRUPO A,Fecha 2,18/06/2026,22:00,México vs. Corea del Sur,Estadio Guadalajara
+GRUPO A,Fecha 3,24/06/2026,22:00,Europa D vs. México,Estadio Ciudad de México
+GRUPO A,Fecha 3,24/06/2026,22:00,Sudáfrica vs. Corea del Sur,Estadio Monterrey
+GRUPO B,Fecha 1,12/06/2026,16:00,Canadá vs. Europa A,Toronto Stadium
+GRUPO B,Fecha 1,13/06/2026,16:00,Qatar vs. Suiza,San Francisco Bay Area Stadium
+GRUPO B,Fecha 2,18/06/2026,16:00,Suiza vs. Europa A,Los Angeles Stadium
+GRUPO B,Fecha 2,18/06/2026,19:00,Canadá vs. Qatar,BC Place Vancouver
+GRUPO B,Fecha 3,24/06/2026,16:00,Suiza vs. Canadá,BC Place Vancouver
+GRUPO B,Fecha 3,24/06/2026,16:00,Europa A vs. Qatar,Seattle Stadium
+GRUPO C,Fecha 1,13/06/2026,19:00,Brasil vs. Marruecos,Boston Stadium
+GRUPO C,Fecha 1,13/06/2026,22:00,Haití vs. Escocia,New York/New Jersey Stadium
+GRUPO C,Fecha 2,19/06/2026,19:00,Brasil vs. Haití,Philadelphia Stadium
+GRUPO C,Fecha 2,19/06/2026,22:00,Escocia vs. Marruecos,Boston Stadium
+GRUPO C,Fecha 3,24/06/2026,19:00,Escocia vs. Brasil,Miami Stadium
+GRUPO C,Fecha 3,24/06/2026,19:00,Marruecos vs. Haití,Atlanta Stadium
+GRUPO D,Fecha 1,12/06/2026,22:00,Estados Unidos vs. Paraguay,Los Angeles Stadium
+GRUPO D,Fecha 1,14/06/2026,01:00,Australia vs. Europa C,BC Place Vancouver
+GRUPO D,Fecha 2,19/06/2026,16:00,Europa C vs. Paraguay,San Francisco Bay Area Stadium
+GRUPO D,Fecha 2,19/06/2026,01:00,Estados Unidos vs. Australia,Seattle Stadium
+GRUPO D,Fecha 3,25/06/2026,23:00,Europa C vs. Estados Unidos,Los Angeles Stadium
+GRUPO D,Fecha 3,25/06/2026,23:00,Paraguay vs. Australia,San Francisco Bay Area Stadium
+GRUPO E,Fecha 1,14/06/2026,14:00,Alemania vs. Curazao,Philadelphia Stadium
+GRUPO E,Fecha 1,14/06/2026,20:00,Costa de Marfil vs. Ecuador,Houston Stadium
+GRUPO E,Fecha 2,20/06/2026,17:00,Alemania vs. Costa de Marfil,Toronto Stadium
+GRUPO E,Fecha 2,20/06/2026,21:00,Curazao vs. Ecuador,Kansas City Stadium
+GRUPO E,Fecha 3,25/06/2026,17:00,Ecuador vs. Alemania,Philadelphia Stadium
+GRUPO E,Fecha 3,25/06/2026,17:00,Curazao vs. Costa de Marfil,New York/New Jersey Stadium
+GRUPO F,Fecha 1,14/06/2026,17:00,Países Bajos vs. Japón,Dallas Stadium
+GRUPO F,Fecha 1,14/06/2026,23:00,Europa B vs. Túnez,Estadio Monterrey
+GRUPO F,Fecha 2,20/06/2026,14:00,Países Bajos vs. Europa B,Houston Stadium
+GRUPO F,Fecha 2,20/06/2026,01:00,Japón vs. Túnez,Estadio Monterrey
+GRUPO F,Fecha 3,25/06/2026,20:00,Túnez vs. Países Bajos,Dallas Stadium
+GRUPO F,Fecha 3,25/06/2026,20:00,Japón vs. Europa B,Kansas City Stadium
+GRUPO G,Fecha 1,15/06/2026,A confirmar,Bélgica vs. Egipto,Los Angeles Stadium
+GRUPO G,Fecha 1,15/06/2026,22:00,Irán vs. Nueva Zelanda,Seattle Stadium
+GRUPO G,Fecha 2,21/06/2026,16:00,Bélgica vs. Irán,Los Angeles Stadium
+GRUPO G,Fecha 2,21/06/2026,22:00,Egipto vs. Nueva Zelanda,BC Place Vancouver
+GRUPO G,Fecha 3,26/06/2026,00:00,Nueva Zelanda vs. Bélgica,Seattle Stadium
+GRUPO G,Fecha 3,26/06/2026,00:00,Egipto vs. Irán,BC Place Vancouver
+GRUPO H,Fecha 1,15/06/2026,13:00,España vs. Cabo Verde,Miami Stadium
+GRUPO H,Fecha 1,15/06/2026,19:00,Arabia Saudita vs. Uruguay,Atlanta Stadium
+GRUPO H,Fecha 2,21/06/2026,13:00,España vs. Arabia Saudita,Miami Stadium
+GRUPO H,Fecha 2,21/06/2026,19:00,Cabo Verde vs. Uruguay,Atlanta Stadium
+GRUPO H,Fecha 3,26/06/2026,21:00,Uruguay vs. España,Houston Stadium
+GRUPO H,Fecha 3,26/06/2026,21:00,Cabo Verde vs. Arabia Saudita,Estadio Guadalajara
+GRUPO I,Fecha 1,16/06/2026,16:00,Francia vs. Senegal,New York/New Jersey Stadium
+GRUPO I,Fecha 1,16/06/2026,19:00,Repechaje 2 vs. Noruega,Boston Stadium
+GRUPO I,Fecha 2,22/06/2026,18:00,Francia vs. Repechaje 2,New York/New Jersey Stadium
+GRUPO I,Fecha 2,22/06/2026,21:00,Noruega vs. Senegal,Philadelphia Stadium
+GRUPO I,Fecha 3,26/06/2026,16:00,Noruega vs. Francia,Boston Stadium
+GRUPO I,Fecha 3,26/06/2026,16:00,Senegal vs. Repechaje 2,Toronto Stadium
+GRUPO J,Fecha 1,16/06/2026,22:00,Argentina vs. Argelia,Kansas City Stadium
+GRUPO J,Fecha 1,17/06/2026,01:00,Austria vs. Jordania,San Francisco Bay Area Stadium
+GRUPO J,Fecha 2,22/06/2026,14:00,Argentina vs. Austria,Dallas Stadium
+GRUPO J,Fecha 2,22/06/2026,00:00,Jordania vs. Argelia,San Francisco Bay Area Stadium
+GRUPO J,Fecha 3,27/06/2026,23:00,Jordania vs. Argentina,Dallas Stadium
+GRUPO J,Fecha 3,27/06/2026,23:00,Argelia vs. Austria,Kansas City Stadium
+GRUPO K,Fecha 1,17/06/2026,14:00,Portugal vs. Repechaje 1,Houston Stadium
+GRUPO K,Fecha 1,17/06/2026,23:00,Uzbekistán vs. Colombia,Estadio Ciudad de México
+GRUPO K,Fecha 2,23/06/2026,14:00,Portugal vs. Uzbekistán,Houston Stadium
+GRUPO K,Fecha 2,23/06/2026,23:00,Repechaje 1 vs. Colombia,Estadio Guadalajara
+GRUPO K,Fecha 3,27/06/2026,20:30,Colombia vs. Portugal,Miami Stadium
+GRUPO K,Fecha 3,27/06/2026,20:30,Repechaje 1 vs. Uzbekistán,Atlanta Stadium
+GRUPO L,Fecha 1,17/06/2026,17:00,Inglaterra vs. Croacia,Toronto Stadium
+GRUPO L,Fecha 1,17/06/2026,20:00,Ghana vs. Panamá,Dallas Stadium
+GRUPO L,Fecha 2,23/06/2026,17:00,Inglaterra vs. Ghana,Boston Stadium
+GRUPO L,Fecha 2,23/06/2026,20:00,Croacia vs. Panamá,Toronto Stadium
+GRUPO L,Fecha 3,27/06/2026,18:00,Panamá vs. Inglaterra,New York/New Jersey Stadium
+GRUPO L,Fecha 3,27/06/2026,18:00,Croacia vs. Ghana,Philadelphia Stadium
+16avos,16avos,28/06/2026,16:00,P73: 2º Grupo A vs 2º Grupo B,Los Angeles Stadium
+16avos,16avos,29/06/2026,14:00,P76: 1º Grupo C vs 2º Grupo F,Houston Stadium
+16avos,16avos,29/06/2026,17:30,P74: 1º Grupo E vs 3º Grupo A/B/C/D/F,Boston Stadium
+16avos,16avos,29/06/2026,22:00,P75: 1º Grupo F vs 2º Grupo C,Estadio Monterrey
+16avos,16avos,30/06/2026,14:00,P78: 2º Grupo E vs 2º Grupo I,Dallas Stadium
+16avos,16avos,30/06/2026,18:00,P77: 1º Grupo I vs 3º Grupo C/D/F/G/H,New York/New Jersey Stadium
+16avos,16avos,30/06/2026,22:00,P79: 1º Grupo A vs 3º Grupo C/E/F/H/I,Estadio Ciudad de México
+16avos,16avos,01/07/2026,13:00,P80: 1º Grupo L vs 3º Grupo E/H/I/J/K,Atlanta Stadium
+16avos,16avos,01/07/2026,17:00,P82: 1º Grupo G vs 3º Grupo A/E/H/I/J,Seattle Stadium
+16avos,16avos,01/07/2026,21:00,P81: 1º Grupo D vs 3º Grupo B/E/F/I/J,San Francisco Bay Area Stadium
+16avos,16avos,02/07/2026,16:00,P84: 1º Grupo H vs 2º Grupo J,Los Angeles Stadium
+16avos,16avos,02/07/2026,20:00,P83: 2º Grupo K vs 2º Grupo L,Toronto Stadium
+16avos,16avos,03/07/2026,00:00,P85: 1º Grupo B vs 3º Grupo E/F/G/I/J,BC Place Vancouver
+16avos,16avos,03/07/2026,15:00,P88: 2º Grupo D vs 2º Grupo G,Dallas Stadium
+16avos,16avos,03/07/2026,19:00,P86: 1º Grupo J vs 2º Grupo H,Miami Stadium
+16avos,16avos,03/07/2026,22:30,P87: 1º Grupo K vs 3º Grupo D/E/I/J/L,Kansas City Stadium
+Octavos,Octavos,04/07/2026,14:00,P90: Gan. P73 vs Gan. P75,Houston Stadium
+Octavos,Octavos,04/07/2026,18:00,P89: Gan. P74 vs Gan. P77,Philadelphia Stadium
+Octavos,Octavos,05/07/2026,17:00,P91: Gan. P76 vs Gan. P78,New York/New Jersey Stadium
+Octavos,Octavos,05/07/2026,21:00,P92: Gan. P79 vs Gan. P80,"Estadio Azteca, Ciudad de México"
+Octavos,Octavos,06/07/2026,16:00,P93: Gan. P83 vs Gan. P84,Dallas Stadium
+Octavos,Octavos,06/07/2026,21:00,P94: Gan. P81 vs Gan. P82,Seattle Stadium
+Octavos,Octavos,07/07/2026,13:00,P95: Gan. P86 vs Gan. P88,Atlanta Stadium
+Octavos,Octavos,07/07/2026,17:00,P96: Gan. P85 vs Gan. P87,BC Place Vancouver
+Cuartos,Cuartos,09/07/2026,17:00,P97: Gan. P89 vs Gan. P90,Boston Stadium
+Cuartos,Cuartos,10/07/2026,16:00,P98: Gan. P93 vs Gan. P94,Los Angeles Stadium
+Cuartos,Cuartos,11/07/2026,18:00,P99: Gan. P91 vs Gan. P92,Miami Stadium
+Cuartos,Cuartos,11/07/2026,22:00,P100: Gan. P95 vs Gan. P96,Kansas City Stadium
+Semifinales,Semifinales,14/07/2026,16:00,P101: Gan. P97 vs Gan. P98,Dallas Stadium
+Semifinales,Semifinales,15/07/2026,16:00,P102: Gan. P99 vs Gan. P100,Atlanta Stadium
+Tercer puesto,Tercer puesto,18/07/2026,18:00,Perdedor P101 vs Perdedor P102,Miami Stadium
+Final,Final,19/07/2026,16:00,Gan. P101 vs Gan. P102,"MetLife Stadium, New Jersey"
