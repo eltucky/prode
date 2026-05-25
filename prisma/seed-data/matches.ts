@@ -1,6 +1,6 @@
 // prisma/seed-data/matches.ts
 // Horarios en UTC (fuente: partidos.csv en hora Argentina ART = UTC-3)
-// Equipos TBD (Europa A/B/C/D, Repechaje 1/2) se dejan sin código → null en DB
+// Horarios en UTC (fuente: partidos.csv en hora Argentina ART = UTC-3)
 import { MatchStage } from '@prisma/client'
 
 export type MatchSeed = {
@@ -16,19 +16,19 @@ export type MatchSeed = {
 export const matches: MatchSeed[] = [
   // ── GRUPO A ──────────────────────────────────────────────────────────────
   { matchNumber:  1, stage: 'GROUP', groupName: 'A', homeTeamCode: 'MEX', awayTeamCode: 'RSA', scheduledAt: new Date('2026-06-11T19:00:00Z'), venue: 'Estadio Ciudad de México' },
-  { matchNumber:  2, stage: 'GROUP', groupName: 'A', homeTeamCode: 'KOR',                      scheduledAt: new Date('2026-06-12T02:00:00Z'), venue: 'Estadio Guadalajara' },
-  { matchNumber:  3, stage: 'GROUP', groupName: 'A',                      awayTeamCode: 'RSA', scheduledAt: new Date('2026-06-18T16:00:00Z'), venue: 'Atlanta Stadium' },
+  { matchNumber:  2, stage: 'GROUP', groupName: 'A', homeTeamCode: 'KOR', awayTeamCode: 'CZE', scheduledAt: new Date('2026-06-12T02:00:00Z'), venue: 'Estadio Guadalajara' },
+  { matchNumber:  3, stage: 'GROUP', groupName: 'A', homeTeamCode: 'CZE', awayTeamCode: 'RSA', scheduledAt: new Date('2026-06-18T16:00:00Z'), venue: 'Atlanta Stadium' },
   { matchNumber:  4, stage: 'GROUP', groupName: 'A', homeTeamCode: 'MEX', awayTeamCode: 'KOR', scheduledAt: new Date('2026-06-19T01:00:00Z'), venue: 'Estadio Guadalajara' },
-  { matchNumber:  5, stage: 'GROUP', groupName: 'A',                      awayTeamCode: 'MEX', scheduledAt: new Date('2026-06-25T01:00:00Z'), venue: 'Estadio Ciudad de México' },
+  { matchNumber:  5, stage: 'GROUP', groupName: 'A', homeTeamCode: 'CZE', awayTeamCode: 'MEX', scheduledAt: new Date('2026-06-25T01:00:00Z'), venue: 'Estadio Ciudad de México' },
   { matchNumber:  6, stage: 'GROUP', groupName: 'A', homeTeamCode: 'RSA', awayTeamCode: 'KOR', scheduledAt: new Date('2026-06-25T01:00:00Z'), venue: 'Estadio Monterrey' },
 
   // ── GRUPO B ──────────────────────────────────────────────────────────────
-  { matchNumber:  7, stage: 'GROUP', groupName: 'B', homeTeamCode: 'CAN',                      scheduledAt: new Date('2026-06-12T19:00:00Z'), venue: 'Toronto Stadium' },
+  { matchNumber:  7, stage: 'GROUP', groupName: 'B', homeTeamCode: 'CAN', awayTeamCode: 'BIH', scheduledAt: new Date('2026-06-12T19:00:00Z'), venue: 'Toronto Stadium' },
   { matchNumber:  8, stage: 'GROUP', groupName: 'B', homeTeamCode: 'QAT', awayTeamCode: 'SUI', scheduledAt: new Date('2026-06-13T19:00:00Z'), venue: 'San Francisco Bay Area Stadium' },
-  { matchNumber:  9, stage: 'GROUP', groupName: 'B', homeTeamCode: 'SUI',                      scheduledAt: new Date('2026-06-18T19:00:00Z'), venue: 'Los Angeles Stadium' },
+  { matchNumber:  9, stage: 'GROUP', groupName: 'B', homeTeamCode: 'SUI', awayTeamCode: 'BIH', scheduledAt: new Date('2026-06-18T19:00:00Z'), venue: 'Los Angeles Stadium' },
   { matchNumber: 10, stage: 'GROUP', groupName: 'B', homeTeamCode: 'CAN', awayTeamCode: 'QAT', scheduledAt: new Date('2026-06-18T22:00:00Z'), venue: 'BC Place Vancouver' },
   { matchNumber: 11, stage: 'GROUP', groupName: 'B', homeTeamCode: 'SUI', awayTeamCode: 'CAN', scheduledAt: new Date('2026-06-24T19:00:00Z'), venue: 'BC Place Vancouver' },
-  { matchNumber: 12, stage: 'GROUP', groupName: 'B',                      awayTeamCode: 'QAT', scheduledAt: new Date('2026-06-24T19:00:00Z'), venue: 'Seattle Stadium' },
+  { matchNumber: 12, stage: 'GROUP', groupName: 'B', homeTeamCode: 'BIH', awayTeamCode: 'QAT', scheduledAt: new Date('2026-06-24T19:00:00Z'), venue: 'Seattle Stadium' },
 
   // ── GRUPO C ──────────────────────────────────────────────────────────────
   { matchNumber: 13, stage: 'GROUP', groupName: 'C', homeTeamCode: 'BRA', awayTeamCode: 'MAR', scheduledAt: new Date('2026-06-13T22:00:00Z'), venue: 'Boston Stadium' },
@@ -40,10 +40,10 @@ export const matches: MatchSeed[] = [
 
   // ── GRUPO D ──────────────────────────────────────────────────────────────
   { matchNumber: 19, stage: 'GROUP', groupName: 'D', homeTeamCode: 'USA', awayTeamCode: 'PAR', scheduledAt: new Date('2026-06-13T01:00:00Z'), venue: 'Los Angeles Stadium' },
-  { matchNumber: 20, stage: 'GROUP', groupName: 'D', homeTeamCode: 'AUS',                      scheduledAt: new Date('2026-06-14T04:00:00Z'), venue: 'BC Place Vancouver' },
-  { matchNumber: 21, stage: 'GROUP', groupName: 'D',                      awayTeamCode: 'PAR', scheduledAt: new Date('2026-06-19T19:00:00Z'), venue: 'San Francisco Bay Area Stadium' },
+  { matchNumber: 20, stage: 'GROUP', groupName: 'D', homeTeamCode: 'AUS', awayTeamCode: 'TUR', scheduledAt: new Date('2026-06-14T04:00:00Z'), venue: 'BC Place Vancouver' },
+  { matchNumber: 21, stage: 'GROUP', groupName: 'D', homeTeamCode: 'TUR', awayTeamCode: 'PAR', scheduledAt: new Date('2026-06-19T19:00:00Z'), venue: 'San Francisco Bay Area Stadium' },
   { matchNumber: 22, stage: 'GROUP', groupName: 'D', homeTeamCode: 'USA', awayTeamCode: 'AUS', scheduledAt: new Date('2026-06-19T04:00:00Z'), venue: 'Seattle Stadium' },
-  { matchNumber: 23, stage: 'GROUP', groupName: 'D',                      awayTeamCode: 'USA', scheduledAt: new Date('2026-06-26T02:00:00Z'), venue: 'Los Angeles Stadium' },
+  { matchNumber: 23, stage: 'GROUP', groupName: 'D', homeTeamCode: 'TUR', awayTeamCode: 'USA', scheduledAt: new Date('2026-06-26T02:00:00Z'), venue: 'Los Angeles Stadium' },
   { matchNumber: 24, stage: 'GROUP', groupName: 'D', homeTeamCode: 'PAR', awayTeamCode: 'AUS', scheduledAt: new Date('2026-06-26T02:00:00Z'), venue: 'San Francisco Bay Area Stadium' },
 
   // ── GRUPO E ──────────────────────────────────────────────────────────────
@@ -56,11 +56,11 @@ export const matches: MatchSeed[] = [
 
   // ── GRUPO F ──────────────────────────────────────────────────────────────
   { matchNumber: 31, stage: 'GROUP', groupName: 'F', homeTeamCode: 'NED', awayTeamCode: 'JPN', scheduledAt: new Date('2026-06-14T20:00:00Z'), venue: 'Dallas Stadium' },
-  { matchNumber: 32, stage: 'GROUP', groupName: 'F',                      awayTeamCode: 'TUN', scheduledAt: new Date('2026-06-15T02:00:00Z'), venue: 'Estadio Monterrey' },
-  { matchNumber: 33, stage: 'GROUP', groupName: 'F', homeTeamCode: 'NED',                      scheduledAt: new Date('2026-06-20T17:00:00Z'), venue: 'Houston Stadium' },
+  { matchNumber: 32, stage: 'GROUP', groupName: 'F', homeTeamCode: 'SWE', awayTeamCode: 'TUN', scheduledAt: new Date('2026-06-15T02:00:00Z'), venue: 'Estadio Monterrey' },
+  { matchNumber: 33, stage: 'GROUP', groupName: 'F', homeTeamCode: 'NED', awayTeamCode: 'SWE', scheduledAt: new Date('2026-06-20T17:00:00Z'), venue: 'Houston Stadium' },
   { matchNumber: 34, stage: 'GROUP', groupName: 'F', homeTeamCode: 'JPN', awayTeamCode: 'TUN', scheduledAt: new Date('2026-06-20T04:00:00Z'), venue: 'Estadio Monterrey' },
   { matchNumber: 35, stage: 'GROUP', groupName: 'F', homeTeamCode: 'TUN', awayTeamCode: 'NED', scheduledAt: new Date('2026-06-25T23:00:00Z'), venue: 'Dallas Stadium' },
-  { matchNumber: 36, stage: 'GROUP', groupName: 'F', homeTeamCode: 'JPN',                      scheduledAt: new Date('2026-06-25T23:00:00Z'), venue: 'Kansas City Stadium' },
+  { matchNumber: 36, stage: 'GROUP', groupName: 'F', homeTeamCode: 'JPN', awayTeamCode: 'SWE', scheduledAt: new Date('2026-06-25T23:00:00Z'), venue: 'Kansas City Stadium' },
 
   // ── GRUPO G ──────────────────────────────────────────────────────────────
   // Bélgica vs Egipto: hora "A confirmar" en el CSV → se usa mediodía ART (15:00 UTC)
@@ -81,11 +81,11 @@ export const matches: MatchSeed[] = [
 
   // ── GRUPO I ──────────────────────────────────────────────────────────────
   { matchNumber: 49, stage: 'GROUP', groupName: 'I', homeTeamCode: 'FRA', awayTeamCode: 'SEN', scheduledAt: new Date('2026-06-16T19:00:00Z'), venue: 'New York/New Jersey Stadium' },
-  { matchNumber: 50, stage: 'GROUP', groupName: 'I',                      awayTeamCode: 'NOR', scheduledAt: new Date('2026-06-16T22:00:00Z'), venue: 'Boston Stadium' },
-  { matchNumber: 51, stage: 'GROUP', groupName: 'I', homeTeamCode: 'FRA',                      scheduledAt: new Date('2026-06-22T21:00:00Z'), venue: 'New York/New Jersey Stadium' },
+  { matchNumber: 50, stage: 'GROUP', groupName: 'I', homeTeamCode: 'IRQ', awayTeamCode: 'NOR', scheduledAt: new Date('2026-06-16T22:00:00Z'), venue: 'Boston Stadium' },
+  { matchNumber: 51, stage: 'GROUP', groupName: 'I', homeTeamCode: 'FRA', awayTeamCode: 'IRQ', scheduledAt: new Date('2026-06-22T21:00:00Z'), venue: 'New York/New Jersey Stadium' },
   { matchNumber: 52, stage: 'GROUP', groupName: 'I', homeTeamCode: 'NOR', awayTeamCode: 'SEN', scheduledAt: new Date('2026-06-23T00:00:00Z'), venue: 'Philadelphia Stadium' },
   { matchNumber: 53, stage: 'GROUP', groupName: 'I', homeTeamCode: 'NOR', awayTeamCode: 'FRA', scheduledAt: new Date('2026-06-26T19:00:00Z'), venue: 'Boston Stadium' },
-  { matchNumber: 54, stage: 'GROUP', groupName: 'I', homeTeamCode: 'SEN',                      scheduledAt: new Date('2026-06-26T19:00:00Z'), venue: 'Toronto Stadium' },
+  { matchNumber: 54, stage: 'GROUP', groupName: 'I', homeTeamCode: 'SEN', awayTeamCode: 'IRQ', scheduledAt: new Date('2026-06-26T19:00:00Z'), venue: 'Toronto Stadium' },
 
   // ── GRUPO J ──────────────────────────────────────────────────────────────
   { matchNumber: 55, stage: 'GROUP', groupName: 'J', homeTeamCode: 'ARG', awayTeamCode: 'ALG', scheduledAt: new Date('2026-06-17T01:00:00Z'), venue: 'Kansas City Stadium' },
@@ -96,12 +96,12 @@ export const matches: MatchSeed[] = [
   { matchNumber: 60, stage: 'GROUP', groupName: 'J', homeTeamCode: 'ALG', awayTeamCode: 'AUT', scheduledAt: new Date('2026-06-28T02:00:00Z'), venue: 'Kansas City Stadium' },
 
   // ── GRUPO K ──────────────────────────────────────────────────────────────
-  { matchNumber: 61, stage: 'GROUP', groupName: 'K', homeTeamCode: 'POR',                      scheduledAt: new Date('2026-06-17T17:00:00Z'), venue: 'Houston Stadium' },
+  { matchNumber: 61, stage: 'GROUP', groupName: 'K', homeTeamCode: 'POR', awayTeamCode: 'COD', scheduledAt: new Date('2026-06-17T17:00:00Z'), venue: 'Houston Stadium' },
   { matchNumber: 62, stage: 'GROUP', groupName: 'K', homeTeamCode: 'UZB', awayTeamCode: 'COL', scheduledAt: new Date('2026-06-18T02:00:00Z'), venue: 'Estadio Ciudad de México' },
   { matchNumber: 63, stage: 'GROUP', groupName: 'K', homeTeamCode: 'POR', awayTeamCode: 'UZB', scheduledAt: new Date('2026-06-23T17:00:00Z'), venue: 'Houston Stadium' },
-  { matchNumber: 64, stage: 'GROUP', groupName: 'K',                      awayTeamCode: 'COL', scheduledAt: new Date('2026-06-24T02:00:00Z'), venue: 'Estadio Guadalajara' },
+  { matchNumber: 64, stage: 'GROUP', groupName: 'K', homeTeamCode: 'COD', awayTeamCode: 'COL', scheduledAt: new Date('2026-06-24T02:00:00Z'), venue: 'Estadio Guadalajara' },
   { matchNumber: 65, stage: 'GROUP', groupName: 'K', homeTeamCode: 'COL', awayTeamCode: 'POR', scheduledAt: new Date('2026-06-27T23:30:00Z'), venue: 'Miami Stadium' },
-  { matchNumber: 66, stage: 'GROUP', groupName: 'K',                      awayTeamCode: 'UZB', scheduledAt: new Date('2026-06-27T23:30:00Z'), venue: 'Atlanta Stadium' },
+  { matchNumber: 66, stage: 'GROUP', groupName: 'K', homeTeamCode: 'COD', awayTeamCode: 'UZB', scheduledAt: new Date('2026-06-27T23:30:00Z'), venue: 'Atlanta Stadium' },
 
   // ── GRUPO L ──────────────────────────────────────────────────────────────
   { matchNumber: 67, stage: 'GROUP', groupName: 'L', homeTeamCode: 'ENG', awayTeamCode: 'CRO', scheduledAt: new Date('2026-06-17T20:00:00Z'), venue: 'Toronto Stadium' },

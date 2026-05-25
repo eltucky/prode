@@ -1,8 +1,8 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage, MatchStatus } from '@prisma/client'
-import { savePrediction } from './actions'
 import { ClientDate } from '@/components/client-date'
+import { PredictionForm } from '@/components/prediction-form'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -152,48 +152,16 @@ export default async function TorneoPage({
                       <div className="text-xs text-gray-400 border-t pt-2">Sin pronóstico</div>
                     )
                   ) : (
-                    <form action={savePrediction} className="flex items-center gap-2 border-t pt-2 flex-wrap">
-                      <input type="hidden" name="matchId" value={match.id} />
-                      <span className="text-xs text-gray-400 shrink-0">Tu pronóstico:</span>
-                      <input
-                        type="number"
-                        name="homeScore"
-                        defaultValue={prediction?.homeScore ?? ''}
-                        min="0"
-                        max="99"
-                        required
-                        placeholder="L"
-                        className="w-12 border rounded px-1 py-0.5 text-center text-sm"
-                      />
-                      <span className="text-gray-400">-</span>
-                      <input
-                        type="number"
-                        name="awayScore"
-                        defaultValue={prediction?.awayScore ?? ''}
-                        min="0"
-                        max="99"
-                        required
-                        placeholder="V"
-                        className="w-12 border rounded px-1 py-0.5 text-center text-sm"
-                      />
-                      {isKnockout && match.homeTeam && match.awayTeam && (
-                        <select
-                          name="predictedWinnerId"
-                          defaultValue={prediction?.predictedWinnerId ?? ''}
-                          className="border rounded px-1 py-0.5 text-xs"
-                        >
-                          <option value="">Ganador...</option>
-                          <option value={match.homeTeamId!}>{match.homeTeam.flag} {match.homeTeam.name}</option>
-                          <option value={match.awayTeamId!}>{match.awayTeam.flag} {match.awayTeam.name}</option>
-                        </select>
-                      )}
-                      <button
-                        type="submit"
-                        className="bg-gray-900 text-white px-3 py-0.5 rounded text-xs hover:bg-gray-700 shrink-0"
-                      >
-                        {prediction ? 'Actualizar' : 'Guardar'}
-                      </button>
-                    </form>
+                    <PredictionForm
+                      key={prediction?.id ?? `new-${match.id}`}
+                      matchId={match.id}
+                      prediction={prediction ?? null}
+                      homeTeam={match.homeTeam}
+                      awayTeam={match.awayTeam}
+                      homeTeamId={match.homeTeamId}
+                      awayTeamId={match.awayTeamId}
+                      isKnockout={isKnockout}
+                    />
                   )}
                 </div>
               )

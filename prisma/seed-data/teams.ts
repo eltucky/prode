@@ -11,8 +11,10 @@ export const teams: TeamSeed[] = [
   { code: 'MEX', name: 'México',         flag: '🇲🇽', group: 'A' },
   { code: 'RSA', name: 'Sudáfrica',      flag: '🇿🇦', group: 'A' },
   { code: 'KOR', name: 'Corea del Sur',  flag: '🇰🇷', group: 'A' },
+  { code: 'CZE', name: 'República Checa',flag: '🇨🇿', group: 'A' },
   // ── Grupo B ──────────────────────────────────────────────────
   { code: 'CAN', name: 'Canadá',         flag: '🇨🇦', group: 'B' },
+  { code: 'BIH', name: 'Bosnia y Herzegovina', flag: '🇧🇦', group: 'B' },
   { code: 'QAT', name: 'Qatar',          flag: '🇶🇦', group: 'B' },
   { code: 'SUI', name: 'Suiza',          flag: '🇨🇭', group: 'B' },
   // ── Grupo C ──────────────────────────────────────────────────
@@ -24,6 +26,7 @@ export const teams: TeamSeed[] = [
   { code: 'USA', name: 'Estados Unidos', flag: '🇺🇸', group: 'D' },
   { code: 'PAR', name: 'Paraguay',       flag: '🇵🇾', group: 'D' },
   { code: 'AUS', name: 'Australia',      flag: '🇦🇺', group: 'D' },
+  { code: 'TUR', name: 'Turquía',        flag: '🇹🇷', group: 'D' },
   // ── Grupo E ──────────────────────────────────────────────────
   { code: 'GER', name: 'Alemania',       flag: '🇩🇪', group: 'E' },
   { code: 'CUW', name: 'Curazao',        flag: '🇨🇼', group: 'E' },
@@ -32,6 +35,7 @@ export const teams: TeamSeed[] = [
   // ── Grupo F ──────────────────────────────────────────────────
   { code: 'NED', name: 'Países Bajos',   flag: '🇳🇱', group: 'F' },
   { code: 'JPN', name: 'Japón',          flag: '🇯🇵', group: 'F' },
+  { code: 'SWE', name: 'Suecia',         flag: '🇸🇪', group: 'F' },
   { code: 'TUN', name: 'Túnez',          flag: '🇹🇳', group: 'F' },
   // ── Grupo G ──────────────────────────────────────────────────
   { code: 'BEL', name: 'Bélgica',        flag: '🇧🇪', group: 'G' },
@@ -46,6 +50,7 @@ export const teams: TeamSeed[] = [
   // ── Grupo I ──────────────────────────────────────────────────
   { code: 'FRA', name: 'Francia',        flag: '🇫🇷', group: 'I' },
   { code: 'SEN', name: 'Senegal',        flag: '🇸🇳', group: 'I' },
+  { code: 'IRQ', name: 'Irak',           flag: '🇮🇶', group: 'I' },
   { code: 'NOR', name: 'Noruega',        flag: '🇳🇴', group: 'I' },
   // ── Grupo J ──────────────────────────────────────────────────
   { code: 'ARG', name: 'Argentina',      flag: '🇦🇷', group: 'J' },
@@ -54,6 +59,7 @@ export const teams: TeamSeed[] = [
   { code: 'JOR', name: 'Jordania',       flag: '🇯🇴', group: 'J' },
   // ── Grupo K ──────────────────────────────────────────────────
   { code: 'POR', name: 'Portugal',       flag: '🇵🇹', group: 'K' },
+  { code: 'COD', name: 'RD del Congo',   flag: '🇨🇩', group: 'K' },
   { code: 'UZB', name: 'Uzbekistán',     flag: '🇺🇿', group: 'K' },
   { code: 'COL', name: 'Colombia',       flag: '🇨🇴', group: 'K' },
   // ── Grupo L ──────────────────────────────────────────────────

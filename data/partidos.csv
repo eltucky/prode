@@ -1,16 +1,16 @@
 grupo,fase,fecha,hora_arg,partido,sede
 GRUPO A,Fecha 1,11/06/2026,16:00,México vs. Sudáfrica,Estadio Ciudad de México
-GRUPO A,Fecha 1,11/06/2026,23:00,Corea del Sur vs. Europa D,Estadio Guadalajara
-GRUPO A,Fecha 2,18/06/2026,13:00,Europa D vs. Sudáfrica,Atlanta Stadium
+GRUPO A,Fecha 1,11/06/2026,23:00,Corea del Sur vs. República Checa,Estadio Guadalajara
+GRUPO A,Fecha 2,18/06/2026,13:00,República Checa vs. Sudáfrica,Atlanta Stadium
 GRUPO A,Fecha 2,18/06/2026,22:00,México vs. Corea del Sur,Estadio Guadalajara
-GRUPO A,Fecha 3,24/06/2026,22:00,Europa D vs. México,Estadio Ciudad de México
+GRUPO A,Fecha 3,24/06/2026,22:00,República Checa vs. México,Estadio Ciudad de México
 GRUPO A,Fecha 3,24/06/2026,22:00,Sudáfrica vs. Corea del Sur,Estadio Monterrey
-GRUPO B,Fecha 1,12/06/2026,16:00,Canadá vs. Europa A,Toronto Stadium
+GRUPO B,Fecha 1,12/06/2026,16:00,Canadá vs. Bosnia y Herzegovina,Toronto Stadium
 GRUPO B,Fecha 1,13/06/2026,16:00,Qatar vs. Suiza,San Francisco Bay Area Stadium
-GRUPO B,Fecha 2,18/06/2026,16:00,Suiza vs. Europa A,Los Angeles Stadium
+GRUPO B,Fecha 2,18/06/2026,16:00,Suiza vs. Bosnia y Herzegovina,Los Angeles Stadium
 GRUPO B,Fecha 2,18/06/2026,19:00,Canadá vs. Qatar,BC Place Vancouver
 GRUPO B,Fecha 3,24/06/2026,16:00,Suiza vs. Canadá,BC Place Vancouver
-GRUPO B,Fecha 3,24/06/2026,16:00,Europa A vs. Qatar,Seattle Stadium
+GRUPO B,Fecha 3,24/06/2026,16:00,Bosnia y Herzegovina vs. Qatar,Seattle Stadium
 GRUPO C,Fecha 1,13/06/2026,19:00,Brasil vs. Marruecos,Boston Stadium
 GRUPO C,Fecha 1,13/06/2026,22:00,Haití vs. Escocia,New York/New Jersey Stadium
 GRUPO C,Fecha 2,19/06/2026,19:00,Brasil vs. Haití,Philadelphia Stadium
@@ -18,10 +18,10 @@ GRUPO C,Fecha 2,19/06/2026,22:00,Escocia vs. Marruecos,Boston Stadium
 GRUPO C,Fecha 3,24/06/2026,19:00,Escocia vs. Brasil,Miami Stadium
 GRUPO C,Fecha 3,24/06/2026,19:00,Marruecos vs. Haití,Atlanta Stadium
 GRUPO D,Fecha 1,12/06/2026,22:00,Estados Unidos vs. Paraguay,Los Angeles Stadium
-GRUPO D,Fecha 1,14/06/2026,01:00,Australia vs. Europa C,BC Place Vancouver
-GRUPO D,Fecha 2,19/06/2026,16:00,Europa C vs. Paraguay,San Francisco Bay Area Stadium
+GRUPO D,Fecha 1,14/06/2026,01:00,Australia vs. Turquía,BC Place Vancouver
+GRUPO D,Fecha 2,19/06/2026,16:00,Turquía vs. Paraguay,San Francisco Bay Area Stadium
 GRUPO D,Fecha 2,19/06/2026,01:00,Estados Unidos vs. Australia,Seattle Stadium
-GRUPO D,Fecha 3,25/06/2026,23:00,Europa C vs. Estados Unidos,Los Angeles Stadium
+GRUPO D,Fecha 3,25/06/2026,23:00,Turquía vs. Estados Unidos,Los Angeles Stadium
 GRUPO D,Fecha 3,25/06/2026,23:00,Paraguay vs. Australia,San Francisco Bay Area Stadium
 GRUPO E,Fecha 1,14/06/2026,14:00,Alemania vs. Curazao,Philadelphia Stadium
 GRUPO E,Fecha 1,14/06/2026,20:00,Costa de Marfil vs. Ecuador,Houston Stadium
@@ -30,11 +30,11 @@ GRUPO E,Fecha 2,20/06/2026,21:00,Curazao vs. Ecuador,Kansas City Stadium
 GRUPO E,Fecha 3,25/06/2026,17:00,Ecuador vs. Alemania,Philadelphia Stadium
 GRUPO E,Fecha 3,25/06/2026,17:00,Curazao vs. Costa de Marfil,New York/New Jersey Stadium
 GRUPO F,Fecha 1,14/06/2026,17:00,Países Bajos vs. Japón,Dallas Stadium
-GRUPO F,Fecha 1,14/06/2026,23:00,Europa B vs. Túnez,Estadio Monterrey
-GRUPO F,Fecha 2,20/06/2026,14:00,Países Bajos vs. Europa B,Houston Stadium
+GRUPO F,Fecha 1,14/06/2026,23:00,Suecia vs. Túnez,Estadio Monterrey
+GRUPO F,Fecha 2,20/06/2026,14:00,Países Bajos vs. Suecia,Houston Stadium
 GRUPO F,Fecha 2,20/06/2026,01:00,Japón vs. Túnez,Estadio Monterrey
 GRUPO F,Fecha 3,25/06/2026,20:00,Túnez vs. Países Bajos,Dallas Stadium
-GRUPO F,Fecha 3,25/06/2026,20:00,Japón vs. Europa B,Kansas City Stadium
+GRUPO F,Fecha 3,25/06/2026,20:00,Japón vs. Suecia,Kansas City Stadium
 GRUPO G,Fecha 1,15/06/2026,A confirmar,Bélgica vs. Egipto,Los Angeles Stadium
 GRUPO G,Fecha 1,15/06/2026,22:00,Irán vs. Nueva Zelanda,Seattle Stadium
 GRUPO G,Fecha 2,21/06/2026,16:00,Bélgica vs. Irán,Los Angeles Stadium
@@ -48,23 +48,23 @@ GRUPO H,Fecha 2,21/06/2026,19:00,Cabo Verde vs. Uruguay,Atlanta Stadium
 GRUPO H,Fecha 3,26/06/2026,21:00,Uruguay vs. España,Houston Stadium
 GRUPO H,Fecha 3,26/06/2026,21:00,Cabo Verde vs. Arabia Saudita,Estadio Guadalajara
 GRUPO I,Fecha 1,16/06/2026,16:00,Francia vs. Senegal,New York/New Jersey Stadium
-GRUPO I,Fecha 1,16/06/2026,19:00,Repechaje 2 vs. Noruega,Boston Stadium
-GRUPO I,Fecha 2,22/06/2026,18:00,Francia vs. Repechaje 2,New York/New Jersey Stadium
+GRUPO I,Fecha 1,16/06/2026,19:00,Irak vs. Noruega,Boston Stadium
+GRUPO I,Fecha 2,22/06/2026,18:00,Francia vs. Irak,New York/New Jersey Stadium
 GRUPO I,Fecha 2,22/06/2026,21:00,Noruega vs. Senegal,Philadelphia Stadium
 GRUPO I,Fecha 3,26/06/2026,16:00,Noruega vs. Francia,Boston Stadium
-GRUPO I,Fecha 3,26/06/2026,16:00,Senegal vs. Repechaje 2,Toronto Stadium
+GRUPO I,Fecha 3,26/06/2026,16:00,Senegal vs. Irak,Toronto Stadium
 GRUPO J,Fecha 1,16/06/2026,22:00,Argentina vs. Argelia,Kansas City Stadium
 GRUPO J,Fecha 1,17/06/2026,01:00,Austria vs. Jordania,San Francisco Bay Area Stadium
 GRUPO J,Fecha 2,22/06/2026,14:00,Argentina vs. Austria,Dallas Stadium
 GRUPO J,Fecha 2,22/06/2026,00:00,Jordania vs. Argelia,San Francisco Bay Area Stadium
 GRUPO J,Fecha 3,27/06/2026,23:00,Jordania vs. Argentina,Dallas Stadium
 GRUPO J,Fecha 3,27/06/2026,23:00,Argelia vs. Austria,Kansas City Stadium
-GRUPO K,Fecha 1,17/06/2026,14:00,Portugal vs. Repechaje 1,Houston Stadium
+GRUPO K,Fecha 1,17/06/2026,14:00,Portugal vs. RD del Congo,Houston Stadium
 GRUPO K,Fecha 1,17/06/2026,23:00,Uzbekistán vs. Colombia,Estadio Ciudad de México
 GRUPO K,Fecha 2,23/06/2026,14:00,Portugal vs. Uzbekistán,Houston Stadium
-GRUPO K,Fecha 2,23/06/2026,23:00,Repechaje 1 vs. Colombia,Estadio Guadalajara
+GRUPO K,Fecha 2,23/06/2026,23:00,RD del Congo vs. Colombia,Estadio Guadalajara
 GRUPO K,Fecha 3,27/06/2026,20:30,Colombia vs. Portugal,Miami Stadium
-GRUPO K,Fecha 3,27/06/2026,20:30,Repechaje 1 vs. Uzbekistán,Atlanta Stadium
+GRUPO K,Fecha 3,27/06/2026,20:30,RD del Congo vs. Uzbekistán,Atlanta Stadium
 GRUPO L,Fecha 1,17/06/2026,17:00,Inglaterra vs. Croacia,Toronto Stadium
 GRUPO L,Fecha 1,17/06/2026,20:00,Ghana vs. Panamá,Dallas Stadium
 GRUPO L,Fecha 2,23/06/2026,17:00,Inglaterra vs. Ghana,Boston Stadium

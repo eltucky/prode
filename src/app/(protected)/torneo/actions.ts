@@ -48,3 +48,27 @@ export async function savePrediction(formData: FormData) {
 
   revalidatePath('/torneo')
 }
+
+export async function deletePrediction(matchId: string) {
+  const session = await auth()
+  if (!session?.user?.id) throw new Error('No autenticado')
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id }, select: { isBlocked: true } })
+  assertNotBlocked(user?.isBlocked ?? false)
+
+  const match = await prisma.match.findUnique({
+    where: { id: matchId },
+    select: { scheduledAt: true, status: true },
+  })
+  if (!match) throw new Error('Partido no encontrado')
+  if (match.status !== 'SCHEDULED') throw new Error('El pronóstico ya está cerrado')
+
+  const lockTime = new Date(match.scheduledAt.getTime() - 60 * 1000)
+  if (new Date() >= lockTime) throw new Error('El pronóstico ya está cerrado')
+
+  await prisma.prediction.deleteMany({
+    where: { userId: session.user.id, matchId },
+  })
+
+  revalidatePath('/torneo')
+}
