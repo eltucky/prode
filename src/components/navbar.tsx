@@ -17,6 +17,9 @@ export default async function Navbar() {
           <Link href="/torneo" className="text-sm text-gray-600 hover:text-gray-900">
             Torneo
           </Link>
+          <Link href="/reglas" className="text-sm text-gray-600 hover:text-gray-900">
+            Reglas
+          </Link>
           {session.user.isSuperAdmin && (
             <Link href="/admin/partidos" className="text-sm text-red-600 hover:text-red-800">
               Admin
