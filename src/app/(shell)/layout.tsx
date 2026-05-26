@@ -1,10 +1,17 @@
+import { auth } from '@/auth'
 import Navbar from '@/components/navbar'
+import BottomNav from '@/components/bottom-nav'
 
-export default function ShellLayout({ children }: { children: React.ReactNode }) {
+export default async function ShellLayout({ children }: { children: React.ReactNode }) {
+  const session = await auth()
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+      <main className="max-w-5xl mx-auto px-4 py-8 pb-20 md:pb-8">{children}</main>
+      {session?.user && (
+        <BottomNav isSuperAdmin={session.user.isSuperAdmin ?? false} />
+      )}
     </div>
   )
 }
