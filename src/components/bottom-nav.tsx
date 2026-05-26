@@ -21,7 +21,7 @@ export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
       {moreOpen && (
         <div
           data-testid="more-overlay"
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-40 md:hidden"
           onClick={() => setMoreOpen(false)}
         />
       )}
