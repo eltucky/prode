@@ -1,9 +1,9 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
-import { createGroup, joinGroup } from '../grupos/actions'
+import { createGroup, joinGroup } from './actions'
 
-export default async function DashboardPage() {
+export default async function GruposPage() {
   const session = await auth()
 
   const memberships = await prisma.groupMember.findMany({

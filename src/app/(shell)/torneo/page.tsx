@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { MatchStage, MatchStatus } from '@prisma/client'
 import { ClientDate } from '@/components/client-date'
 import { PredictionForm } from '@/components/prediction-form'
+import Link from 'next/link'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -50,12 +51,12 @@ export default async function TorneoPage({
     orderBy: [{ scheduledAt: 'asc' }, { matchNumber: 'asc' }],
   })
 
-  const predictions = await prisma.prediction.findMany({
+  const predictions = session?.user?.id ? await prisma.prediction.findMany({
     where: {
-      userId: session!.user!.id,
+      userId: session.user.id,
       matchId: { in: matches.map(m => m.id) },
     },
-  })
+  }) : []
   const predMap = new Map(predictions.map(p => [p.matchId, p]))
 
   const byStage = matches.reduce<Record<string, typeof matches>>((acc, match) => {
@@ -151,7 +152,7 @@ export default async function TorneoPage({
                     ) : (
                       <div className="text-xs text-gray-400 border-t pt-2">Sin pronóstico</div>
                     )
-                  ) : (
+                  ) : session ? (
                     <PredictionForm
                       key={prediction?.id ?? `new-${match.id}`}
                       matchId={match.id}
@@ -162,6 +163,12 @@ export default async function TorneoPage({
                       awayTeamId={match.awayTeamId}
                       isKnockout={isKnockout}
                     />
+                  ) : (
+                    <div className="border-t pt-2">
+                      <Link href="/login" className="text-xs text-blue-600 hover:text-blue-800">
+                        Iniciá sesión para hacer tu pronóstico →
+                      </Link>
+                    </div>
                   )}
                 </div>
               )

@@ -3,20 +3,20 @@ import { describe, it, expect } from 'vitest'
 function resolveRedirect(
   isLoggedIn: boolean,
   pathname: string
-): 'login' | 'dashboard' | null {
-  const isPublic = pathname === '/login' || pathname.startsWith('/api/auth')
+): 'login' | 'grupos' | null {
+  const isPublic = pathname === '/' || pathname === '/login' || pathname === '/reglas' || pathname === '/torneo' || pathname.startsWith('/torneo?') || pathname.startsWith('/api/auth')
   if (!isLoggedIn && !isPublic) return 'login'
-  if (isLoggedIn && pathname === '/login') return 'dashboard'
+  if (isLoggedIn && pathname === '/login') return 'grupos'
   return null
 }
 
 describe('lógica de redirección del middleware', () => {
   it('redirige usuario no autenticado al login', () => {
-    expect(resolveRedirect(false, '/dashboard')).toBe('login')
+    expect(resolveRedirect(false, '/grupos')).toBe('login')
   })
 
   it('redirige usuario no autenticado en ruta protegida cualquiera', () => {
-    expect(resolveRedirect(false, '/groups/abc')).toBe('login')
+    expect(resolveRedirect(false, '/grupos/abc')).toBe('login')
   })
 
   it('permite usuario no autenticado en /login', () => {
@@ -27,11 +27,23 @@ describe('lógica de redirección del middleware', () => {
     expect(resolveRedirect(false, '/api/auth/signin')).toBeNull()
   })
 
-  it('redirige usuario autenticado en /login al dashboard', () => {
-    expect(resolveRedirect(true, '/login')).toBe('dashboard')
+  it('permite usuario no autenticado en /', () => {
+    expect(resolveRedirect(false, '/')).toBeNull()
+  })
+
+  it('permite usuario no autenticado en /torneo', () => {
+    expect(resolveRedirect(false, '/torneo')).toBeNull()
+  })
+
+  it('permite usuario no autenticado en /reglas', () => {
+    expect(resolveRedirect(false, '/reglas')).toBeNull()
+  })
+
+  it('redirige usuario autenticado en /login a grupos', () => {
+    expect(resolveRedirect(true, '/login')).toBe('grupos')
   })
 
   it('permite usuario autenticado en ruta protegida', () => {
-    expect(resolveRedirect(true, '/dashboard')).toBeNull()
+    expect(resolveRedirect(true, '/grupos')).toBeNull()
   })
 })

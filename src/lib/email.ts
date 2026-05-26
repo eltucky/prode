@@ -71,7 +71,7 @@ export function buildSummaryHtml(userName: string, data: SummaryData): string {
 </table>
 <h2>Tu posición en los grupos</h2>
 <ul>${groupItems}</ul>
-<p><a href="${APP_URL}/dashboard">Ver dashboard →</a></p>
+<p><a href="${APP_URL}/grupos">Ver grupos →</a></p>
 `
 }
 

@@ -7,15 +7,18 @@ export default async function Navbar() {
 
   return (
     <nav className="border-b bg-white px-4 py-3 flex items-center justify-between">
-      <Link href="/dashboard" className="font-bold text-lg flex items-center gap-2">
+      <Link href={session ? '/grupos' : '/'} className="font-bold text-lg flex items-center gap-2">
         <span>⚽</span>
         <span>Prode 2026</span>
       </Link>
 
-      {session?.user && (
+      {session?.user ? (
         <div className="flex items-center gap-4">
           <Link href="/torneo" className="text-sm text-gray-600 hover:text-gray-900">
             Torneo
+          </Link>
+          <Link href="/grupos" className="text-sm text-gray-600 hover:text-gray-900">
+            Grupos
           </Link>
           <Link href="/reglas" className="text-sm text-gray-600 hover:text-gray-900">
             Reglas
@@ -50,6 +53,18 @@ export default async function Navbar() {
               Salir
             </button>
           </form>
+        </div>
+      ) : (
+        <div className="flex items-center gap-4">
+          <Link href="/torneo" className="text-sm text-gray-600 hover:text-gray-900">
+            Torneo
+          </Link>
+          <Link href="/reglas" className="text-sm text-gray-600 hover:text-gray-900">
+            Reglas
+          </Link>
+          <Link href="/login" className="text-sm text-gray-600 hover:text-gray-900">
+            Iniciar sesión
+          </Link>
         </div>
       )}
     </nav>

@@ -26,7 +26,7 @@ export async function createGroup(formData: FormData) {
     },
   })
 
-  revalidatePath('/dashboard')
+  revalidatePath('/grupos')
   redirect(`/grupos/${group.id}`)
 }
 
@@ -52,6 +52,6 @@ export async function joinGroup(formData: FormData) {
     })
   }
 
-  revalidatePath('/dashboard')
+  revalidatePath('/grupos')
   redirect(`/grupos/${group.id}`)
 }

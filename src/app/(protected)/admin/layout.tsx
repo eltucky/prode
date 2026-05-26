@@ -11,7 +11,7 @@ const NAV = [
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
-  if (!session?.user?.isSuperAdmin) redirect('/dashboard')
+  if (!session?.user?.isSuperAdmin) redirect('/grupos')
 
   return (
     <div className="space-y-6">

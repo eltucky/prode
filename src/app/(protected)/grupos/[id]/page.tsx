@@ -25,7 +25,7 @@ export default async function GrupoPage({
   if (!group) notFound()
 
   const isMember = group.members.some(m => m.userId === session?.user?.id)
-  if (!isMember) redirect('/dashboard')
+  if (!isMember) redirect('/grupos')
 
   const isOwner = group.ownerId === session?.user?.id
 
@@ -51,7 +51,7 @@ export default async function GrupoPage({
     <div className="space-y-6">
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <Link href="/dashboard" className="text-sm text-gray-400 hover:text-gray-600">
+          <Link href="/grupos" className="text-sm text-gray-400 hover:text-gray-600">
             ← Mis grupos
           </Link>
           <h1 className="text-2xl font-bold mt-1">{group.name}</h1>

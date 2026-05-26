@@ -18,7 +18,7 @@ const STAGE_LABELS: Record<MatchStage, string> = {
 
 export default async function AdminPartidosPage() {
   const session = await auth()
-  if (!session?.user?.isSuperAdmin) redirect('/dashboard')
+  if (!session?.user?.isSuperAdmin) redirect('/grupos')
 
   const matches = await prisma.match.findMany({
     include: { homeTeam: true, awayTeam: true },

@@ -11,15 +11,15 @@ export default async function ReglasPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="border-b bg-white px-4 py-3 flex items-center justify-between">
-        <Link href="/dashboard" className="font-bold text-lg flex items-center gap-2">
+        <Link href={session ? '/grupos' : '/'} className="font-bold text-lg flex items-center gap-2">
           <span>⚽</span>
           <span>Prode 2026</span>
         </Link>
         <Link
-          href={session ? '/dashboard' : '/login'}
+          href={session ? '/grupos' : '/login'}
           className="text-sm text-gray-600 hover:text-gray-900"
         >
-          {session ? 'Volver al dashboard' : 'Iniciar sesión'}
+          {session ? 'Mis grupos' : 'Iniciar sesión'}
         </Link>
       </nav>
 
