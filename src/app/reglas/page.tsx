@@ -74,8 +74,8 @@ export default async function ReglasPage() {
             />
             <ScoreRow
               points={5}
-              label="Resultado exacto"
-              description="Ambos marcadores exactos, pero te equivocaste en el clasificado."
+              label="Resultado exacto sin clasificado correcto"
+              description="Pronosticás empate con marcador exacto (ej: 1-1) pero te equivocás en quién clasifica. Es el único caso posible: si pronosticás un ganador con marcador exacto, ese equipo siempre clasifica en el reglamentario."
             />
             <ScoreRow
               points={4}
@@ -110,11 +110,12 @@ export default async function ReglasPage() {
             </thead>
             <tbody className="divide-y text-gray-700">
               <tr><td className="py-2">Resultado correcto (base)</td><td className="py-2 text-right font-mono">+2</td></tr>
-              <tr><td className="py-2">Gol del local exacto</td><td className="py-2 text-right font-mono">+1</td></tr>
-              <tr><td className="py-2">Gol del visitante exacto</td><td className="py-2 text-right font-mono">+1</td></tr>
-              <tr><td className="py-2">Ambos goles exactos (bonus)</td><td className="py-2 text-right font-mono">+1</td></tr>
-              <tr><td className="py-2">Clasificado correcto (solo eliminatorias)</td><td className="py-2 text-right font-mono">+2</td></tr>
-              <tr className="font-semibold"><td className="py-2">Máximo por partido (grupos)</td><td className="py-2 text-right font-mono">5</td></tr>
+              <tr><td className="py-2 text-gray-500 text-xs pl-3" colSpan={2}>Los siguientes bonuses solo aplican si primero acertás el resultado</td></tr>
+              <tr><td className="py-2 pl-3">Gol del local exacto</td><td className="py-2 text-right font-mono">+1</td></tr>
+              <tr><td className="py-2 pl-3">Gol del visitante exacto</td><td className="py-2 text-right font-mono">+1</td></tr>
+              <tr><td className="py-2 pl-3">Ambos goles exactos (bonus adicional)</td><td className="py-2 text-right font-mono">+1</td></tr>
+              <tr><td className="py-2 pl-3">Clasificado correcto (solo eliminatorias)</td><td className="py-2 text-right font-mono">+2</td></tr>
+              <tr className="font-semibold border-t"><td className="py-2">Máximo por partido (grupos)</td><td className="py-2 text-right font-mono">5</td></tr>
               <tr className="font-semibold"><td className="py-2">Máximo por partido (eliminatorias)</td><td className="py-2 text-right font-mono">7</td></tr>
             </tbody>
           </table>
