@@ -74,7 +74,7 @@ export default async function AdminPartidosPage() {
                 </td>
                 <td className="px-4 py-2">
                   <AdminMatchResultRow
-                    key={match.id}
+                    key={`${match.id}-${match.homeScore ?? 'null'}-${match.awayScore ?? 'null'}`}
                     matchId={match.id}
                     homeScore={match.homeScore}
                     awayScore={match.awayScore}

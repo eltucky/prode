@@ -1,7 +1,7 @@
 'use client'
 
 import { useTransition, useState } from 'react'
-import { updateMatchResult } from '@/app/(protected)/admin/partidos/actions'
+import { updateMatchResult, clearMatchResult } from '@/app/(protected)/admin/partidos/actions'
 import { MatchStatus } from '@prisma/client'
 
 type Props = {
@@ -19,6 +19,7 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
   const [home, setHome] = useState(savedHome)
   const [away, setAway] = useState(savedAway)
   const [matchStatus, setMatchStatus] = useState<MatchStatus>(status)
+  const [confirming, setConfirming] = useState(false)
 
   const hasScores = home !== '' && away !== ''
   const isDirty = home !== savedHome || away !== savedAway || matchStatus !== status
@@ -34,24 +35,21 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
     if (val !== '' && home !== '') setMatchStatus('FINISHED')
   }
 
-  function handleStatusChange(val: MatchStatus) {
-    setMatchStatus(val)
-    if (val === 'SCHEDULED') {
-      setHome('')
-      setAway('')
-    }
-  }
-
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     startTransition(() => updateMatchResult(formData))
   }
 
+  function handleClear() {
+    setConfirming(false)
+    startTransition(() => clearMatchResult(matchId))
+  }
+
   return (
     <form onSubmit={handleSubmit}>
       <input type="hidden" name="matchId" value={matchId} />
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 flex-wrap">
         <input
           type="number"
           name="homeScore"
@@ -74,23 +72,14 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
         <select
           name="status"
           value={matchStatus}
-          onChange={e => handleStatusChange(e.target.value as MatchStatus)}
+          onChange={e => setMatchStatus(e.target.value as MatchStatus)}
           className="border rounded px-1 py-0.5 text-xs"
         >
-          {hasScores ? (
-            <>
-              <option value="IN_PROGRESS">LIVE</option>
-              <option value="FINISHED">FIN</option>
-            </>
-          ) : (
-            <>
-              <option value="SCHEDULED">SCHED</option>
-              <option value="IN_PROGRESS">LIVE</option>
-              <option value="FINISHED">FIN</option>
-              <option value="POSTPONED">POST</option>
-              <option value="CANCELLED">CANC</option>
-            </>
-          )}
+          <option value="SCHEDULED">SCHED</option>
+          <option value="IN_PROGRESS">LIVE</option>
+          <option value="FINISHED">FIN</option>
+          <option value="POSTPONED">POST</option>
+          <option value="CANCELLED">CANC</option>
         </select>
         <button
           type="submit"
@@ -99,6 +88,36 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
         >
           ✓
         </button>
+        {homeScore !== null && !confirming && (
+          <button
+            type="button"
+            onClick={() => setConfirming(true)}
+            disabled={isPending}
+            className="text-xs text-red-500 hover:text-red-700 disabled:opacity-40"
+          >
+            ✕
+          </button>
+        )}
+        {confirming && (
+          <span className="flex items-center gap-1">
+            <span className="text-xs text-gray-500">¿Borrar?</span>
+            <button
+              type="button"
+              onClick={handleClear}
+              disabled={isPending}
+              className="text-xs text-red-600 font-semibold hover:text-red-800 disabled:opacity-40"
+            >
+              Sí
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(false)}
+              className="text-xs text-gray-500 hover:text-gray-700"
+            >
+              No
+            </button>
+          </span>
+        )}
       </div>
     </form>
   )

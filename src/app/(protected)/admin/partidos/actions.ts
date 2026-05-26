@@ -52,6 +52,17 @@ export async function updateMatchResult(formData: FormData) {
   revalidatePath('/torneo')
 }
 
+export async function clearMatchResult(matchId: string) {
+  await requireSuperAdmin()
+  const id = z.string().cuid().parse(matchId)
+  await prisma.match.update({
+    where: { id },
+    data: { homeScore: null, awayScore: null, winnerId: null, status: 'SCHEDULED' },
+  })
+  revalidatePath('/admin/partidos')
+  revalidatePath('/torneo')
+}
+
 export async function triggerSync(): Promise<{ updated: number; linked: number }> {
   await requireSuperAdmin()
   const { syncResults } = await import('@/lib/sync-results')
