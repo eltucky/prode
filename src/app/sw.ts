@@ -18,7 +18,7 @@ const serwist = new Serwist({
   runtimeCaching: [
     // API routes must never be cached — data must always come from the server
     {
-      matcher: ({ url }) => url.pathname.startsWith('/api/'),
+      matcher: ({ sameOrigin, url }) => sameOrigin && url.pathname.startsWith('/api/'),
       handler: new NetworkOnly(),
     },
     // All other requests use the default Next.js cache strategy
