@@ -33,6 +33,15 @@ export default async function LoginPage() {
             Iniciar sesión con Google
           </button>
         </form>
+
+        {process.env.VERCEL_ENV === 'preview' && (
+          <a
+            href="/api/auth/preview-signin"
+            className="block w-full text-center bg-gray-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-gray-700 transition-colors"
+          >
+            Preview login
+          </a>
+        )}
       </div>
     </main>
   )
