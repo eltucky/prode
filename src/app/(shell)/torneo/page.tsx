@@ -31,12 +31,20 @@ function isLocked(scheduledAt: Date): boolean {
   return Date.now() >= scheduledAt.getTime() - 60 * 1000
 }
 
+function groupFilterHref(stageFilter: MatchStage | undefined, grupo: string | undefined, target: string | undefined): string {
+  const params = new URLSearchParams()
+  if (stageFilter) params.set('etapa', stageFilter)
+  else params.set('etapa', 'GROUP')
+  if (target) params.set('grupo', target)
+  return `/torneo?${params.toString()}`
+}
+
 export default async function TorneoPage({
   searchParams,
 }: {
-  searchParams: Promise<{ etapa?: string }>
+  searchParams: Promise<{ etapa?: string; grupo?: string }>
 }) {
-  const { etapa } = await searchParams
+  const { etapa, grupo } = await searchParams
   const session = await auth()
 
   const stageOrder: MatchStage[] = [
@@ -44,6 +52,8 @@ export default async function TorneoPage({
   ]
   const VALID_STAGES = new Set<string>(stageOrder)
   const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
+
+  const showingGroupStage = !stageFilter || stageFilter === 'GROUP'
 
   const matches = await prisma.match.findMany({
     where: stageFilter ? { stage: stageFilter } : undefined,
@@ -59,15 +69,24 @@ export default async function TorneoPage({
   }) : []
   const predMap = new Map(predictions.map(p => [p.matchId, p]))
 
+  // Available group letters from the GROUP stage matches
+  const availableGroups = showingGroupStage
+    ? [...new Set(matches.filter(m => m.stage === 'GROUP' && m.groupName).map(m => m.groupName!))].sort()
+    : []
+
+  const grupoFilter = showingGroupStage && grupo && availableGroups.includes(grupo) ? grupo : undefined
+
   const byStage = matches.reduce<Record<string, typeof matches>>((acc, match) => {
     const key = match.stage
     if (!acc[key]) acc[key] = []
+    // Apply group filter only within GROUP stage
+    if (match.stage === 'GROUP' && grupoFilter && match.groupName !== grupoFilter) return acc
     acc[key].push(match)
     return acc
   }, {})
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-bold">Torneo</h1>
         <div className="flex gap-2 flex-wrap">
@@ -78,7 +97,7 @@ export default async function TorneoPage({
             <a
               key={stage}
               href={`/torneo?etapa=${stage}`}
-              className={`text-sm px-3 py-1 rounded-full border ${stageFilter === stage ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-300 hover:bg-gray-50'}`}
+              className={`text-sm px-3 py-1 rounded-full border ${stageFilter === stage && !grupoFilter ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-300 hover:bg-gray-50'}`}
             >
               {STAGE_LABELS[stage]}
             </a>
@@ -86,9 +105,35 @@ export default async function TorneoPage({
         </div>
       </div>
 
+      {showingGroupStage && availableGroups.length > 0 && (
+        <div className="flex gap-2 flex-wrap items-center">
+          <span className="text-xs text-gray-400 mr-1">Grupo:</span>
+          <a
+            href={stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'}
+            className={`text-sm px-3 py-1 rounded-full border ${!grupoFilter ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-300 hover:bg-gray-50'}`}
+          >
+            Todos
+          </a>
+          {availableGroups.map(g => (
+            <a
+              key={g}
+              href={groupFilterHref(stageFilter, grupo, g)}
+              className={`text-sm px-3 py-1 rounded-full border ${grupoFilter === g ? 'bg-gray-900 text-white border-gray-900' : 'border-gray-300 hover:bg-gray-50'}`}
+            >
+              {g}
+            </a>
+          ))}
+        </div>
+      )}
+
       {stageOrder.filter(s => byStage[s]?.length).map(stage => (
         <section key={stage}>
-          <h2 className="text-lg font-semibold mb-3 text-gray-700">{STAGE_LABELS[stage]}</h2>
+          <h2 className="text-lg font-semibold mb-3 text-gray-700">
+            {STAGE_LABELS[stage]}
+            {stage === 'GROUP' && grupoFilter && (
+              <span className="ml-2 text-base font-normal text-gray-400">— Grupo {grupoFilter}</span>
+            )}
+          </h2>
           <div className="space-y-2">
             {byStage[stage].map(match => {
               const badge = STATUS_BADGE[match.status]
@@ -100,7 +145,7 @@ export default async function TorneoPage({
                 <div key={match.id} className="bg-white border rounded-xl px-4 py-3 space-y-2">
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex flex-col min-w-0">
-                      {match.groupName && (
+                      {match.groupName && !grupoFilter && (
                         <span className="text-xs text-gray-400 mb-0.5">Grupo {match.groupName}</span>
                       )}
                       <div className="flex items-center gap-3">
