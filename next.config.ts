@@ -1,4 +1,5 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
+import withSerwist from "@serwist/next"
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -9,6 +10,9 @@ const nextConfig: NextConfig = {
       { hostname: 'lh3.googleusercontent.com' },
     ],
   },
-};
+}
 
-export default nextConfig;
+export default withSerwist({
+  swSrc: "src/app/sw.ts",
+  swDest: "public/sw.js",
+})(nextConfig)
