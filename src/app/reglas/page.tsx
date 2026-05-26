@@ -75,7 +75,7 @@ export default async function ReglasPage() {
             <ScoreRow
               points={5}
               label="Resultado exacto sin clasificado correcto"
-              description="Pronosticás empate con marcador exacto (ej: 1-1) pero te equivocás en quién clasifica. Es el único caso posible: si pronosticás un ganador con marcador exacto, ese equipo siempre clasifica en el reglamentario."
+              description="Pronosticás empate con marcador exacto (ej: 1-1) pero te equivocás en quién clasifica."
             />
             <ScoreRow
               points={4}
