@@ -13,18 +13,18 @@ export default async function Navbar() {
       </Link>
 
       {session?.user ? (
-        <div className="flex items-center gap-4">
-          <Link href="/torneo" className="text-sm text-gray-600 hover:text-gray-900">
+        <div className="flex items-center gap-2 md:gap-4">
+          <Link href="/torneo" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
             Torneo
           </Link>
-          <Link href="/grupos" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="/grupos" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
             Grupos
           </Link>
-          <Link href="/reglas" className="text-sm text-gray-600 hover:text-gray-900">
+          <Link href="/reglas" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
             Reglas
           </Link>
           {session.user.isSuperAdmin && (
-            <Link href="/admin/partidos" className="text-sm text-red-600 hover:text-red-800">
+            <Link href="/admin/partidos" className="hidden md:block text-sm text-red-600 hover:text-red-800">
               Admin
             </Link>
           )}
@@ -37,7 +37,7 @@ export default async function Navbar() {
               className="rounded-full"
             />
           )}
-          <Link href="/perfil" className="text-sm text-gray-600 hover:text-gray-900 hidden sm:block">
+          <Link href="/perfil" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
             {session.user.name}
           </Link>
           <form
@@ -48,7 +48,7 @@ export default async function Navbar() {
           >
             <button
               type="submit"
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              className="hidden md:block text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
               Salir
             </button>
