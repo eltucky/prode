@@ -20,9 +20,9 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
   const [away, setAway] = useState(savedAway)
   const [matchStatus, setMatchStatus] = useState<MatchStatus>(status)
 
+  const hasScores = home !== '' && away !== ''
   const isDirty = home !== savedHome || away !== savedAway || matchStatus !== status
-  const scoresEmpty = home === '' || away === ''
-  const disabled = !isDirty || isPending || (matchStatus === 'FINISHED' && scoresEmpty)
+  const disabled = !isDirty || isPending || (matchStatus === 'FINISHED' && !hasScores)
 
   function handleHomeChange(val: string) {
     setHome(val)
@@ -32,6 +32,14 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
   function handleAwayChange(val: string) {
     setAway(val)
     if (val !== '' && home !== '') setMatchStatus('FINISHED')
+  }
+
+  function handleStatusChange(val: MatchStatus) {
+    setMatchStatus(val)
+    if (val === 'SCHEDULED') {
+      setHome('')
+      setAway('')
+    }
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -66,14 +74,23 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
         <select
           name="status"
           value={matchStatus}
-          onChange={e => setMatchStatus(e.target.value as MatchStatus)}
+          onChange={e => handleStatusChange(e.target.value as MatchStatus)}
           className="border rounded px-1 py-0.5 text-xs"
         >
-          <option value="SCHEDULED">SCHED</option>
-          <option value="IN_PROGRESS">LIVE</option>
-          <option value="FINISHED">FIN</option>
-          <option value="POSTPONED">POST</option>
-          <option value="CANCELLED">CANC</option>
+          {hasScores ? (
+            <>
+              <option value="IN_PROGRESS">LIVE</option>
+              <option value="FINISHED">FIN</option>
+            </>
+          ) : (
+            <>
+              <option value="SCHEDULED">SCHED</option>
+              <option value="IN_PROGRESS">LIVE</option>
+              <option value="FINISHED">FIN</option>
+              <option value="POSTPONED">POST</option>
+              <option value="CANCELLED">CANC</option>
+            </>
+          )}
         </select>
         <button
           type="submit"
