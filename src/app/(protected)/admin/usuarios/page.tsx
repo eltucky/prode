@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import Image from 'next/image'
 import { blockUser, unblockUser, toggleSuperAdmin } from './actions'
+import { SubmitButton } from '@/components/submit-button'
 
 export default async function AdminUsuariosPage() {
   const session = await auth()
@@ -69,24 +70,24 @@ export default async function AdminUsuariosPage() {
                           {user.isBlocked ? (
                             <form action={unblockUser}>
                               <input type="hidden" name="userId" value={user.id} />
-                              <button type="submit" className="text-xs text-green-600 hover:text-green-800">
+                              <SubmitButton className="text-xs text-green-600 hover:text-green-800">
                                 Desbloquear
-                              </button>
+                              </SubmitButton>
                             </form>
                           ) : (
                             <form action={blockUser}>
                               <input type="hidden" name="userId" value={user.id} />
-                              <button type="submit" className="text-xs text-red-500 hover:text-red-700">
+                              <SubmitButton className="text-xs text-red-500 hover:text-red-700">
                                 Bloquear
-                              </button>
+                              </SubmitButton>
                             </form>
                           )}
                           <form action={toggleSuperAdmin}>
                             <input type="hidden" name="userId" value={user.id} />
                             <input type="hidden" name="currentValue" value={String(user.isSuperAdmin)} />
-                            <button type="submit" className="text-xs text-blue-500 hover:text-blue-700">
+                            <SubmitButton className="text-xs text-blue-500 hover:text-blue-700">
                               {user.isSuperAdmin ? 'Quitar admin' : 'Hacer admin'}
-                            </button>
+                            </SubmitButton>
                           </form>
                         </>
                       )}
