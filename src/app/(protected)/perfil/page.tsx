@@ -2,6 +2,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { redirect } from 'next/navigation'
 import { updateEmailNotifications } from './actions'
+import { SubmitButton } from '@/components/submit-button'
 
 export default async function PerfilPage() {
   const session = await auth()
@@ -39,12 +40,9 @@ export default async function PerfilPage() {
               className="mt-1 w-5 h-5 accent-gray-900 shrink-0"
             />
           </label>
-          <button
-            type="submit"
-            className="w-full bg-gray-900 text-white rounded-lg py-2 text-sm hover:bg-gray-700"
-          >
+          <SubmitButton className="w-full bg-gray-900 text-white rounded-lg py-2 text-sm hover:bg-gray-700">
             Guardar
-          </button>
+          </SubmitButton>
         </form>
       </div>
     </div>
