@@ -55,5 +55,6 @@ describe('SubmitButton', () => {
     const btn = screen.getByRole('button')
     expect(btn.className).toContain('opacity-60')
     expect(btn.className).toContain('cursor-not-allowed')
+    expect(btn.className).toContain('bg-gray-900')
   })
 })
