@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import { deleteGroup, removeUserFromGroup, transferOwnership } from './actions'
+import { SubmitButton } from '@/components/submit-button'
 
 export default async function AdminGruposPage({
   searchParams,
@@ -47,18 +48,18 @@ export default async function AdminGruposPage({
                         <option key={m.userId} value={m.userId}>{m.user.name}</option>
                       ))}
                     </select>
-                    <button type="submit" className="text-xs bg-gray-700 text-white px-2 py-1 rounded hover:bg-gray-900">
+                    <SubmitButton className="text-xs bg-gray-700 text-white px-2 py-1 rounded hover:bg-gray-900">
                       Transferir
-                    </button>
+                    </SubmitButton>
                   </form>
                 )}
                 {confirmar === group.id ? (
                   <form action={deleteGroup} className="flex items-center gap-1">
                     <input type="hidden" name="groupId" value={group.id} />
                     <span className="text-xs text-red-600 font-medium">¿Confirmar?</span>
-                    <button type="submit" className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
+                    <SubmitButton className="text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700">
                       Sí, eliminar
-                    </button>
+                    </SubmitButton>
                     <a href="/admin/grupos" className="text-xs text-gray-500 hover:text-gray-700 ml-1">No</a>
                   </form>
                 ) : (
@@ -84,9 +85,9 @@ export default async function AdminGruposPage({
                     <form action={removeUserFromGroup}>
                       <input type="hidden" name="groupId" value={group.id} />
                       <input type="hidden" name="userId" value={member.userId} />
-                      <button type="submit" className="text-xs text-red-500 hover:text-red-700">
+                      <SubmitButton className="text-xs text-red-500 hover:text-red-700">
                         Sacar
-                      </button>
+                      </SubmitButton>
                     </form>
                   )}
                 </div>
