@@ -5,6 +5,7 @@ import { triggerSyncAction } from './actions'
 import { MatchStage } from '@prisma/client'
 import { ClientDate } from '@/components/client-date'
 import { AdminMatchResultRow } from '@/components/admin-match-result-row'
+import { SubmitButton } from '@/components/submit-button'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP: 'Fase de Grupos',
@@ -30,9 +31,9 @@ export default async function AdminPartidosPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Admin — Partidos</h1>
         <form action={triggerSyncAction}>
-          <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
+          <SubmitButton className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
             🔄 Sincronizar resultados
-          </button>
+          </SubmitButton>
         </form>
       </div>
 
