@@ -1,6 +1,4 @@
 const BASE_URL = 'https://v3.football.api-sports.io'
-const LEAGUE_ID = 1    // FIFA World Cup
-const SEASON = 2026
 
 export type ApiFixture = {
   fixture: {
@@ -16,6 +14,42 @@ export type ApiFixture = {
   score: { fulltime: { home: number | null; away: number | null } }
 }
 
+export type Tournament = {
+  leagueId: number
+  season: number
+  name: string
+  /** Optional filter applied after fetching. Return true to include the fixture. */
+  teamFilter?: (fixture: ApiFixture) => boolean
+}
+
+// All FIFA World Cup champion nations (team names as used by API-Football)
+export const WORLD_CUP_CHAMPIONS = new Set([
+  'Uruguay',
+  'Italy',
+  'Germany',
+  'Brazil',
+  'England',
+  'Argentina',
+  'France',
+  'Spain',
+])
+
+export const TOURNAMENTS = {
+  WORLD_CUP_2026: {
+    leagueId: 1,
+    season: 2026,
+    name: 'FIFA World Cup 2026',
+  },
+  FRIENDLIES_CHAMPIONS_2026: {
+    leagueId: 10,
+    season: 2026,
+    name: 'International Friendlies 2026 (Champions)',
+    teamFilter: (fixture: ApiFixture) =>
+      WORLD_CUP_CHAMPIONS.has(fixture.teams.home.name) ||
+      WORLD_CUP_CHAMPIONS.has(fixture.teams.away.name),
+  },
+} as const satisfies Record<string, Tournament>
+
 async function apiFetch(path: string): Promise<unknown> {
   const apiKey = process.env.FOOTBALL_API_KEY
   if (!apiKey) throw new Error('FOOTBALL_API_KEY is not set')
@@ -28,7 +62,15 @@ async function apiFetch(path: string): Promise<unknown> {
   return res.json()
 }
 
+export async function fetchFixtures(tournament: Tournament): Promise<ApiFixture[]> {
+  const data = await apiFetch(
+    `/fixtures?league=${tournament.leagueId}&season=${tournament.season}`
+  ) as { response: ApiFixture[] }
+  const fixtures = data.response
+  return tournament.teamFilter ? fixtures.filter(tournament.teamFilter) : fixtures
+}
+
+/** @deprecated Use fetchFixtures(TOURNAMENTS.WORLD_CUP_2026) instead */
 export async function fetchWorldCupFixtures(): Promise<ApiFixture[]> {
-  const data = await apiFetch(`/fixtures?league=${LEAGUE_ID}&season=${SEASON}`) as { response: ApiFixture[] }
-  return data.response
+  return fetchFixtures(TOURNAMENTS.WORLD_CUP_2026)
 }

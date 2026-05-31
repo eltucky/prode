@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/db'
-import { fetchWorldCupFixtures } from '@/lib/football-api'
+import { fetchFixtures, TOURNAMENTS, type Tournament } from '@/lib/football-api'
 import { MatchStatus } from '@prisma/client'
 import { scoreMatch } from '@/lib/scoring'
 
@@ -23,8 +23,11 @@ export function determineWinnerId(
   return null
 }
 
-export async function syncResults(): Promise<{ updated: number; linked: number }> {
-  const fixtures = await fetchWorldCupFixtures()
+export async function syncResults(
+  tournaments: Tournament[] = [TOURNAMENTS.WORLD_CUP_2026]
+): Promise<{ updated: number; linked: number }> {
+  const fixtureArrays = await Promise.all(tournaments.map(fetchFixtures))
+  const fixtures = fixtureArrays.flat()
   let updated = 0
   let linked = 0
 
