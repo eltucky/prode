@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { signOutAction } from '@/app/actions'
+import { SubmitButton } from '@/components/submit-button'
 
 const TABS = [
   { href: '/torneo', label: 'Torneo', icon: '🏟️' },
@@ -38,12 +39,9 @@ export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             </Link>
           )}
           <form action={signOutAction}>
-            <button
-              type="submit"
-              className="flex items-center gap-2 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 w-full text-left"
-            >
+            <SubmitButton className="flex items-center gap-2 px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 w-full text-left">
               Salir
-            </button>
+            </SubmitButton>
           </form>
         </div>
       )}

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { auth, signOut } from '@/auth'
+import { SubmitButton } from '@/components/submit-button'
 
 export default async function Navbar() {
   const session = await auth()
@@ -46,12 +47,9 @@ export default async function Navbar() {
               await signOut({ redirectTo: '/login' })
             }}
           >
-            <button
-              type="submit"
-              className="hidden md:block text-sm text-gray-500 hover:text-gray-900 transition-colors"
-            >
+            <SubmitButton className="hidden md:block text-sm text-gray-500 hover:text-gray-900 transition-colors">
               Salir
-            </button>
+            </SubmitButton>
           </form>
         </div>
       ) : (

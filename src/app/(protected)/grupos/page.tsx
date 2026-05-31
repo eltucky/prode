@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
+import { SubmitButton } from '@/components/submit-button'
 import { createGroup, joinGroup } from './actions'
 
 export default async function GruposPage() {
@@ -63,12 +64,9 @@ export default async function GruposPage() {
               maxLength={50}
               className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
-            <button
-              type="submit"
-              className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 shrink-0"
-            >
+            <SubmitButton className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 shrink-0">
               Crear
-            </button>
+            </SubmitButton>
           </form>
         </div>
 
@@ -82,12 +80,9 @@ export default async function GruposPage() {
               required
               className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
             />
-            <button
-              type="submit"
-              className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 shrink-0"
-            >
+            <SubmitButton className="bg-gray-900 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 shrink-0">
               Unirse
-            </button>
+            </SubmitButton>
           </form>
         </div>
       </div>
