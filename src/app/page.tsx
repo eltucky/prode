@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default async function RootPage() {
   const session = await auth()
-  if (session) redirect('/grupos')
+  if (session) redirect('/torneo')
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col">

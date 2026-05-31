@@ -2,33 +2,23 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { auth, signOut } from '@/auth'
 import { SubmitButton } from '@/components/submit-button'
+import { NavLinks } from '@/components/nav-links'
 
 export default async function Navbar() {
   const session = await auth()
 
   return (
     <nav className="border-b bg-white px-4 py-3 flex items-center justify-between">
-      <Link href={session ? '/grupos' : '/'} className="font-bold text-lg flex items-center gap-2">
+      <Link href={session ? '/torneo' : '/'} className="font-bold text-lg flex items-center gap-2">
         <span>⚽</span>
         <span>Prode 2026</span>
       </Link>
 
       {session?.user ? (
         <div className="flex items-center gap-2 md:gap-4">
-          <Link href="/torneo" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
-            Torneo
-          </Link>
-          <Link href="/grupos" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
-            Grupos
-          </Link>
-          <Link href="/reglas" className="hidden md:block text-sm text-gray-600 hover:text-gray-900">
-            Reglas
-          </Link>
-          {session.user.isSuperAdmin && (
-            <Link href="/admin/partidos" className="hidden md:block text-sm text-red-600 hover:text-red-800">
-              Admin
-            </Link>
-          )}
+          <div className="hidden md:flex items-center gap-4">
+            <NavLinks isSuperAdmin={session.user.isSuperAdmin ?? false} />
+          </div>
           {session.user.image && (
             <Image
               src={session.user.image}
