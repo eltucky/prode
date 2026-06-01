@@ -8,6 +8,7 @@ import { AdminMatchResultRow } from '@/components/admin-match-result-row'
 import { SubmitButton } from '@/components/submit-button'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
+  FRIENDLY: 'Amistoso',
   GROUP: 'Fase de Grupos',
   ROUND_OF_32: 'Ronda de 32',
   ROUND_OF_16: 'Octavos',

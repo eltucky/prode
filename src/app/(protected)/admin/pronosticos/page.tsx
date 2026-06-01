@@ -4,6 +4,7 @@ import { MatchStage } from '@prisma/client'
 import { AdminPredictionRow } from '@/components/admin-prediction-row'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
+  FRIENDLY: 'Amistoso',
   GROUP: 'Grupos',
   ROUND_OF_32: 'R32',
   ROUND_OF_16: 'Octavos',

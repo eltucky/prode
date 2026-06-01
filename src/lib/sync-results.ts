@@ -26,12 +26,24 @@ export function determineWinnerId(
 export async function syncResults(
   tournaments: Tournament[] = [TOURNAMENTS.WORLD_CUP_2026]
 ): Promise<{ updated: number; linked: number }> {
+  // Resolve tournament DB IDs to scope the local match lookup
+  const dbTournaments = await Promise.all(
+    tournaments.map(t =>
+      prisma.tournament.findUnique({
+        where: { externalId_season: { externalId: t.leagueId, season: t.season } },
+        select: { id: true },
+      })
+    )
+  )
+  const tournamentIds = dbTournaments.filter(Boolean).map(t => t!.id)
+
   const fixtureArrays = await Promise.all(tournaments.map(fetchFixtures))
   const fixtures = fixtureArrays.flat()
   let updated = 0
   let linked = 0
 
   const localMatches = await prisma.match.findMany({
+    where: tournamentIds.length > 0 ? { tournamentId: { in: tournamentIds } } : {},
     include: { homeTeam: true, awayTeam: true },
   })
 

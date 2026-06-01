@@ -1,3 +1,5 @@
+import { MatchStage } from '@prisma/client'
+
 const BASE_URL = 'https://v3.football.api-sports.io'
 
 export type ApiFixture = {
@@ -5,10 +7,14 @@ export type ApiFixture = {
     id: number
     date: string
     status: { short: string }
+    venue?: { name?: string | null }
+  }
+  league?: {
+    round?: string
   }
   teams: {
-    home: { id: number; name: string }
-    away: { id: number; name: string }
+    home: { id: number; name: string; code?: string }
+    away: { id: number; name: string; code?: string }
   }
   goals: { home: number | null; away: number | null }
   score: { fulltime: { home: number | null; away: number | null } }
@@ -49,6 +55,17 @@ export const TOURNAMENTS = {
       WORLD_CUP_CHAMPIONS.has(fixture.teams.away.name),
   },
 } as const satisfies Record<string, Tournament>
+
+export function mapApiRoundToStage(round: string): MatchStage {
+  if (round.startsWith('Group Stage')) return 'GROUP'
+  if (round === 'Round of 32') return 'ROUND_OF_32'
+  if (round === 'Round of 16') return 'ROUND_OF_16'
+  if (round === 'Quarter-finals') return 'QUARTER_FINAL'
+  if (round === 'Semi-finals') return 'SEMI_FINAL'
+  if (round === '3rd Place Final') return 'THIRD_PLACE'
+  if (round === 'Final') return 'FINAL'
+  return 'FRIENDLY'
+}
 
 async function apiFetch(path: string): Promise<unknown> {
   const apiKey = process.env.FOOTBALL_API_KEY

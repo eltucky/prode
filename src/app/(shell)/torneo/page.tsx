@@ -6,6 +6,7 @@ import { PredictionForm } from '@/components/prediction-form'
 import Link from 'next/link'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
+  FRIENDLY: 'Amistosos',
   GROUP: 'Fase de Grupos',
   ROUND_OF_32: 'Ronda de 32',
   ROUND_OF_16: 'Octavos',
@@ -48,7 +49,7 @@ export default async function TorneoPage({
   const session = await auth()
 
   const stageOrder: MatchStage[] = [
-    'GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
+    'FRIENDLY', 'GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
   ]
   const VALID_STAGES = new Set<string>(stageOrder)
   const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined

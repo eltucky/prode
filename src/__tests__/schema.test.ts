@@ -11,7 +11,8 @@ describe('MatchStage enum', () => {
     expect(stages).toContain('SEMI_FINAL')
     expect(stages).toContain('THIRD_PLACE')
     expect(stages).toContain('FINAL')
-    expect(stages).toHaveLength(7)
+    expect(stages).toContain('FRIENDLY')
+    expect(stages).toHaveLength(8)
   })
 })
 

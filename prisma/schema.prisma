@@ -65,12 +65,24 @@ model VerificationToken {
 
 // ─── Dominio del torneo ──────────────────────────────────────────────────────
 
+model Tournament {
+  id         String   @id @default(cuid())
+  externalId Int
+  season     Int
+  name       String
+  createdAt  DateTime @default(now())
+
+  matches Match[]
+
+  @@unique([externalId, season])
+}
+
 model Team {
-  id    String  @id @default(cuid())
+  id    String @id @default(cuid())
   name  String
-  code  String  @unique
+  code  String @unique
   flag  String
-  group String?
+  apiId Int?   @unique
 
   homeMatches Match[] @relation("HomeTeam")
   awayMatches Match[] @relation("AwayTeam")
@@ -78,6 +90,7 @@ model Team {
 }
 
 enum MatchStage {
+  FRIENDLY
   GROUP
   ROUND_OF_32
   ROUND_OF_16
@@ -96,20 +109,22 @@ enum MatchStatus {
 }
 
 model Match {
-  id          String      @id @default(cuid())
-  homeTeamId  String?
-  awayTeamId  String?
-  stage       MatchStage
-  groupName   String?
-  matchNumber Int @unique
-  scheduledAt DateTime
-  venue       String?
-  status      MatchStatus @default(SCHEDULED)
-  homeScore   Int?
-  awayScore   Int?
-  winnerId    String?
-  externalId  String?     @unique
+  id           String      @id @default(cuid())
+  tournamentId String
+  homeTeamId   String?
+  awayTeamId   String?
+  stage        MatchStage
+  groupName    String?
+  matchNumber  Int?
+  scheduledAt  DateTime
+  venue        String?
+  status       MatchStatus @default(SCHEDULED)
+  homeScore    Int?
+  awayScore    Int?
+  winnerId     String?
+  externalId   String?     @unique
 
+  tournament  Tournament   @relation(fields: [tournamentId], references: [id])
   homeTeam    Team?        @relation("HomeTeam", fields: [homeTeamId], references: [id])
   awayTeam    Team?        @relation("AwayTeam", fields: [awayTeamId], references: [id])
   winner      Team?        @relation("MatchWinner", fields: [winnerId], references: [id])
