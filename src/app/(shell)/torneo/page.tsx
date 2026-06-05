@@ -1,7 +1,7 @@
 // src/app/(shell)/torneo/page.tsx
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
-import { MatchStage, MatchStatus } from '@prisma/client'
+import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
 import Link from 'next/link'
 
