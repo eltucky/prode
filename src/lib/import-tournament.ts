@@ -21,30 +21,32 @@ export async function importTournament(config: Tournament): Promise<ImportResult
   })
   console.log('[import-tournament] tournament upserted:', tournament.id)
 
-  // Collect unique teams (skip TBD placeholders without a code)
-  const teamDataMap = new Map<string, { apiId: number; name: string; code: string }>()
+  // Collect unique teams by apiId — fixtures always have numeric id, code is often absent
+  const teamByApiId = new Map<number, { apiId: number; name: string; code: string }>()
   for (const fixture of fixtures) {
     const { home, away } = fixture.teams
-    if (home.code) teamDataMap.set(home.code, { apiId: home.id, name: home.name, code: home.code })
-    if (away.code) teamDataMap.set(away.code, { apiId: away.id, name: away.name, code: away.code })
+    if (!teamByApiId.has(home.id))
+      teamByApiId.set(home.id, { apiId: home.id, name: home.name, code: home.code || `T${home.id}` })
+    if (!teamByApiId.has(away.id))
+      teamByApiId.set(away.id, { apiId: away.id, name: away.name, code: away.code || `T${away.id}` })
   }
-  console.log('[import-tournament] unique teams with code:', teamDataMap.size, [...teamDataMap.keys()])
+  console.log('[import-tournament] unique teams:', teamByApiId.size, [...teamByApiId.values()].map(t => `${t.name}(${t.code})`))
 
-  for (const team of teamDataMap.values()) {
+  for (const team of teamByApiId.values()) {
     const flag = getFlagEmoji(team.code)
     await prisma.team.upsert({
-      where: { code: team.code },
-      update: { name: team.name, apiId: team.apiId, flag },
+      where: { apiId: team.apiId },
+      update: { name: team.name, flag },
       create: { code: team.code, name: team.name, apiId: team.apiId, flag },
     })
   }
 
-  // Build code → DB id map to avoid per-match queries
+  // Build apiId → DB id map for match linking
   const dbTeams = await prisma.team.findMany({
-    where: { code: { in: [...teamDataMap.keys()] } },
-    select: { id: true, code: true },
+    where: { apiId: { in: [...teamByApiId.keys()] } },
+    select: { id: true, apiId: true },
   })
-  const codeToId = new Map(dbTeams.map(t => [t.code, t.id]))
+  const apiIdToDbId = new Map(dbTeams.map(t => [t.apiId!, t.id]))
 
   // Get next matchNumber for this tournament (stable across re-imports)
   const { _max } = await prisma.match.aggregate({
@@ -66,8 +68,8 @@ export async function importTournament(config: Tournament): Promise<ImportResult
       ? (round.split(' - ')[1] ?? null)
       : null
 
-    const homeTeamId = fixture.teams.home.code ? (codeToId.get(fixture.teams.home.code) ?? null) : null
-    const awayTeamId = fixture.teams.away.code ? (codeToId.get(fixture.teams.away.code) ?? null) : null
+    const homeTeamId = apiIdToDbId.get(fixture.teams.home.id) ?? null
+    const awayTeamId = apiIdToDbId.get(fixture.teams.away.id) ?? null
     const venue = fixture.fixture.venue?.name ?? null
     const scheduledAt = new Date(fixture.fixture.date)
     const externalId = String(fixture.fixture.id)
@@ -98,6 +100,6 @@ export async function importTournament(config: Tournament): Promise<ImportResult
     matchesUpserted++
   }
 
-  console.log('[import-tournament] done', { teamsUpserted: teamDataMap.size, matchesUpserted })
-  return { tournamentId: tournament.id, teamsUpserted: teamDataMap.size, matchesUpserted }
+  console.log('[import-tournament] done', { teamsUpserted: teamByApiId.size, matchesUpserted })
+  return { tournamentId: tournament.id, teamsUpserted: teamByApiId.size, matchesUpserted }
 }
