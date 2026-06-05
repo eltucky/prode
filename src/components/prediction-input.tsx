@@ -90,6 +90,7 @@ export function PredictionInput({
     setConfirming(false)
     setHomeScore(null)
     setAwayScore(null)
+    setWinnerId('')
     setStatus('idle')
     startTransition(() => deletePrediction(matchId))
   }

@@ -3,7 +3,6 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
-import Link from 'next/link'
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP:         'Fase de Grupos',

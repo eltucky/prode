@@ -28,7 +28,7 @@ export default function ReglasPage() {
         <ScoreRow points={2} label="Solo resultado correcto" description="Acertás el resultado pero te equivocaste en el clasificado." />
         <ScoreRow points={0} label="Resultado incorrecto" description="No acertás el resultado. El clasificado no suma." />
         <p className="text-xs pt-3 border-t mt-2" style={{ color: 'var(--text-muted)', borderColor: 'var(--border)' }}>
-          El marcador se evalúa al final del tiempo reglamentario (90 min).
+          El marcador se evalúa al final del tiempo reglamentario (90 min). El clasificado puede diferir si el partido se define en prórroga o penales.
         </p>
       </Section>
 
@@ -41,15 +41,23 @@ export default function ReglasPage() {
             </tr>
           </thead>
           <tbody style={{ color: 'var(--text-primary)' }}>
+            <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
+              <td className="py-2 text-sm" style={{ color: 'var(--text-primary)' }}>Resultado correcto (base)</td>
+              <td className="py-2 text-right font-mono font-bold" style={{ color: 'var(--accent)' }}>+2</td>
+            </tr>
+            <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
+              <td className="py-2 text-xs pl-3" colSpan={2} style={{ color: 'var(--text-muted)' }}>
+                Los siguientes bonuses solo aplican si primero acertás el resultado
+              </td>
+            </tr>
             {[
-              ['Resultado correcto (base)', '+2'],
               ['Gol del local exacto', '+1'],
               ['Gol del visitante exacto', '+1'],
               ['Ambos goles exactos (bonus)', '+1'],
               ['Clasificado correcto (eliminatorias)', '+2'],
             ].map(([label, pts]) => (
               <tr key={label} className="border-b" style={{ borderColor: 'var(--border)' }}>
-                <td className="py-2 text-sm" style={{ color: 'var(--text-primary)' }}>{label}</td>
+                <td className="py-2 text-sm pl-3" style={{ color: 'var(--text-primary)' }}>{label}</td>
                 <td className="py-2 text-right font-mono font-bold" style={{ color: 'var(--accent)' }}>{pts}</td>
               </tr>
             ))}
