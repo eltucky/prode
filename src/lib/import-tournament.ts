@@ -9,13 +9,17 @@ export type ImportResult = {
 }
 
 export async function importTournament(config: Tournament): Promise<ImportResult> {
+  console.log('[import-tournament] start', { leagueId: config.leagueId, season: config.season, name: config.name })
+
   const fixtures = await fetchFixtures(config)
+  console.log('[import-tournament] fixtures fetched:', fixtures.length)
 
   const tournament = await prisma.tournament.upsert({
     where: { externalId_season: { externalId: config.leagueId, season: config.season } },
     update: { name: config.name },
     create: { externalId: config.leagueId, season: config.season, name: config.name },
   })
+  console.log('[import-tournament] tournament upserted:', tournament.id)
 
   // Collect unique teams (skip TBD placeholders without a code)
   const teamDataMap = new Map<string, { apiId: number; name: string; code: string }>()
@@ -24,6 +28,7 @@ export async function importTournament(config: Tournament): Promise<ImportResult
     if (home.code) teamDataMap.set(home.code, { apiId: home.id, name: home.name, code: home.code })
     if (away.code) teamDataMap.set(away.code, { apiId: away.id, name: away.name, code: away.code })
   }
+  console.log('[import-tournament] unique teams with code:', teamDataMap.size, [...teamDataMap.keys()])
 
   for (const team of teamDataMap.values()) {
     const flag = getFlagEmoji(team.code)
@@ -93,5 +98,6 @@ export async function importTournament(config: Tournament): Promise<ImportResult
     matchesUpserted++
   }
 
+  console.log('[import-tournament] done', { teamsUpserted: teamDataMap.size, matchesUpserted })
   return { tournamentId: tournament.id, teamsUpserted: teamDataMap.size, matchesUpserted }
 }

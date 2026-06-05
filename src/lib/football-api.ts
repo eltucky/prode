@@ -71,20 +71,46 @@ async function apiFetch(path: string): Promise<unknown> {
   const apiKey = process.env.FOOTBALL_API_KEY
   if (!apiKey) throw new Error('FOOTBALL_API_KEY is not set')
 
-  const res = await fetch(`${BASE_URL}${path}`, {
+  const url = `${BASE_URL}${path}`
+  console.log('[football-api] GET', url)
+
+  const res = await fetch(url, {
     headers: { 'x-apisports-key': apiKey },
   })
 
   if (!res.ok) throw new Error(`API-Football error: ${res.status}`)
-  return res.json()
+
+  const data = await res.json() as Record<string, unknown>
+
+  if (data.errors && typeof data.errors === 'object' && Object.keys(data.errors).length > 0) {
+    console.error('[football-api] API errors:', JSON.stringify(data.errors))
+  }
+
+  const responseCount = Array.isArray(data.response) ? data.response.length : 'non-array'
+  console.log('[football-api] response items:', responseCount)
+
+  return data
 }
 
 export async function fetchFixtures(tournament: Tournament): Promise<ApiFixture[]> {
   const data = await apiFetch(
     `/fixtures?league=${tournament.leagueId}&season=${tournament.season}`
   ) as { response: ApiFixture[] }
-  const fixtures = data.response
-  return tournament.teamFilter ? fixtures.filter(tournament.teamFilter) : fixtures
+  const fixtures = data.response ?? []
+
+  if (fixtures.length > 0) {
+    const sample = fixtures[0]
+    console.log('[football-api] sample fixture teams:', JSON.stringify({
+      home: { id: sample.teams.home.id, name: sample.teams.home.name, code: sample.teams.home.code },
+      away: { id: sample.teams.away.id, name: sample.teams.away.name, code: sample.teams.away.code },
+    }))
+  }
+
+  const filtered = tournament.teamFilter ? fixtures.filter(tournament.teamFilter) : fixtures
+  if (tournament.teamFilter) {
+    console.log('[football-api] after teamFilter:', filtered.length, '/', fixtures.length)
+  }
+  return filtered
 }
 
 /** @deprecated Use fetchFixtures(TOURNAMENTS.WORLD_CUP_2026) instead */
