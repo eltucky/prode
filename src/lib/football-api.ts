@@ -82,12 +82,14 @@ async function apiFetch(path: string): Promise<unknown> {
 
   const data = await res.json() as Record<string, unknown>
 
-  if (data.errors && typeof data.errors === 'object' && Object.keys(data.errors).length > 0) {
-    console.error('[football-api] API errors:', JSON.stringify(data.errors))
-  }
-
   const responseCount = Array.isArray(data.response) ? data.response.length : 'non-array'
   console.log('[football-api] response items:', responseCount)
+
+  if (data.errors && typeof data.errors === 'object' && Object.keys(data.errors as object).length > 0) {
+    const msg = Object.values(data.errors as Record<string, string>).join(' | ')
+    console.error('[football-api] API errors:', JSON.stringify(data.errors))
+    throw new Error(`API-Football: ${msg}`)
+  }
 
   return data
 }
