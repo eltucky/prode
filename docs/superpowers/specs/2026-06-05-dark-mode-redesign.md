@@ -53,7 +53,7 @@ Reemplaza a `prediction-form.tsx`. Mismo contrato de props, misma lógica de sav
   - `✓ Guardado` (verde, fade out a 2s) — tras save exitoso
   - `Sin pronóstico` (gris tenue) — cuando ningún score está cargado
   - `Completá el otro score` (gris tenue) — cuando solo un score tiene valor
-- **Eliminación**: sin botón "Borrar" visible. Se implementa como acción secundaria accesible desde el menú de tres puntos (···) en la esquina de la card, que aparece solo cuando hay un pronóstico cargado. Confirmación inline: "¿Borrar? Sí / No".
+- **Eliminación**: ícono 🗑 pequeño en la esquina superior derecha de la card, visible solo cuando hay un pronóstico cargado. Al tocar/clickear, muestra confirmación inline debajo del score: "¿Borrar pronóstico? Sí / No" — mismos estilos dark, sin modal.
 - **Lock**: cuando el partido está bloqueado (`isLocked`), el componente no se renderiza; la card muestra el pronóstico guardado en modo lectura.
 
 ### Layout mobile
