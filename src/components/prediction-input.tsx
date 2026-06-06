@@ -158,14 +158,14 @@ export function PredictionInput({
         </div>
 
         {/* Desktop */}
-        <div className="hidden md:flex w-full items-center justify-between">
-          <div className="flex flex-col items-center gap-1">
+        <div className="hidden md:flex w-full items-center">
+          <div className="flex-1 flex flex-col items-center gap-1">
             <span className="text-3xl leading-none">{homeTeam?.flag ?? '?'}</span>
-            <span className="text-xs max-w-[72px] text-center truncate" style={{ color: 'var(--text-muted)' }}>
+            <span className="text-xs w-full text-center truncate px-2" style={{ color: 'var(--text-muted)' }}>
               {homeTeam?.name}
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <ScoreInputWithArrows
               value={homeScore}
               onIncrement={() => changeScore(homeScore, setHomeScore, 1)}
@@ -180,9 +180,9 @@ export function PredictionInput({
               onChange={v => handleInputChange(v, setAwayScore)}
             />
           </div>
-          <div className="flex flex-col items-center gap-1">
+          <div className="flex-1 flex flex-col items-center gap-1">
             <span className="text-3xl leading-none">{awayTeam?.flag ?? '?'}</span>
-            <span className="text-xs max-w-[72px] text-center truncate" style={{ color: 'var(--text-muted)' }}>
+            <span className="text-xs w-full text-center truncate px-2" style={{ color: 'var(--text-muted)' }}>
               {awayTeam?.name}
             </span>
           </div>
