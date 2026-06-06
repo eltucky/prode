@@ -2,7 +2,7 @@
 'use client'
 
 import { useTransition, useState, useRef, useEffect } from 'react'
-import { savePrediction, deletePrediction } from '@/app/(protected)/torneo/actions'
+import { savePrediction } from '@/app/(protected)/torneo/actions'
 
 type Team = { flag: string; name: string }
 
@@ -34,7 +34,6 @@ export function PredictionInput({
   const [awayScore, setAwayScore] = useState<number | null>(prediction?.awayScore ?? null)
   const [winnerId, setWinnerId] = useState(prediction?.predictedWinnerId ?? '')
   const [status, setStatus] = useState<SaveStatus>('idle')
-  const [confirming, setConfirming] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
   const wasPending = useRef(false)
@@ -110,15 +109,6 @@ export function PredictionInput({
     if (!isNaN(n) && n >= 0 && n <= 99) setter(n)
   }
 
-  function handleDelete() {
-    setConfirming(false)
-    setHomeScore(null)
-    setAwayScore(null)
-    setWinnerId('')
-    setStatus('idle')
-    startTransition(() => { deletePrediction(matchId) })
-  }
-
   const hasPrediction = prediction !== null
   const showKnockoutSelector =
     isKnockout &&
@@ -140,38 +130,13 @@ export function PredictionInput({
 
   return (
     <div className="space-y-3">
-      <div className={`relative${hasPrediction ? ' pt-6 md:pt-0' : ''}`}>
-        {hasPrediction && !confirming && (
-          <button
-            type="button"
-            onClick={() => setConfirming(true)}
-            aria-label="Borrar pronóstico"
-            className="absolute top-0 right-0 text-sm leading-none transition-colors"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            🗑
-          </button>
-        )}
-
+      <div className="relative">
         {(status === 'saving' || status === 'saved') && (
           <span
             aria-label={status === 'saving' ? 'Guardando' : 'Guardado'}
             className={`absolute bottom-1 right-1 w-2 h-2 rounded-full pointer-events-none${status === 'saving' ? ' animate-pulse' : ''}`}
             style={{ background: 'var(--accent)' }}
           />
-        )}
-
-        {confirming && (
-          <div
-            className="absolute inset-0 flex items-center justify-center gap-3 text-xs rounded-lg z-10"
-            style={{ background: 'var(--surface)', opacity: 0.95 }}
-          >
-            <span style={{ color: 'var(--text-muted)' }}>¿Borrar pronóstico?</span>
-            <button onClick={handleDelete} className="font-semibold" style={{ color: '#ef4444' }}>Sí</button>
-            <button onClick={() => setConfirming(false)} style={{ color: 'var(--text-muted)' }}>No</button>
-          </div>
         )}
 
         {/* Mobile */}
