@@ -1,6 +1,7 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { redirect } from 'next/navigation'
+import Image from 'next/image'
 import { updateEmailNotifications } from './actions'
 import { SubmitButton } from '@/components/submit-button'
 
@@ -15,21 +16,54 @@ export default async function PerfilPage() {
   if (!user) redirect('/login')
 
   return (
-    <div className="max-w-lg mx-auto space-y-6">
-      <h1 className="text-2xl font-bold">Perfil</h1>
+    <div className="max-w-lg mx-auto space-y-4">
+      <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+        Perfil
+      </h1>
 
-      <div className="bg-white border rounded-xl p-6 space-y-1">
-        <div className="font-medium">{user.name}</div>
-        <div className="text-sm text-gray-500">{user.email}</div>
+      {/* Hero */}
+      <div
+        className="rounded-2xl p-5 flex items-center gap-4"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        {session.user.image ? (
+          <Image
+            src={session.user.image}
+            alt={user.name ?? ''}
+            width={48}
+            height={48}
+            className="rounded-full shrink-0"
+            style={{ border: '2px solid var(--accent)' }}
+          />
+        ) : (
+          <div
+            className="w-12 h-12 rounded-full shrink-0 flex items-center justify-center text-xl"
+            style={{ background: 'var(--surface-raised)', border: '2px solid var(--accent)' }}
+          >
+            👤
+          </div>
+        )}
+        <div>
+          <div className="font-bold" style={{ color: 'var(--text-primary)' }}>{user.name}</div>
+          <div className="text-sm" style={{ color: 'var(--text-muted)' }}>{user.email}</div>
+        </div>
       </div>
 
-      <div className="bg-white border rounded-xl p-6">
-        <h2 className="font-semibold mb-4">Notificaciones</h2>
+      {/* Notificaciones */}
+      <div
+        className="rounded-2xl p-5"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+          Notificaciones
+        </h2>
         <form action={updateEmailNotifications} className="space-y-4">
           <label className="flex items-start justify-between gap-4 cursor-pointer">
             <div>
-              <div className="font-medium text-sm">Recordatorios y resumen diario</div>
-              <div className="text-xs text-gray-500 mt-0.5">
+              <div className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
+                Recordatorios y resumen diario
+              </div>
+              <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
                 Te avisamos 2 horas antes de cada partido si todavía no cargaste pronóstico, y te mandamos un resumen de puntos al final del día.
               </div>
             </div>
@@ -37,10 +71,14 @@ export default async function PerfilPage() {
               type="checkbox"
               name="emailNotifications"
               defaultChecked={user.emailNotifications}
-              className="mt-1 w-5 h-5 accent-gray-900 shrink-0"
+              className="mt-1 w-5 h-5 shrink-0"
+              style={{ accentColor: 'var(--accent)' }}
             />
           </label>
-          <SubmitButton className="w-full bg-gray-900 text-white rounded-lg py-2 text-sm hover:bg-gray-700">
+          <SubmitButton
+            className="w-full rounded-xl py-2.5 text-sm font-bold transition-colors"
+            style={{ background: 'var(--accent)', color: '#000' } as React.CSSProperties}
+          >
             Guardar
           </SubmitButton>
         </form>

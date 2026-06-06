@@ -1,0 +1,148 @@
+// src/components/match-card.tsx
+import { MatchStage, MatchStatus } from '@prisma/client'
+import { ClientDate } from '@/components/client-date'
+import { PredictionInput } from '@/components/prediction-input'
+import Link from 'next/link'
+
+type Team = { flag: string; name: string } | null
+
+type Match = {
+  id: string
+  stage: MatchStage
+  status: MatchStatus
+  scheduledAt: Date
+  homeScore: number | null
+  awayScore: number | null
+  homeTeamId: string | null
+  awayTeamId: string | null
+  groupName: string | null
+  homeTeam: Team
+  awayTeam: Team
+}
+
+type Prediction = {
+  homeScore: number
+  awayScore: number
+  predictedWinnerId: string | null
+  points: number | null
+} | null
+
+type Props = {
+  match: Match
+  prediction: Prediction
+  hasSession: boolean
+  showGroupLabel: boolean
+  locked: boolean
+  isKnockout: boolean
+}
+
+const STATUS_BADGE: Record<MatchStatus, { label: string; bg: string; color: string }> = {
+  SCHEDULED:   { label: 'Programado', bg: 'var(--surface-raised)', color: 'var(--text-muted)' },
+  IN_PROGRESS: { label: 'En juego',   bg: '#fbbf2422',             color: '#fbbf24' },
+  FINISHED:    { label: 'Finalizado', bg: '#22c55e1a',             color: 'var(--accent)' },
+  POSTPONED:   { label: 'Postergado', bg: '#ef44441a',             color: '#ef4444' },
+  CANCELLED:   { label: 'Cancelado',  bg: '#ef44441a',             color: '#ef4444' },
+}
+
+export function MatchCard({ match, prediction, hasSession, showGroupLabel, locked, isKnockout }: Props) {
+  const badge = STATUS_BADGE[match.status]
+  const hasPrediction = prediction !== null
+
+  return (
+    <div
+      className="rounded-xl px-4 py-3 space-y-3"
+      style={{
+        background: 'var(--surface)',
+        border: `1px solid ${hasPrediction && !locked ? '#22c55e40' : 'var(--border)'}`,
+      }}
+    >
+      {/* Header row */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col min-w-0">
+          {showGroupLabel && match.groupName && (
+            <span className="text-[10px] mb-0.5 uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              Grupo {match.groupName}
+            </span>
+          )}
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+              {match.homeTeam ? `${match.homeTeam.flag} ${match.homeTeam.name}` : 'TBD'}
+            </span>
+            <span className="text-sm font-bold tabular-nums shrink-0" style={{ color: 'var(--text-muted)' }}>
+              {match.status === 'FINISHED'
+                ? `${match.homeScore} - ${match.awayScore}`
+                : 'vs'}
+            </span>
+            <span className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
+              {match.awayTeam ? `${match.awayTeam.flag} ${match.awayTeam.name}` : 'TBD'}
+            </span>
+          </div>
+        </div>
+        <div className="flex flex-col items-end shrink-0 gap-1">
+          <span
+            className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+            style={{ background: badge.bg, color: badge.color }}
+          >
+            {badge.label}
+          </span>
+          <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
+            <ClientDate iso={match.scheduledAt.toISOString()} />
+          </span>
+        </div>
+      </div>
+
+      {/* Bottom row: prediction area */}
+      {match.status !== 'CANCELLED' && (
+        <div className="border-t pt-3" style={{ borderColor: 'var(--border)' }}>
+          {locked ? (
+            prediction ? (
+              <div className="flex items-center gap-2 text-sm flex-wrap">
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Tu pronóstico:</span>
+                <span className="font-mono font-semibold" style={{ color: 'var(--text-primary)' }}>
+                  {prediction.homeScore} - {prediction.awayScore}
+                </span>
+                {isKnockout && prediction.predictedWinnerId && (
+                  <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                    {'(ganador: '}
+                    {prediction.predictedWinnerId === match.homeTeamId
+                      ? match.homeTeam?.name
+                      : match.awayTeam?.name}
+                    {')'}
+                  </span>
+                )}
+                {prediction.points !== null && (
+                  <span
+                    className="ml-auto text-xs font-bold px-2 py-0.5 rounded-full"
+                    style={{
+                      background: prediction.points > 0 ? '#22c55e1a' : 'var(--surface-raised)',
+                      color: prediction.points > 0 ? 'var(--accent)' : 'var(--text-muted)',
+                    }}
+                  >
+                    {prediction.points > 0 ? '+' : ''}{prediction.points} pts
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Sin pronóstico</span>
+            )
+          ) : hasSession ? (
+            <PredictionInput
+              key={prediction ? 'has-pred' : `new-${match.id}`}
+              matchId={match.id}
+              prediction={prediction}
+              homeTeam={match.homeTeam}
+              awayTeam={match.awayTeam}
+              homeTeamId={match.homeTeamId}
+              awayTeamId={match.awayTeamId}
+              isKnockout={isKnockout}
+            />
+          ) : (
+            <Link href="/login" className="text-xs" style={{ color: '#3b82f6' }}>
+              Iniciá sesión para hacer tu pronóstico →
+            </Link>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}

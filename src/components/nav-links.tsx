@@ -1,3 +1,4 @@
+// src/components/nav-links.tsx
 'use client'
 
 import Link from 'next/link'
@@ -20,11 +21,8 @@ export function NavLinks({ isSuperAdmin }: { isSuperAdmin: boolean }) {
           <Link
             key={href}
             href={href}
-            className={`text-sm transition-colors ${
-              isActive
-                ? 'text-gray-900 font-semibold'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
+            className="text-sm font-medium transition-colors"
+            style={{ color: isActive ? 'var(--text-primary)' : 'var(--text-muted)' }}
           >
             {label}
           </Link>
@@ -33,11 +31,8 @@ export function NavLinks({ isSuperAdmin }: { isSuperAdmin: boolean }) {
       {isSuperAdmin && (
         <Link
           href="/admin/partidos"
-          className={`text-sm transition-colors ${
-            pathname.startsWith('/admin')
-              ? 'text-red-700 font-semibold'
-              : 'text-red-500 hover:text-red-700'
-          }`}
+          className="text-sm font-medium transition-colors"
+          style={{ color: pathname.startsWith('/admin') ? '#ef4444' : '#f87171' }}
         >
           Admin
         </Link>
