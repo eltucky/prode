@@ -140,7 +140,7 @@ export function PredictionInput({
 
   return (
     <div className="space-y-3">
-      <div className={`relative${hasPrediction && !confirming ? ' pt-6 md:pt-0' : ''}`}>
+      <div className={`relative${hasPrediction ? ' pt-6 md:pt-0' : ''}`}>
         {hasPrediction && !confirming && (
           <button
             type="button"
@@ -161,6 +161,17 @@ export function PredictionInput({
             className={`absolute bottom-1 right-1 w-2 h-2 rounded-full pointer-events-none${status === 'saving' ? ' animate-pulse' : ''}`}
             style={{ background: 'var(--accent)' }}
           />
+        )}
+
+        {confirming && (
+          <div
+            className="absolute inset-0 flex items-center justify-center gap-3 text-xs rounded-lg z-10"
+            style={{ background: 'var(--surface)', opacity: 0.95 }}
+          >
+            <span style={{ color: 'var(--text-muted)' }}>¿Borrar pronóstico?</span>
+            <button onClick={handleDelete} className="font-semibold" style={{ color: '#ef4444' }}>Sí</button>
+            <button onClick={() => setConfirming(false)} style={{ color: 'var(--text-muted)' }}>No</button>
+          </div>
         )}
 
         {/* Mobile */}
@@ -243,35 +254,16 @@ export function PredictionInput({
         </select>
       )}
 
-      {confirming ? (
-        <div className="flex items-center justify-center gap-3 text-xs">
-          <span style={{ color: 'var(--text-muted)' }}>¿Borrar pronóstico?</span>
-          <button
-            onClick={handleDelete}
-            className="font-semibold"
-            style={{ color: '#ef4444' }}
-          >
-            Sí
-          </button>
-          <button
-            onClick={() => setConfirming(false)}
-            style={{ color: 'var(--text-muted)' }}
-          >
-            No
-          </button>
-        </div>
-      ) : statusText ? (
+      {statusText && (
         <p
           className="text-center text-xs"
           style={{
-            color: status === 'saved' ? 'var(--accent)'
-                 : status === 'locked' ? '#f59e0b'
-                 : 'var(--text-muted)',
+            color: status === 'locked' ? '#f59e0b' : 'var(--text-muted)',
           }}
         >
           {statusText}
         </p>
-      ) : null}
+      )}
     </div>
   )
 }
