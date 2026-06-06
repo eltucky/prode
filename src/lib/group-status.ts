@@ -2,7 +2,7 @@ import { MatchStage } from '@prisma/client'
 
 export type GroupStatus = 'complete' | 'actionRequired' | 'missed'
 
-const LOCK_THRESHOLD_MS = 60 * 1000
+export const LOCK_THRESHOLD_MS = 60 * 1000
 
 export function computeGroupStatusMap(
   matches: Array<{ id: string; stage: MatchStage; groupName: string | null; scheduledAt: Date }>,

@@ -3,7 +3,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
-import { computeGroupStatusMap, type GroupStatus } from '@/lib/group-status'
+import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
 
 const BADGE_COLORS: Record<GroupStatus, string> = {
   complete:       '#22c55e',
@@ -32,7 +32,7 @@ const KNOCKOUT_STAGES: MatchStage[] = [
 ]
 
 function isLocked(scheduledAt: Date): boolean {
-  return Date.now() >= scheduledAt.getTime() - 60 * 1000
+  return Date.now() >= scheduledAt.getTime() - LOCK_THRESHOLD_MS
 }
 
 function groupFilterHref(stageFilter: MatchStage | undefined, grupo: string | undefined, target: string | undefined): string {
@@ -87,8 +87,9 @@ export default async function TorneoPage({
   }) : []
   const predMap = new Map(predictions.map(p => [p.matchId, p]))
 
+  const groupMatches = matches.filter(m => m.stage === 'GROUP')
   const groupStatusMap = session?.user?.id
-    ? computeGroupStatusMap(matches, new Set(predMap.keys()))
+    ? computeGroupStatusMap(groupMatches, new Set(predMap.keys()))
     : new Map<string, GroupStatus>()
 
   const availableGroups = showingGroupStage
