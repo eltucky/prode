@@ -39,13 +39,14 @@ export function PredictionInput({
   const isFirstRender = useRef(true)
   const wasPending = useRef(false)
   const skipSaved = useRef(false)
+  const isLockedRef = useRef(false)
 
   // Auto-lock when the match lock time arrives on the client
   useEffect(() => {
     const lockAt = new Date(scheduledAt).getTime() - 60 * 1000
     const delay = lockAt - Date.now()
-    if (delay <= 0) { setStatus('locked'); return }
-    const t = setTimeout(() => setStatus('locked'), delay)
+    if (delay <= 0) { isLockedRef.current = true; setStatus('locked'); return }
+    const t = setTimeout(() => { isLockedRef.current = true; setStatus('locked') }, delay)
     return () => clearTimeout(t)
   }, [scheduledAt])
 
@@ -66,7 +67,7 @@ export function PredictionInput({
       isFirstRender.current = false
       return
     }
-    if (status === 'locked') return
+    if (isLockedRef.current) return
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     if (homeScore === null || awayScore === null) {
@@ -85,13 +86,14 @@ export function PredictionInput({
         const result = await savePrediction(fd)
         if (result?.error === 'locked') {
           skipSaved.current = true
+          isLockedRef.current = true
           setStatus('locked')
         }
       })
     }, 500)
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [homeScore, awayScore, winnerId, matchId, status])
+  }, [homeScore, awayScore, winnerId, matchId])
 
   function changeScore(score: number | null, setter: (v: number | null) => void, delta: 1 | -1) {
     if (delta === 1) {
