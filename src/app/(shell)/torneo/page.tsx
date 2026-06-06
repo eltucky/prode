@@ -3,6 +3,19 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
+import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
+
+const BADGE_COLORS: Record<GroupStatus, string> = {
+  complete:       '#22c55e',
+  actionRequired: '#ef4444',
+  missed:         '#f59e0b',
+}
+
+const BADGE_LABELS: Record<GroupStatus, string> = {
+  complete:       'Grupo completo',
+  actionRequired: 'Pronósticos pendientes',
+  missed:         'Pronósticos perdidos',
+}
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP:         'Fase de Grupos',
@@ -19,7 +32,7 @@ const KNOCKOUT_STAGES: MatchStage[] = [
 ]
 
 function isLocked(scheduledAt: Date): boolean {
-  return Date.now() >= scheduledAt.getTime() - 60 * 1000
+  return Date.now() >= scheduledAt.getTime() - LOCK_THRESHOLD_MS
 }
 
 function groupFilterHref(stageFilter: MatchStage | undefined, grupo: string | undefined, target: string | undefined): string {
@@ -80,6 +93,11 @@ export default async function TorneoPage({
   }) : []
   const predMap = new Map(predictions.map(p => [p.matchId, p]))
 
+  const groupMatches = matches.filter(m => m.stage === 'GROUP')
+  const groupStatusMap = session?.user?.id
+    ? computeGroupStatusMap(groupMatches, new Set(predMap.keys()))
+    : new Map<string, GroupStatus>()
+
   const availableGroups = showingGroupStage
     ? [...new Set(matches.filter(m => m.stage === 'GROUP' && m.groupName).map(m => m.groupName!))].sort()
     : []
@@ -130,7 +148,7 @@ export default async function TorneoPage({
 
       {/* Group filter */}
       {showingGroupStage && availableGroups.length > 0 && (
-        <div className="flex gap-2 flex-wrap items-center">
+        <div className="flex gap-2 flex-wrap items-center pb-2">
           <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>Grupo:</span>
           <a
             href={stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'}
@@ -142,19 +160,30 @@ export default async function TorneoPage({
           >
             Todos
           </a>
-          {availableGroups.map(g => (
-            <a
-              key={g}
-              href={groupFilterHref(stageFilter, grupo, g)}
-              className={pillClass(grupoFilter === g)}
-              style={{
-                background: grupoFilter === g ? 'var(--accent)' : 'var(--surface-raised)',
-                color: grupoFilter === g ? '#000' : 'var(--text-muted)',
-              }}
-            >
-              {g}
-            </a>
-          ))}
+          {availableGroups.map(g => {
+            const status = groupStatusMap.get(g)
+            const badgeColor = status ? BADGE_COLORS[status] : undefined
+            return (
+              <a
+                key={g}
+                href={groupFilterHref(stageFilter, grupo, g)}
+                className={`relative ${pillClass(grupoFilter === g)}`}
+                style={{
+                  background: grupoFilter === g ? 'var(--accent)' : 'var(--surface-raised)',
+                  color: grupoFilter === g ? '#000' : 'var(--text-muted)',
+                }}
+              >
+                {g}
+                {badgeColor && status && (
+                  <span
+                    className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full border-2"
+                    style={{ background: badgeColor, borderColor: 'var(--bg)' }}
+                    aria-label={BADGE_LABELS[status]}
+                  />
+                )}
+              </a>
+            )
+          })}
         </div>
       )}
 
