@@ -11,6 +11,12 @@ const BADGE_COLORS: Record<GroupStatus, string> = {
   missed:         '#f59e0b',
 }
 
+const BADGE_LABELS: Record<GroupStatus, string> = {
+  complete:       'Grupo completo',
+  actionRequired: 'Pronósticos pendientes',
+  missed:         'Pronósticos perdidos',
+}
+
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP:         'Fase de Grupos',
   ROUND_OF_32:   'Ronda de 32',
@@ -135,7 +141,7 @@ export default async function TorneoPage({
 
       {/* Group filter */}
       {showingGroupStage && availableGroups.length > 0 && (
-        <div className="flex gap-2 flex-wrap items-center">
+        <div className="flex gap-2 flex-wrap items-center pb-2">
           <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>Grupo:</span>
           <a
             href={stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'}
@@ -161,10 +167,11 @@ export default async function TorneoPage({
                 }}
               >
                 {g}
-                {badgeColor && (
+                {badgeColor && status && (
                   <span
                     className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full border-2"
                     style={{ background: badgeColor, borderColor: 'var(--bg)' }}
+                    aria-label={BADGE_LABELS[status]}
                   />
                 )}
               </a>
