@@ -133,8 +133,8 @@ export function PredictionInput({
   const statusText: string | null = {
     idle: hasPrediction ? null : 'Tocá ▲ para empezar',
     partial: 'Completá el otro score',
-    saving: 'Guardando...',
-    saved: '✓ Guardado',
+    saving: null,
+    saved: null,
     locked: 'Este partido ya cerró',
   }[status]
 
@@ -153,6 +153,14 @@ export function PredictionInput({
           >
             🗑
           </button>
+        )}
+
+        {(status === 'saving' || status === 'saved') && (
+          <span
+            aria-label={status === 'saving' ? 'Guardando' : 'Guardado'}
+            className={`absolute bottom-1 right-1 w-2 h-2 rounded-full pointer-events-none${status === 'saving' ? ' animate-pulse' : ''}`}
+            style={{ background: 'var(--accent)' }}
+          />
         )}
 
         {/* Mobile */}
