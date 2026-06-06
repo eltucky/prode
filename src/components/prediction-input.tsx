@@ -114,7 +114,7 @@ export function PredictionInput({
     setAwayScore(null)
     setWinnerId('')
     setStatus('idle')
-    startTransition(() => deletePrediction(matchId))
+    startTransition(() => { deletePrediction(matchId) })
   }
 
   const hasPrediction = prediction !== null
