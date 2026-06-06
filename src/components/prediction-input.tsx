@@ -140,7 +140,7 @@ export function PredictionInput({
 
   return (
     <div className="space-y-3">
-      <div className="relative">
+      <div className={`relative${hasPrediction && !confirming ? ' pt-6 md:pt-0' : ''}`}>
         {hasPrediction && !confirming && (
           <button
             type="button"
