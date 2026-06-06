@@ -35,10 +35,9 @@ export async function savePrediction(formData: FormData) {
     select: { scheduledAt: true, status: true },
   })
   if (!match) throw new Error('Partido no encontrado')
-  if (match.status !== 'SCHEDULED') throw new Error('El pronóstico ya está cerrado')
 
   const lockTime = new Date(match.scheduledAt.getTime() - 60 * 1000)
-  if (new Date() >= lockTime) throw new Error('El pronóstico ya está cerrado')
+  if (match.status !== 'SCHEDULED' || new Date() >= lockTime) return { error: 'locked' as const }
 
   await prisma.prediction.upsert({
     where: { userId_matchId: { userId: session.user.id, matchId } },
@@ -61,10 +60,9 @@ export async function deletePrediction(matchId: string) {
     select: { scheduledAt: true, status: true },
   })
   if (!match) throw new Error('Partido no encontrado')
-  if (match.status !== 'SCHEDULED') throw new Error('El pronóstico ya está cerrado')
 
   const lockTime = new Date(match.scheduledAt.getTime() - 60 * 1000)
-  if (new Date() >= lockTime) throw new Error('El pronóstico ya está cerrado')
+  if (match.status !== 'SCHEDULED' || new Date() >= lockTime) return { error: 'locked' as const }
 
   await prisma.prediction.deleteMany({
     where: { userId: session.user.id, matchId },

@@ -135,6 +135,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
               homeTeamId={match.homeTeamId}
               awayTeamId={match.awayTeamId}
               isKnockout={isKnockout}
+              scheduledAt={match.scheduledAt.toISOString()}
             />
           ) : (
             <Link href="/login" className="text-xs" style={{ color: '#3b82f6' }}>

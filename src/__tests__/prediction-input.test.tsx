@@ -19,6 +19,7 @@ const baseProps = {
   homeTeamId: 'home-1',
   awayTeamId: 'away-1',
   isKnockout: false,
+  scheduledAt: new Date(Date.now() + 3600 * 1000).toISOString(),
 }
 
 describe('PredictionInput', () => {

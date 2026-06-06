@@ -14,9 +14,10 @@ type Props = {
   homeTeamId: string | null
   awayTeamId: string | null
   isKnockout: boolean
+  scheduledAt: string
 }
 
-type SaveStatus = 'idle' | 'partial' | 'saving' | 'saved'
+type SaveStatus = 'idle' | 'partial' | 'saving' | 'saved' | 'locked'
 
 export function PredictionInput({
   matchId,
@@ -26,6 +27,7 @@ export function PredictionInput({
   homeTeamId,
   awayTeamId,
   isKnockout,
+  scheduledAt,
 }: Props) {
   const [isPending, startTransition] = useTransition()
   const [homeScore, setHomeScore] = useState<number | null>(prediction?.homeScore ?? null)
@@ -36,12 +38,25 @@ export function PredictionInput({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
   const wasPending = useRef(false)
+  const skipSaved = useRef(false)
+
+  // Auto-lock when the match lock time arrives on the client
+  useEffect(() => {
+    const lockAt = new Date(scheduledAt).getTime() - 60 * 1000
+    const delay = lockAt - Date.now()
+    if (delay <= 0) { setStatus('locked'); return }
+    const t = setTimeout(() => setStatus('locked'), delay)
+    return () => clearTimeout(t)
+  }, [scheduledAt])
 
   useEffect(() => {
     if (wasPending.current && !isPending) {
-      setStatus('saved')
-      const t = setTimeout(() => setStatus('idle'), 2000)
-      return () => clearTimeout(t)
+      if (!skipSaved.current) {
+        setStatus('saved')
+        const t = setTimeout(() => setStatus('idle'), 2000)
+        return () => clearTimeout(t)
+      }
+      skipSaved.current = false
     }
     wasPending.current = isPending
   }, [isPending])
@@ -51,6 +66,7 @@ export function PredictionInput({
       isFirstRender.current = false
       return
     }
+    if (status === 'locked') return
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     if (homeScore === null || awayScore === null) {
@@ -65,11 +81,17 @@ export function PredictionInput({
       fd.set('homeScore', String(homeScore))
       fd.set('awayScore', String(awayScore))
       if (winnerId) fd.set('predictedWinnerId', winnerId)
-      startTransition(() => savePrediction(fd))
+      startTransition(async () => {
+        const result = await savePrediction(fd)
+        if (result?.error === 'locked') {
+          skipSaved.current = true
+          setStatus('locked')
+        }
+      })
     }, 500)
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [homeScore, awayScore, winnerId, matchId])
+  }, [homeScore, awayScore, winnerId, matchId, status])
 
   function changeScore(score: number | null, setter: (v: number | null) => void, delta: 1 | -1) {
     if (delta === 1) {
@@ -104,11 +126,14 @@ export function PredictionInput({
     awayScore !== null &&
     homeScore === awayScore
 
+  const isLocked = status === 'locked'
+
   const statusText: string | null = {
     idle: hasPrediction ? null : 'Tocá ▲ para empezar',
     partial: 'Completá el otro score',
     saving: 'Guardando...',
     saved: '✓ Guardado',
+    locked: 'Este partido ya cerró',
   }[status]
 
   return (
@@ -131,9 +156,9 @@ export function PredictionInput({
         {/* Mobile */}
         <div className="flex w-full items-center justify-between md:hidden">
           <div className="flex flex-col items-center gap-1">
-            <ArrowBtn label="Aumentar" onClick={() => changeScore(homeScore, setHomeScore, 1)} />
+            <ArrowBtn label="Aumentar" onClick={() => changeScore(homeScore, setHomeScore, 1)} disabled={isLocked} />
             <span className="text-3xl leading-none">{homeTeam?.flag ?? '?'}</span>
-            <ArrowBtn label="Disminuir" down onClick={() => changeScore(homeScore, setHomeScore, -1)} disabled={homeScore === null || homeScore === 0} />
+            <ArrowBtn label="Disminuir" down onClick={() => changeScore(homeScore, setHomeScore, -1)} disabled={isLocked || homeScore === null || homeScore === 0} />
           </div>
           <div className="flex items-center gap-3">
             <span
@@ -151,9 +176,9 @@ export function PredictionInput({
             </span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <ArrowBtn label="Aumentar" onClick={() => changeScore(awayScore, setAwayScore, 1)} />
+            <ArrowBtn label="Aumentar" onClick={() => changeScore(awayScore, setAwayScore, 1)} disabled={isLocked} />
             <span className="text-3xl leading-none">{awayTeam?.flag ?? '?'}</span>
-            <ArrowBtn label="Disminuir" down onClick={() => changeScore(awayScore, setAwayScore, -1)} disabled={awayScore === null || awayScore === 0} />
+            <ArrowBtn label="Disminuir" down onClick={() => changeScore(awayScore, setAwayScore, -1)} disabled={isLocked || awayScore === null || awayScore === 0} />
           </div>
         </div>
 
@@ -171,6 +196,7 @@ export function PredictionInput({
               onIncrement={() => changeScore(homeScore, setHomeScore, 1)}
               onDecrement={() => changeScore(homeScore, setHomeScore, -1)}
               onChange={v => handleInputChange(v, setHomeScore)}
+              disabled={isLocked}
             />
             <span className="text-xl font-light" style={{ color: 'var(--text-dimmed)' }}>—</span>
             <ScoreInputWithArrows
@@ -178,6 +204,7 @@ export function PredictionInput({
               onIncrement={() => changeScore(awayScore, setAwayScore, 1)}
               onDecrement={() => changeScore(awayScore, setAwayScore, -1)}
               onChange={v => handleInputChange(v, setAwayScore)}
+              disabled={isLocked}
             />
           </div>
           <div className="flex flex-col items-center gap-1">
@@ -226,7 +253,11 @@ export function PredictionInput({
       ) : statusText ? (
         <p
           className="text-center text-xs"
-          style={{ color: status === 'saved' ? 'var(--accent)' : 'var(--text-muted)' }}
+          style={{
+            color: status === 'saved' ? 'var(--accent)'
+                 : status === 'locked' ? '#f59e0b'
+                 : 'var(--text-muted)',
+          }}
         >
           {statusText}
         </p>
@@ -269,15 +300,17 @@ function ScoreInputWithArrows({
   onIncrement,
   onDecrement,
   onChange,
+  disabled = false,
 }: {
   value: number | null
   onIncrement: () => void
   onDecrement: () => void
   onChange: (v: string) => void
+  disabled?: boolean
 }) {
   return (
     <div className="flex flex-col items-center gap-1">
-      <ArrowBtn label="Aumentar" onClick={onIncrement} />
+      <ArrowBtn label="Aumentar" onClick={onIncrement} disabled={disabled} />
       <input
         type="number"
         value={value ?? ''}
@@ -285,14 +318,15 @@ function ScoreInputWithArrows({
         min={0}
         max={99}
         placeholder="—"
-        className="score-input w-14 h-12 text-center text-3xl font-extrabold tabular-nums rounded-lg focus:outline-none"
+        disabled={disabled}
+        className="score-input w-14 h-12 text-center text-3xl font-extrabold tabular-nums rounded-lg focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
           background: 'var(--surface-raised)',
           border: '1px solid var(--border)',
           color: 'var(--text-primary)',
         }}
       />
-      <ArrowBtn label="Disminuir" down onClick={onDecrement} disabled={value === null || value === 0} />
+      <ArrowBtn label="Disminuir" down onClick={onDecrement} disabled={disabled || value === null || value === 0} />
     </div>
   )
 }
