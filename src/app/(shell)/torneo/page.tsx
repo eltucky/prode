@@ -3,6 +3,13 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
+import { computeGroupStatusMap, type GroupStatus } from '@/lib/group-status'
+
+const BADGE_COLORS: Record<GroupStatus, string> = {
+  complete:       '#22c55e',
+  actionRequired: '#ef4444',
+  missed:         '#f59e0b',
+}
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP:         'Fase de Grupos',
@@ -74,6 +81,10 @@ export default async function TorneoPage({
   }) : []
   const predMap = new Map(predictions.map(p => [p.matchId, p]))
 
+  const groupStatusMap = session?.user?.id
+    ? computeGroupStatusMap(matches, new Set(predMap.keys()))
+    : new Map<string, GroupStatus>()
+
   const availableGroups = showingGroupStage
     ? [...new Set(matches.filter(m => m.stage === 'GROUP' && m.groupName).map(m => m.groupName!))].sort()
     : []
@@ -136,19 +147,29 @@ export default async function TorneoPage({
           >
             Todos
           </a>
-          {availableGroups.map(g => (
-            <a
-              key={g}
-              href={groupFilterHref(stageFilter, grupo, g)}
-              className={pillClass(grupoFilter === g)}
-              style={{
-                background: grupoFilter === g ? 'var(--accent)' : 'var(--surface-raised)',
-                color: grupoFilter === g ? '#000' : 'var(--text-muted)',
-              }}
-            >
-              {g}
-            </a>
-          ))}
+          {availableGroups.map(g => {
+            const status = groupStatusMap.get(g)
+            const badgeColor = status ? BADGE_COLORS[status] : undefined
+            return (
+              <a
+                key={g}
+                href={groupFilterHref(stageFilter, grupo, g)}
+                className={`relative ${pillClass(grupoFilter === g)}`}
+                style={{
+                  background: grupoFilter === g ? 'var(--accent)' : 'var(--surface-raised)',
+                  color: grupoFilter === g ? '#000' : 'var(--text-muted)',
+                }}
+              >
+                {g}
+                {badgeColor && (
+                  <span
+                    className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full border-2"
+                    style={{ background: badgeColor, borderColor: 'var(--bg)' }}
+                  />
+                )}
+              </a>
+            )
+          })}
         </div>
       )}
 
