@@ -46,6 +46,12 @@ export default async function TorneoPage({
   const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
   const showingGroupStage = !stageFilter || stageFilter === 'GROUP'
 
+  // Lazy IN_PROGRESS transition: first visitor after match start triggers the update
+  await prisma.match.updateMany({
+    where: { status: 'SCHEDULED', scheduledAt: { lt: new Date() } },
+    data: { status: 'IN_PROGRESS' },
+  })
+
   // Lightweight query: which stages have at least one defined match
   const definedStageRows = await prisma.match.findMany({
     where: { homeTeamId: { not: null }, awayTeamId: { not: null } },
