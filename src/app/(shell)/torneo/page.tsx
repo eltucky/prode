@@ -46,8 +46,22 @@ export default async function TorneoPage({
   const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
   const showingGroupStage = !stageFilter || stageFilter === 'GROUP'
 
+  // Lightweight query: which stages have at least one defined match
+  const definedStageRows = await prisma.match.findMany({
+    where: { homeTeamId: { not: null }, awayTeamId: { not: null } },
+    select: { stage: true },
+    distinct: ['stage'],
+  })
+  const stagesWithMatches = new Set(definedStageRows.map(r => r.stage))
+  const filterableStages = stageOrder.filter(s => stagesWithMatches.has(s))
+  const showStageFilter = filterableStages.length > 1
+
   const matches = await prisma.match.findMany({
-    where: stageFilter ? { stage: stageFilter } : undefined,
+    where: {
+      ...(stageFilter ? { stage: stageFilter } : {}),
+      homeTeamId: { not: null },
+      awayTeamId: { not: null },
+    },
     include: { homeTeam: true, awayTeam: true },
     orderBy: [{ scheduledAt: 'asc' }, { matchNumber: 'asc' }],
   })
@@ -79,32 +93,34 @@ export default async function TorneoPage({
 
   return (
     <div className="space-y-6">
-      {/* Stage filter */}
-      <div className="flex items-center gap-2 flex-wrap">
-        <a
-          href="/torneo"
-          className={pillClass(!stageFilter)}
-          style={{
-            background: !stageFilter ? 'var(--accent)' : 'var(--surface-raised)',
-            color: !stageFilter ? '#000' : 'var(--text-muted)',
-          }}
-        >
-          Todos
-        </a>
-        {stageOrder.map(stage => (
+      {/* Stage filter — only when more than one stage has defined matches */}
+      {showStageFilter && (
+        <div className="flex items-center gap-2 flex-wrap">
           <a
-            key={stage}
-            href={`/torneo?etapa=${stage}`}
-            className={pillClass(stageFilter === stage && !grupoFilter)}
+            href="/torneo"
+            className={pillClass(!stageFilter)}
             style={{
-              background: stageFilter === stage && !grupoFilter ? 'var(--accent)' : 'var(--surface-raised)',
-              color: stageFilter === stage && !grupoFilter ? '#000' : 'var(--text-muted)',
+              background: !stageFilter ? 'var(--accent)' : 'var(--surface-raised)',
+              color: !stageFilter ? '#000' : 'var(--text-muted)',
             }}
           >
-            {STAGE_LABELS[stage]}
+            Todos
           </a>
-        ))}
-      </div>
+          {filterableStages.map(stage => (
+            <a
+              key={stage}
+              href={`/torneo?etapa=${stage}`}
+              className={pillClass(stageFilter === stage && !grupoFilter)}
+              style={{
+                background: stageFilter === stage && !grupoFilter ? 'var(--accent)' : 'var(--surface-raised)',
+                color: stageFilter === stage && !grupoFilter ? '#000' : 'var(--text-muted)',
+              }}
+            >
+              {STAGE_LABELS[stage]}
+            </a>
+          ))}
+        </div>
+      )}
 
       {/* Group filter */}
       {showingGroupStage && availableGroups.length > 0 && (
