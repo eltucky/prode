@@ -47,7 +47,11 @@ export default async function TorneoPage({
   const showingGroupStage = !stageFilter || stageFilter === 'GROUP'
 
   const matches = await prisma.match.findMany({
-    where: stageFilter ? { stage: stageFilter } : undefined,
+    where: {
+      ...(stageFilter ? { stage: stageFilter } : {}),
+      homeTeamId: { not: null },
+      awayTeamId: { not: null },
+    },
     include: { homeTeam: true, awayTeam: true },
     orderBy: [{ scheduledAt: 'asc' }, { matchNumber: 'asc' }],
   })
