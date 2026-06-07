@@ -2,7 +2,7 @@
 'use client'
 
 import { useTransition, useState, useRef, useEffect } from 'react'
-import { savePrediction, deletePrediction } from '@/app/(protected)/torneo/actions'
+import { savePrediction } from '@/app/(protected)/torneo/actions'
 
 type Team = { flag: string; name: string }
 
@@ -34,18 +34,18 @@ export function PredictionInput({
   const [awayScore, setAwayScore] = useState<number | null>(prediction?.awayScore ?? null)
   const [winnerId, setWinnerId] = useState(prediction?.predictedWinnerId ?? '')
   const [status, setStatus] = useState<SaveStatus>('idle')
-  const [confirming, setConfirming] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isFirstRender = useRef(true)
   const wasPending = useRef(false)
   const skipSaved = useRef(false)
+  const isLockedRef = useRef(false)
 
   // Auto-lock when the match lock time arrives on the client
   useEffect(() => {
     const lockAt = new Date(scheduledAt).getTime() - 60 * 1000
     const delay = lockAt - Date.now()
-    if (delay <= 0) { setStatus('locked'); return }
-    const t = setTimeout(() => setStatus('locked'), delay)
+    if (delay <= 0) { isLockedRef.current = true; setStatus('locked'); return }
+    const t = setTimeout(() => { isLockedRef.current = true; setStatus('locked') }, delay)
     return () => clearTimeout(t)
   }, [scheduledAt])
 
@@ -66,7 +66,7 @@ export function PredictionInput({
       isFirstRender.current = false
       return
     }
-    if (status === 'locked') return
+    if (isLockedRef.current) return
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     if (homeScore === null || awayScore === null) {
@@ -85,13 +85,14 @@ export function PredictionInput({
         const result = await savePrediction(fd)
         if (result?.error === 'locked') {
           skipSaved.current = true
+          isLockedRef.current = true
           setStatus('locked')
         }
       })
     }, 500)
 
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
-  }, [homeScore, awayScore, winnerId, matchId, status])
+  }, [homeScore, awayScore, winnerId, matchId])
 
   function changeScore(score: number | null, setter: (v: number | null) => void, delta: 1 | -1) {
     if (delta === 1) {
@@ -108,15 +109,6 @@ export function PredictionInput({
     if (!isNaN(n) && n >= 0 && n <= 99) setter(n)
   }
 
-  function handleDelete() {
-    setConfirming(false)
-    setHomeScore(null)
-    setAwayScore(null)
-    setWinnerId('')
-    setStatus('idle')
-    startTransition(() => { deletePrediction(matchId) })
-  }
-
   const hasPrediction = prediction !== null
   const showKnockoutSelector =
     isKnockout &&
@@ -131,26 +123,20 @@ export function PredictionInput({
   const statusText: string | null = {
     idle: hasPrediction ? null : 'Tocá ▲ para empezar',
     partial: 'Completá el otro score',
-    saving: 'Guardando...',
-    saved: '✓ Guardado',
+    saving: null,
+    saved: null,
     locked: 'Este partido ya cerró',
   }[status]
 
   return (
     <div className="space-y-3">
       <div className="relative">
-        {hasPrediction && !confirming && (
-          <button
-            type="button"
-            onClick={() => setConfirming(true)}
-            aria-label="Borrar pronóstico"
-            className="absolute top-0 right-0 text-sm leading-none transition-colors"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = '#ef4444')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            🗑
-          </button>
+        {(status === 'saving' || status === 'saved') && (
+          <span
+            aria-label={status === 'saving' ? 'Guardando' : 'Guardado'}
+            className={`absolute bottom-1 right-1 w-2 h-2 rounded-full pointer-events-none${status === 'saving' ? ' animate-pulse' : ''}`}
+            style={{ background: 'var(--accent)' }}
+          />
         )}
 
         {/* Mobile */}
@@ -233,35 +219,16 @@ export function PredictionInput({
         </select>
       )}
 
-      {confirming ? (
-        <div className="flex items-center justify-center gap-3 text-xs">
-          <span style={{ color: 'var(--text-muted)' }}>¿Borrar pronóstico?</span>
-          <button
-            onClick={handleDelete}
-            className="font-semibold"
-            style={{ color: '#ef4444' }}
-          >
-            Sí
-          </button>
-          <button
-            onClick={() => setConfirming(false)}
-            style={{ color: 'var(--text-muted)' }}
-          >
-            No
-          </button>
-        </div>
-      ) : statusText ? (
+      {statusText && (
         <p
           className="text-center text-xs"
           style={{
-            color: status === 'saved' ? 'var(--accent)'
-                 : status === 'locked' ? '#f59e0b'
-                 : 'var(--text-muted)',
+            color: status === 'locked' ? '#f59e0b' : 'var(--text-muted)',
           }}
         >
           {statusText}
         </p>
-      ) : null}
+      )}
     </div>
   )
 }
