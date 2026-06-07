@@ -11,8 +11,9 @@ export default async function LoginPage({
   if (session) redirect('/grupos')
 
   const { callbackUrl } = await searchParams
-  // Only allow relative URLs to prevent open redirect
-  const redirectTo = callbackUrl?.startsWith('/') ? callbackUrl : '/grupos'
+  // Only allow relative paths (not protocol-relative //host) to prevent open redirect
+  const isValid = callbackUrl?.startsWith('/') && !callbackUrl.startsWith('//')
+  const redirectTo = isValid ? callbackUrl : '/grupos'
 
   return (
     <main
