@@ -1,0 +1,100 @@
+import { auth } from '@/auth'
+import { prisma } from '@/lib/db'
+import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { SubmitButton } from '@/components/submit-button'
+import { joinViaInvite } from './actions'
+
+export default async function InvitePage({
+  params,
+}: {
+  params: Promise<{ code: string }>
+}) {
+  const { code } = await params
+  const session = await auth()
+
+  const group = await prisma.group.findUnique({
+    where: { inviteCode: code },
+    include: { _count: { select: { members: true } } },
+  })
+
+  // State 1: invalid code
+  if (!group) {
+    return (
+      <div className="max-w-sm mx-auto text-center space-y-4 py-16">
+        <div className="text-4xl">🔗</div>
+        <h1 className="text-xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
+          Link inválido
+        </h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          Este link de invitación no es válido o ya no está disponible.
+        </p>
+        <Link
+          href="/torneo"
+          className="inline-block text-sm font-medium"
+          style={{ color: 'var(--accent)' }}
+        >
+          Ver el torneo →
+        </Link>
+      </div>
+    )
+  }
+
+  // State 2: already a member → redirect silently
+  if (session?.user?.id) {
+    const membership = await prisma.groupMember.findUnique({
+      where: { groupId_userId: { groupId: group.id, userId: session.user.id } },
+    })
+    if (membership) redirect(`/grupos/${group.id}`)
+  }
+
+  const memberCount = group._count.members
+
+  return (
+    <div className="max-w-sm mx-auto text-center space-y-6 py-16">
+      <div className="text-4xl">🏆</div>
+      <div>
+        <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          {group.name}
+        </h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+          {memberCount} {memberCount === 1 ? 'participante' : 'participantes'}
+        </p>
+      </div>
+
+      <div
+        className="rounded-2xl p-5 space-y-4"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
+          {session
+            ? 'Uniéndote a este grupo podrás competir con sus miembros.'
+            : 'Iniciá sesión para unirte a este grupo y competir.'}
+        </p>
+
+        {/* State 4: logged in, not yet a member */}
+        {session && (
+          <form action={joinViaInvite.bind(null, code)}>
+            <SubmitButton
+              className="w-full rounded-xl px-4 py-3 text-sm font-bold transition-colors"
+              style={{ background: 'var(--accent)', color: '#000' } as React.CSSProperties}
+            >
+              Unirse al grupo
+            </SubmitButton>
+          </form>
+        )}
+
+        {/* State 3: not logged in */}
+        {!session && (
+          <Link
+            href={`/login?callbackUrl=/invite/${code}`}
+            className="block w-full rounded-xl px-4 py-3 text-sm font-bold text-center transition-colors"
+            style={{ background: 'var(--accent)', color: '#000' }}
+          >
+            Iniciar sesión para unirte
+          </Link>
+        )}
+      </div>
+    </div>
+  )
+}
