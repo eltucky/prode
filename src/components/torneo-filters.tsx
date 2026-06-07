@@ -64,7 +64,7 @@ export function TorneoFilters({
   }
 
   const pillClass = (active: boolean) =>
-    `relative text-xs px-3 py-1.5 rounded-full font-medium transition-opacity ${active ? 'font-bold' : ''}`
+    `relative text-xs px-3 py-1.5 rounded-full font-medium transition-opacity cursor-pointer ${active ? 'font-bold' : ''}`
 
   const pending = (href: string) => isPending && pendingHref === href
 
