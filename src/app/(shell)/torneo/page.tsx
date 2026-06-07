@@ -3,19 +3,8 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
+import { TorneoFilters } from '@/components/torneo-filters'
 import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
-
-const BADGE_COLORS: Record<GroupStatus, string> = {
-  complete:       '#22c55e',
-  actionRequired: '#ef4444',
-  missed:         '#f59e0b',
-}
-
-const BADGE_LABELS: Record<GroupStatus, string> = {
-  complete:       'Grupo completo',
-  actionRequired: 'Pronósticos pendientes',
-  missed:         'Pronósticos perdidos',
-}
 
 const STAGE_LABELS: Record<MatchStage, string> = {
   GROUP:         'Fase de Grupos',
@@ -33,14 +22,6 @@ const KNOCKOUT_STAGES: MatchStage[] = [
 
 function isLocked(scheduledAt: Date): boolean {
   return Date.now() >= scheduledAt.getTime() - LOCK_THRESHOLD_MS
-}
-
-function groupFilterHref(stageFilter: MatchStage | undefined, grupo: string | undefined, target: string | undefined): string {
-  const params = new URLSearchParams()
-  if (stageFilter) params.set('etapa', stageFilter)
-  else params.set('etapa', 'GROUP')
-  if (target) params.set('grupo', target)
-  return `/torneo?${params.toString()}`
 }
 
 const stageOrder: MatchStage[] = [
@@ -112,80 +93,17 @@ export default async function TorneoPage({
     return acc
   }, {})
 
-  const pillClass = (active: boolean) =>
-    `text-xs px-3 py-1.5 rounded-full font-medium transition-colors ${active ? 'font-bold' : ''}`
-
   return (
     <div className="space-y-6">
-      {/* Stage filter — only when more than one stage has defined matches */}
-      {showStageFilter && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <a
-            href="/torneo"
-            className={pillClass(!stageFilter)}
-            style={{
-              background: !stageFilter ? 'var(--accent)' : 'var(--surface-raised)',
-              color: !stageFilter ? '#000' : 'var(--text-muted)',
-            }}
-          >
-            Todos
-          </a>
-          {filterableStages.map(stage => (
-            <a
-              key={stage}
-              href={`/torneo?etapa=${stage}`}
-              className={pillClass(stageFilter === stage && !grupoFilter)}
-              style={{
-                background: stageFilter === stage && !grupoFilter ? 'var(--accent)' : 'var(--surface-raised)',
-                color: stageFilter === stage && !grupoFilter ? '#000' : 'var(--text-muted)',
-              }}
-            >
-              {STAGE_LABELS[stage]}
-            </a>
-          ))}
-        </div>
-      )}
-
-      {/* Group filter */}
-      {showingGroupStage && availableGroups.length > 0 && (
-        <div className="flex gap-2 flex-wrap items-center pb-2">
-          <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>Grupo:</span>
-          <a
-            href={stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'}
-            className={pillClass(!grupoFilter)}
-            style={{
-              background: !grupoFilter ? 'var(--accent)' : 'var(--surface-raised)',
-              color: !grupoFilter ? '#000' : 'var(--text-muted)',
-            }}
-          >
-            Todos
-          </a>
-          {availableGroups.map(g => {
-            const status = groupStatusMap.get(g)
-            const badgeColor = status ? BADGE_COLORS[status] : undefined
-            return (
-              <a
-                key={g}
-                href={groupFilterHref(stageFilter, grupo, g)}
-                className={`relative ${pillClass(grupoFilter === g)}`}
-                style={{
-                  background: grupoFilter === g ? 'var(--accent)' : 'var(--surface-raised)',
-                  color: grupoFilter === g ? '#000' : 'var(--text-muted)',
-                }}
-              >
-                {g}
-                {badgeColor && status && (
-                  <span
-                    className="absolute -bottom-1 -right-1 w-2.5 h-2.5 rounded-full border-2"
-                    style={{ background: badgeColor, borderColor: 'var(--bg)' }}
-                    aria-label={BADGE_LABELS[status]}
-                  />
-                )}
-              </a>
-            )
-          })}
-        </div>
-      )}
+      <TorneoFilters
+        showStageFilter={showStageFilter}
+        filterableStages={filterableStages}
+        stageFilter={stageFilter}
+        showingGroupStage={showingGroupStage}
+        availableGroups={availableGroups}
+        grupoFilter={grupoFilter}
+        groupStatusMap={Object.fromEntries(groupStatusMap)}
+      />
 
       {/* Match list */}
       {stageOrder.filter(s => byStage[s]?.length).map(stage => (
