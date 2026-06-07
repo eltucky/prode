@@ -2,9 +2,18 @@
 import { auth, signIn } from '@/auth'
 import { redirect } from 'next/navigation'
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>
+}) {
   const session = await auth()
   if (session) redirect('/grupos')
+
+  const { callbackUrl } = await searchParams
+  // Only allow relative paths (not protocol-relative //host) to prevent open redirect
+  const isValid = callbackUrl?.startsWith('/') && !callbackUrl.startsWith('//')
+  const redirectTo = isValid ? callbackUrl : '/grupos'
 
   return (
     <main
@@ -29,7 +38,7 @@ export default async function LoginPage() {
           <form
             action={async () => {
               'use server'
-              await signIn('google', { redirectTo: '/grupos' })
+              await signIn('google', { redirectTo })
             }}
           >
             <button

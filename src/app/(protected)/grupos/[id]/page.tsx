@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { InviteCopyButton } from '@/components/invite-copy-button'
 
 export default async function GrupoPage({
   params,
@@ -26,8 +27,6 @@ export default async function GrupoPage({
 
   const isMember = group.members.some(m => m.userId === session?.user?.id)
   if (!isMember) redirect('/grupos')
-
-  const isOwner = group.ownerId === session?.user?.id
 
   const memberIds = group.members.map(m => m.userId)
   const predictions = await prisma.prediction.findMany({
@@ -63,17 +62,7 @@ export default async function GrupoPage({
           </p>
         </div>
 
-        {isOwner && (
-          <div
-            className="rounded-xl px-4 py-3"
-            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-          >
-            <p className="text-xs mb-1" style={{ color: 'var(--text-muted)' }}>Código de invitación</p>
-            <p className="font-mono text-sm font-semibold select-all" style={{ color: 'var(--text-primary)' }}>
-              {group.inviteCode}
-            </p>
-          </div>
-        )}
+        <InviteCopyButton inviteCode={group.inviteCode} />
       </div>
 
       {/* Standings table */}
