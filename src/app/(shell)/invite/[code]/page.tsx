@@ -22,7 +22,7 @@ export default async function InvitePage({
   if (!group) {
     return (
       <div className="max-w-sm mx-auto text-center space-y-4 py-16">
-        <div className="text-4xl">🔗</div>
+        <div className="text-4xl" aria-hidden="true">🔗</div>
         <h1 className="text-xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
           Link inválido
         </h1>
@@ -52,7 +52,7 @@ export default async function InvitePage({
 
   return (
     <div className="max-w-sm mx-auto text-center space-y-6 py-16">
-      <div className="text-4xl">🏆</div>
+      <div className="text-4xl" aria-hidden="true">🏆</div>
       <div>
         <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
           {group.name}
@@ -77,7 +77,7 @@ export default async function InvitePage({
           <form action={joinViaInvite.bind(null, code)}>
             <SubmitButton
               className="w-full rounded-xl px-4 py-3 text-sm font-bold transition-colors"
-              style={{ background: 'var(--accent)', color: '#000' } as React.CSSProperties}
+              style={{ background: 'var(--accent)', color: '#000' }}
             >
               Unirse al grupo
             </SubmitButton>
