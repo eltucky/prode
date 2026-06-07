@@ -1,20 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export function InviteCopyButton({ inviteCode }: { inviteCode: string }) {
   const [copied, setCopied] = useState(false)
   const [url, setUrl] = useState('')
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setUrl(`${window.location.origin}/invite/${inviteCode}`)
   }, [inviteCode])
 
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
+
   async function handleCopy() {
     if (!url) return
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      timeoutRef.current = setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy invite URL:', err)
+    }
   }
 
   return (
@@ -32,6 +43,7 @@ export function InviteCopyButton({ inviteCode }: { inviteCode: string }) {
         </span>
         <button
           onClick={handleCopy}
+          disabled={copied}
           className="text-xs px-3 py-1.5 rounded-lg shrink-0 font-medium cursor-pointer transition-colors"
           style={{ background: 'var(--accent)', color: '#000' }}
         >
