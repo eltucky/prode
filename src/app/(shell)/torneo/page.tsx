@@ -103,34 +103,33 @@ export default async function TorneoPage({
         availableGroups={availableGroups}
         grupoFilter={grupoFilter}
         groupStatusMap={Object.fromEntries(groupStatusMap)}
-      />
-
-      {/* Match list */}
-      {stageOrder.filter(s => byStage[s]?.length).map(stage => (
-        <section key={stage}>
-          <h2 className="text-base font-bold mb-3 uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
-            {STAGE_LABELS[stage]}
-            {stage === 'GROUP' && grupoFilter && (
-              <span className="ml-2 font-normal normal-case" style={{ color: 'var(--text-dimmed)' }}>
-                — Grupo {grupoFilter}
-              </span>
-            )}
-          </h2>
-          <div className="space-y-2">
-            {byStage[stage].map(match => (
-              <MatchCard
-                key={match.id}
-                match={match}
-                prediction={predMap.get(match.id) ?? null}
-                hasSession={!!session}
-                showGroupLabel={!grupoFilter}
-                locked={isLocked(match.scheduledAt)}
-                isKnockout={KNOCKOUT_STAGES.includes(match.stage)}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+      >
+        {stageOrder.filter(s => byStage[s]?.length).map(stage => (
+          <section key={stage}>
+            <h2 className="text-base font-bold mb-3 uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              {STAGE_LABELS[stage]}
+              {stage === 'GROUP' && grupoFilter && (
+                <span className="ml-2 font-normal normal-case" style={{ color: 'var(--text-dimmed)' }}>
+                  — Grupo {grupoFilter}
+                </span>
+              )}
+            </h2>
+            <div className="space-y-2">
+              {byStage[stage].map(match => (
+                <MatchCard
+                  key={match.id}
+                  match={match}
+                  prediction={predMap.get(match.id) ?? null}
+                  hasSession={!!session}
+                  showGroupLabel={!grupoFilter}
+                  locked={isLocked(match.scheduledAt)}
+                  isKnockout={KNOCKOUT_STAGES.includes(match.stage)}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
+      </TorneoFilters>
     </div>
   )
 }

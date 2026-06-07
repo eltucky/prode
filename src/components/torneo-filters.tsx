@@ -1,9 +1,10 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useTransition, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { type MatchStage } from '@prisma/client'
 import { type GroupStatus } from '@/lib/group-status'
+import { Skeleton } from '@/components/skeleton'
 
 const BADGE_COLORS: Record<GroupStatus, string> = {
   complete:       '#22c55e',
@@ -43,6 +44,7 @@ type Props = {
   availableGroups: string[]
   grupoFilter: string | undefined
   groupStatusMap: Record<string, GroupStatus>
+  children: React.ReactNode
 }
 
 export function TorneoFilters({
@@ -53,20 +55,25 @@ export function TorneoFilters({
   availableGroups,
   grupoFilter,
   groupStatusMap,
+  children,
 }: Props) {
   const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [pendingHref, setPendingHref] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const [isNavigating, setIsNavigating] = useState(false)
+
+  // Reset when the URL actually changes (navigation complete)
+  const searchParamsStr = searchParams.toString()
+  useEffect(() => {
+    setIsNavigating(false)
+  }, [searchParamsStr])
 
   function navigate(href: string) {
-    setPendingHref(href)
-    startTransition(() => router.push(href))
+    setIsNavigating(true)
+    router.push(href)
   }
 
   const pillClass = (active: boolean) =>
-    `relative text-xs px-3 py-1.5 rounded-full font-medium transition-opacity cursor-pointer ${active ? 'font-bold' : ''}`
-
-  const pending = (href: string) => isPending && pendingHref === href
+    `relative text-xs px-3 py-1.5 rounded-full font-medium cursor-pointer ${active ? 'font-bold' : ''}`
 
   return (
     <>
@@ -74,7 +81,6 @@ export function TorneoFilters({
         <div className="flex items-center gap-2 flex-wrap">
           <Pill
             active={!stageFilter}
-            loading={pending('/torneo')}
             onClick={() => navigate('/torneo')}
             pillClass={pillClass}
           >
@@ -86,7 +92,6 @@ export function TorneoFilters({
               <Pill
                 key={stage}
                 active={stageFilter === stage && !grupoFilter}
-                loading={pending(href)}
                 onClick={() => navigate(href)}
                 pillClass={pillClass}
               >
@@ -105,7 +110,6 @@ export function TorneoFilters({
             return (
               <Pill
                 active={!grupoFilter}
-                loading={pending(href)}
                 onClick={() => navigate(href)}
                 pillClass={pillClass}
               >
@@ -121,7 +125,6 @@ export function TorneoFilters({
               <Pill
                 key={g}
                 active={grupoFilter === g}
-                loading={pending(href)}
                 onClick={() => navigate(href)}
                 pillClass={pillClass}
               >
@@ -138,19 +141,70 @@ export function TorneoFilters({
           })}
         </div>
       )}
+
+      {isNavigating ? <MatchListSkeleton /> : children}
     </>
+  )
+}
+
+function MatchListSkeleton() {
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className="rounded-xl px-4 py-3 space-y-3"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
+          <div className="flex items-center justify-between gap-4">
+            <Skeleton className="h-4 w-48" />
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
+          <div className="flex items-center justify-between md:hidden py-1">
+            <div className="flex flex-col items-center gap-1">
+              <Skeleton className="w-7 h-5" />
+              <Skeleton className="w-9 h-9 rounded-full" />
+              <Skeleton className="w-7 h-5" />
+            </div>
+            <div className="flex items-center gap-3">
+              <Skeleton className="w-8 h-10" />
+              <Skeleton className="w-3 h-3 rounded-full" />
+              <Skeleton className="w-8 h-10" />
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <Skeleton className="w-7 h-5" />
+              <Skeleton className="w-9 h-9 rounded-full" />
+              <Skeleton className="w-7 h-5" />
+            </div>
+          </div>
+          <div className="hidden md:flex items-center">
+            <div className="flex-1 flex flex-col items-center gap-2">
+              <Skeleton className="w-9 h-9 rounded-full" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <Skeleton className="w-14 h-12 rounded-lg" />
+              <Skeleton className="w-3 h-3 rounded-full" />
+              <Skeleton className="w-14 h-12 rounded-lg" />
+            </div>
+            <div className="flex-1 flex flex-col items-center gap-2">
+              <Skeleton className="w-9 h-9 rounded-full" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 
 function Pill({
   active,
-  loading,
   onClick,
   pillClass,
   children,
 }: {
   active: boolean
-  loading: boolean
   onClick: () => void
   pillClass: (active: boolean) => string
   children: React.ReactNode
@@ -165,9 +219,6 @@ function Pill({
       }}
     >
       {children}
-      {loading && (
-        <span className="absolute inset-0 rounded-full ring-2 ring-current animate-pulse pointer-events-none" />
-      )}
     </button>
   )
 }
