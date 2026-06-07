@@ -27,9 +27,14 @@ export async function joinViaInvite(code: string) {
   })
 
   if (!existing) {
-    await prisma.groupMember.create({
-      data: { groupId: group.id, userId: session.user.id },
-    })
+    try {
+      await prisma.groupMember.create({
+        data: { groupId: group.id, userId: session.user.id },
+      })
+    } catch (e: unknown) {
+      // P2002 = unique constraint violation — another request joined concurrently
+      if ((e as { code?: string })?.code !== 'P2002') throw e
+    }
   }
 
   revalidatePath('/grupos')

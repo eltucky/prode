@@ -33,4 +33,18 @@ describe('InviteCopyButton', () => {
     expect(screen.getByRole('button', { name: '¡Copiado!' })).toBeInTheDocument()
     vi.useRealTimers()
   })
+
+  it('resets button to Copiar after 2 seconds', async () => {
+    vi.useFakeTimers()
+    render(<InviteCopyButton inviteCode="abc123" />)
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Copiar' }))
+    })
+    expect(screen.getByRole('button', { name: '¡Copiado!' })).toBeInTheDocument()
+    await act(async () => {
+      vi.advanceTimersByTime(2001)
+    })
+    expect(screen.getByRole('button', { name: 'Copiar' })).toBeInTheDocument()
+    vi.useRealTimers()
+  })
 })
