@@ -28,8 +28,6 @@ export default async function GrupoPage({
   const isMember = group.members.some(m => m.userId === session?.user?.id)
   if (!isMember) redirect('/grupos')
 
-  const isOwner = group.ownerId === session?.user?.id
-
   const memberIds = group.members.map(m => m.userId)
   const predictions = await prisma.prediction.findMany({
     where: { userId: { in: memberIds }, points: { not: null } },
