@@ -4,7 +4,7 @@ function resolveRedirect(
   isLoggedIn: boolean,
   pathname: string
 ): 'login' | 'grupos' | null {
-  const isPublic = pathname === '/' || pathname === '/login' || pathname === '/reglas' || pathname === '/torneo' || pathname.startsWith('/torneo?') || pathname.startsWith('/api/auth')
+  const isPublic = pathname === '/' || pathname === '/login' || pathname === '/reglas' || pathname === '/torneo' || pathname.startsWith('/torneo?') || pathname.startsWith('/api/auth') || pathname.startsWith('/invite/')
   if (!isLoggedIn && !isPublic) return 'login'
   if (isLoggedIn && pathname === '/login') return 'grupos'
   return null
@@ -45,5 +45,9 @@ describe('lógica de redirección del middleware', () => {
 
   it('permite usuario autenticado en ruta protegida', () => {
     expect(resolveRedirect(true, '/grupos')).toBeNull()
+  })
+
+  it('permite usuario no autenticado en /invite/', () => {
+    expect(resolveRedirect(false, '/invite/abc123')).toBeNull()
   })
 })
