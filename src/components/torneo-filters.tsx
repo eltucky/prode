@@ -158,8 +158,7 @@ function Pill({
   return (
     <button
       onClick={onClick}
-      disabled={loading}
-      className={`${pillClass(active)} ${loading ? 'opacity-60' : ''}`}
+      className={pillClass(active)}
       style={{
         background: active ? 'var(--accent)' : 'var(--surface-raised)',
         color: active ? '#000' : 'var(--text-muted)',
@@ -167,10 +166,7 @@ function Pill({
     >
       {children}
       {loading && (
-        <span
-          className="inline-block ml-1.5 w-2 h-2 rounded-full animate-pulse align-middle"
-          style={{ background: 'currentColor' }}
-        />
+        <span className="absolute inset-0 rounded-full ring-2 ring-current animate-pulse pointer-events-none" />
       )}
     </button>
   )
