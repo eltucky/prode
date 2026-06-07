@@ -27,9 +27,9 @@ export default function GrupoLoading() {
         <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
           <Skeleton className="h-4 w-40" />
         </div>
-        <div className="divide-y" style={{ borderColor: 'var(--border)' }}>
+        <div>
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4 px-4 py-2">
+            <div key={i} className="flex items-center gap-4 px-4 py-2" style={{ borderTop: i > 0 ? '1px solid var(--border)' : 'none' }}>
               <Skeleton className="h-4 w-4" />
               <div className="flex items-center gap-2 flex-1">
                 <Skeleton className="w-6 h-6 rounded-full shrink-0" />
