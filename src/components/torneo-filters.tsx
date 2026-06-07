@@ -1,7 +1,6 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useTransition, useState } from 'react'
 import { type MatchStage } from '@prisma/client'
 import { type GroupStatus } from '@/lib/group-status'
 
@@ -55,18 +54,9 @@ export function TorneoFilters({
   groupStatusMap,
 }: Props) {
   const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [pendingHref, setPendingHref] = useState<string | null>(null)
-
-  function navigate(href: string) {
-    setPendingHref(href)
-    startTransition(() => router.push(href))
-  }
 
   const pillClass = (active: boolean) =>
-    `relative text-xs px-3 py-1.5 rounded-full font-medium transition-opacity cursor-pointer ${active ? 'font-bold' : ''}`
-
-  const pending = (href: string) => isPending && pendingHref === href
+    `text-xs px-3 py-1.5 rounded-full font-medium cursor-pointer ${active ? 'font-bold' : ''}`
 
   return (
     <>
@@ -74,8 +64,7 @@ export function TorneoFilters({
         <div className="flex items-center gap-2 flex-wrap">
           <Pill
             active={!stageFilter}
-            loading={pending('/torneo')}
-            onClick={() => navigate('/torneo')}
+            onClick={() => router.push('/torneo')}
             pillClass={pillClass}
           >
             Todos
@@ -86,8 +75,7 @@ export function TorneoFilters({
               <Pill
                 key={stage}
                 active={stageFilter === stage && !grupoFilter}
-                loading={pending(href)}
-                onClick={() => navigate(href)}
+                onClick={() => router.push(href)}
                 pillClass={pillClass}
               >
                 {STAGE_LABELS[stage]}
@@ -105,8 +93,7 @@ export function TorneoFilters({
             return (
               <Pill
                 active={!grupoFilter}
-                loading={pending(href)}
-                onClick={() => navigate(href)}
+                onClick={() => router.push(href)}
                 pillClass={pillClass}
               >
                 Todos
@@ -121,8 +108,7 @@ export function TorneoFilters({
               <Pill
                 key={g}
                 active={grupoFilter === g}
-                loading={pending(href)}
-                onClick={() => navigate(href)}
+                onClick={() => router.push(href)}
                 pillClass={pillClass}
               >
                 {g}
@@ -144,13 +130,11 @@ export function TorneoFilters({
 
 function Pill({
   active,
-  loading,
   onClick,
   pillClass,
   children,
 }: {
   active: boolean
-  loading: boolean
   onClick: () => void
   pillClass: (active: boolean) => string
   children: React.ReactNode
@@ -165,9 +149,6 @@ function Pill({
       }}
     >
       {children}
-      {loading && (
-        <span className="absolute inset-0 rounded-full ring-2 ring-current animate-pulse pointer-events-none" />
-      )}
     </button>
   )
 }
