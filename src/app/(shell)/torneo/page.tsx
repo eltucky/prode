@@ -5,7 +5,7 @@ import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
 import { TorneoFilters } from '@/components/torneo-filters'
 import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
-import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n'
+import { getLocale, getDictionary, type Dictionary, t } from '@/lib/i18n'
 
 const KNOCKOUT_STAGES: MatchStage[] = [
   'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
@@ -118,7 +118,7 @@ export default async function TorneoPage({
               {STAGE_LABELS[stage]}
               {stage === 'GROUP' && grupoFilter && (
                 <span className="ml-2 font-normal normal-case" style={{ color: 'var(--text-dimmed)' }}>
-                  — Grupo {grupoFilter}
+                  — {t(dict.torneo.groupLabel, { name: grupoFilter })}
                 </span>
               )}
             </h2>

@@ -182,7 +182,7 @@ export default async function GrupoPage({
                 className="text-xs px-2 py-0.5 rounded-full shrink-0"
                 style={{ background: 'var(--surface-raised)', color: 'var(--text-muted)' }}
               >
-                Admin
+                {dict.grupoDetail.adminBadge}
               </span>
             )}
           </div>

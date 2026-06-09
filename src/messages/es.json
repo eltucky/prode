@@ -40,7 +40,8 @@
     "tableCorrect": "Aciertos",
     "inviteTitle": "Invitar amigos",
     "copyButton": "Copiar",
-    "copied": "¡Copiado!"
+    "copied": "¡Copiado!",
+    "adminBadge": "Admin"
   },
   "torneo": {
     "stageGroup": "Fase de Grupos",

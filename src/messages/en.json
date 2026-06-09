@@ -40,7 +40,8 @@
     "tableCorrect": "Correct",
     "inviteTitle": "Invite friends",
     "copyButton": "Copy",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "adminBadge": "Admin"
   },
   "torneo": {
     "stageGroup": "Group Stage",
