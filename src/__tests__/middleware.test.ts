@@ -51,3 +51,40 @@ describe('lógica de redirección del middleware', () => {
     expect(resolveRedirect(false, '/invite/abc123')).toBeNull()
   })
 })
+
+// ─── Locale resolver ──────────────────────────────────────────────────────────
+
+function resolveLocale(cookieValue: string | undefined, acceptLanguage: string): string {
+  if (cookieValue === 'es' || cookieValue === 'en') return cookieValue
+  const firstTag = acceptLanguage.split(',')[0].split(';')[0].trim()
+  const code = firstTag.split('-')[0].toLowerCase()
+  if (code === 'es' || code === 'en') return code
+  return 'es'
+}
+
+describe('resolveLocale()', () => {
+  it('returns cookie value when valid', () => {
+    expect(resolveLocale('en', '')).toBe('en')
+    expect(resolveLocale('es', '')).toBe('es')
+  })
+
+  it('ignores invalid cookie value and falls back to Accept-Language', () => {
+    expect(resolveLocale('fr', 'en-US,en;q=0.9')).toBe('en')
+  })
+
+  it('parses Accept-Language with quality values', () => {
+    expect(resolveLocale(undefined, 'en-US,en;q=0.9,es;q=0.8')).toBe('en')
+  })
+
+  it('parses Accept-Language with region tag', () => {
+    expect(resolveLocale(undefined, 'es-AR,es;q=0.9')).toBe('es')
+  })
+
+  it('defaults to es when no match', () => {
+    expect(resolveLocale(undefined, 'fr-FR,fr;q=0.9')).toBe('es')
+  })
+
+  it('defaults to es when Accept-Language is empty', () => {
+    expect(resolveLocale(undefined, '')).toBe('es')
+  })
+})
