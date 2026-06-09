@@ -4,9 +4,13 @@ import Image from 'next/image'
 import { auth, signOut } from '@/auth'
 import { SubmitButton } from '@/components/submit-button'
 import { NavLinks } from '@/components/nav-links'
+import { LocaleSwitcher } from '@/components/locale-switcher'
+import { getLocale, getDictionary } from '@/lib/i18n'
 
 export default async function Navbar() {
   const session = await auth()
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
 
   return (
     <nav
@@ -30,6 +34,7 @@ export default async function Navbar() {
 
       {session?.user ? (
         <div className="flex items-center gap-2 md:gap-4">
+          <LocaleSwitcher />
           <div className="hidden md:flex items-center gap-4">
             <NavLinks isSuperAdmin={session.user.isSuperAdmin ?? false} />
           </div>
@@ -60,20 +65,21 @@ export default async function Navbar() {
               className="hidden md:block text-sm transition-colors"
               style={{ color: 'var(--text-muted)' } as React.CSSProperties}
             >
-              Salir
+              {dict.nav.signOut}
             </SubmitButton>
           </form>
         </div>
       ) : (
         <div className="flex items-center gap-4">
-          {(['Torneo', 'Reglas'] as const).map(label => (
+          <LocaleSwitcher />
+          {(['torneo', 'reglas'] as const).map((key) => (
             <Link
-              key={label}
-              href={`/${label.toLowerCase()}`}
+              key={key}
+              href={`/${key}`}
               className="text-sm"
               style={{ color: 'var(--text-muted)' }}
             >
-              {label}
+              {dict.nav[key]}
             </Link>
           ))}
           <Link
@@ -81,7 +87,7 @@ export default async function Navbar() {
             className="text-sm"
             style={{ color: 'var(--text-muted)' }}
           >
-            Iniciar sesión
+            {dict.nav.signIn}
           </Link>
         </div>
       )}
