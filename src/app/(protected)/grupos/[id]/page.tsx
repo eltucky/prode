@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { InviteCopyButton } from '@/components/invite-copy-button'
+import { getLocale, getDictionary } from '@/lib/i18n'
 
 export default async function GrupoPage({
   params,
@@ -12,6 +13,9 @@ export default async function GrupoPage({
 }) {
   const { id } = await params
   const session = await auth()
+
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
 
   const group = await prisma.group.findUnique({
     where: { id },
@@ -51,14 +55,14 @@ export default async function GrupoPage({
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <Link href="/grupos" className="text-sm transition-colors" style={{ color: 'var(--text-muted)' }}>
-            ← Mis grupos
+            {dict.grupoDetail.back}
           </Link>
           <h1 className="text-xl font-extrabold tracking-tight mt-1" style={{ color: 'var(--text-primary)' }}>
             {group.name}
           </h1>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {group.members.length}{' '}
-            {group.members.length === 1 ? 'participante' : 'participantes'}
+            {group.members.length === 1 ? dict.grupoDetail.memberSingular : dict.grupoDetail.memberPlural}
           </p>
         </div>
 
@@ -72,13 +76,13 @@ export default async function GrupoPage({
       >
         <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
           <h2 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-            Tabla de posiciones
+            {dict.grupoDetail.standingsTitle}
           </h2>
         </div>
         <table className="w-full text-sm">
           <thead style={{ background: 'var(--surface-raised)' }}>
             <tr>
-              {['#', 'Participante', 'Pts', 'Aciertos'].map((h, i) => (
+              {[dict.grupoDetail.tableRank, dict.grupoDetail.tableParticipant, dict.grupoDetail.tablePoints, dict.grupoDetail.tableCorrect].map((h, i) => (
                 <th
                   key={h}
                   className={`px-4 py-2 text-xs font-semibold uppercase ${i === 0 ? 'text-left w-8' : i === 1 ? 'text-left' : i === 3 ? 'text-right hidden sm:table-cell' : 'text-right'}`}

@@ -1,6 +1,7 @@
 // src/app/login/page.tsx
 import { auth, signIn } from '@/auth'
 import { redirect } from 'next/navigation'
+import { getLocale, getDictionary } from '@/lib/i18n'
 
 export default async function LoginPage({
   searchParams,
@@ -11,9 +12,11 @@ export default async function LoginPage({
   if (session) redirect('/grupos')
 
   const { callbackUrl } = await searchParams
-  // Only allow relative paths (not protocol-relative //host) to prevent open redirect
   const isValid = callbackUrl?.startsWith('/') && !callbackUrl.startsWith('//')
   const redirectTo = isValid ? callbackUrl : '/grupos'
+
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
 
   return (
     <main
@@ -24,10 +27,10 @@ export default async function LoginPage({
         <div>
           <div className="text-5xl mb-3">⚽</div>
           <h1 className="text-2xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-            Prode Mundial 2026
+            {dict.login.title}
           </h1>
           <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-            Jugá con tus amigos
+            {dict.login.subtitle}
           </p>
         </div>
 
@@ -52,7 +55,7 @@ export default async function LoginPage({
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              Continuar con Google
+              {dict.login.continueWithGoogle}
             </button>
           </form>
 
@@ -62,13 +65,13 @@ export default async function LoginPage({
               className="block w-full text-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors"
               style={{ background: 'var(--surface-raised)', border: '1px solid var(--border)', color: 'var(--text-muted)' }}
             >
-              Preview login
+              {dict.login.previewLogin}
             </a>
           )}
         </div>
 
         <p className="text-xs" style={{ color: 'var(--text-dimmed)' }}>
-          Al ingresar aceptás las reglas del torneo
+          {dict.login.terms}
         </p>
       </div>
     </main>

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { SubmitButton } from '@/components/submit-button'
 import { joinViaInvite } from './actions'
+import { getLocale, getDictionary } from '@/lib/i18n'
 
 export default async function InvitePage({
   params,
@@ -12,6 +13,9 @@ export default async function InvitePage({
 }) {
   const { code } = await params
   const session = await auth()
+
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
 
   const group = await prisma.group.findUnique({
     where: { inviteCode: code },
@@ -24,17 +28,17 @@ export default async function InvitePage({
       <div className="max-w-sm mx-auto text-center space-y-4 py-16">
         <div className="text-4xl" aria-hidden="true">🔗</div>
         <h1 className="text-xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
-          Link inválido
+          {dict.invite.invalidTitle}
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          Este link de invitación no es válido o ya no está disponible.
+          {dict.invite.invalidDescription}
         </p>
         <Link
           href="/torneo"
           className="inline-block text-sm font-medium"
           style={{ color: 'var(--accent)' }}
         >
-          Ver el torneo →
+          {dict.invite.viewTournament}
         </Link>
       </div>
     )
@@ -58,7 +62,7 @@ export default async function InvitePage({
           {group.name}
         </h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-          {memberCount} {memberCount === 1 ? 'participante' : 'participantes'}
+          {memberCount} {memberCount === 1 ? dict.invite.memberSingular : dict.invite.memberPlural}
         </p>
       </div>
 
@@ -68,8 +72,8 @@ export default async function InvitePage({
       >
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
           {session
-            ? 'Uniéndote a este grupo podrás competir con sus miembros.'
-            : 'Iniciá sesión para unirte a este grupo y competir.'}
+            ? dict.invite.loggedInDescription
+            : dict.invite.guestDescription}
         </p>
 
         {/* State 4: logged in, not yet a member */}
@@ -79,7 +83,7 @@ export default async function InvitePage({
               className="w-full rounded-xl px-4 py-3 text-sm font-bold transition-colors"
               style={{ background: 'var(--accent)', color: '#000' }}
             >
-              Unirse al grupo
+              {dict.invite.joinButton}
             </SubmitButton>
           </form>
         )}
@@ -91,7 +95,7 @@ export default async function InvitePage({
             className="block w-full rounded-xl px-4 py-3 text-sm font-bold text-center transition-colors"
             style={{ background: 'var(--accent)', color: '#000' }}
           >
-            Iniciar sesión para unirte
+            {dict.invite.loginToJoin}
           </Link>
         )}
       </div>

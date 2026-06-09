@@ -5,16 +5,7 @@ import { MatchStage } from '@prisma/client'
 import { MatchCard } from '@/components/match-card'
 import { TorneoFilters } from '@/components/torneo-filters'
 import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
-
-const STAGE_LABELS: Record<MatchStage, string> = {
-  GROUP:         'Fase de Grupos',
-  ROUND_OF_32:   'Ronda de 32',
-  ROUND_OF_16:   'Octavos',
-  QUARTER_FINAL: 'Cuartos',
-  SEMI_FINAL:    'Semifinales',
-  THIRD_PLACE:   'Tercer Puesto',
-  FINAL:         'Final',
-}
+import { getLocale, getDictionary, type Dictionary } from '@/lib/i18n'
 
 const KNOCKOUT_STAGES: MatchStage[] = [
   'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
@@ -28,13 +19,30 @@ const stageOrder: MatchStage[] = [
   'GROUP', 'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
 ]
 
+function getStageLabels(dict: Dictionary): Record<MatchStage, string> {
+  return {
+    GROUP:         dict.torneo.stageGroup,
+    ROUND_OF_32:   dict.torneo.stageRound32,
+    ROUND_OF_16:   dict.torneo.stageRound16,
+    QUARTER_FINAL: dict.torneo.stageQuarter,
+    SEMI_FINAL:    dict.torneo.stageSemi,
+    THIRD_PLACE:   dict.torneo.stageThird,
+    FINAL:         dict.torneo.stageFinal,
+  }
+}
+
 export default async function TorneoPage({
   searchParams,
 }: {
   searchParams: Promise<{ etapa?: string; grupo?: string }>
 }) {
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
+
   const { etapa, grupo } = await searchParams
   const session = await auth()
+
+  const STAGE_LABELS = getStageLabels(dict)
 
   const VALID_STAGES = new Set<string>(stageOrder)
   const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
@@ -124,6 +132,7 @@ export default async function TorneoPage({
                   showGroupLabel={!grupoFilter}
                   locked={isLocked(match.scheduledAt)}
                   isKnockout={KNOCKOUT_STAGES.includes(match.stage)}
+                  dict={dict}
                 />
               ))}
             </div>
