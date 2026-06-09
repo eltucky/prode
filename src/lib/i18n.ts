@@ -8,9 +8,9 @@ export const DEFAULT_LOCALE: Locale = 'es'
 const dictionaries = {
   es: () => import('@/messages/es.json').then((m) => m.default),
   en: () => import('@/messages/en.json').then((m) => m.default),
-} satisfies Record<Locale, () => Promise<unknown>>
+}
 
-export type Dictionary = Awaited<ReturnType<typeof dictionaries['es']>>
+export type Dictionary = Awaited<ReturnType<(typeof dictionaries)['es']>>
 
 export async function getDictionary(locale: Locale): Promise<Dictionary> {
   return dictionaries[locale]() as Promise<Dictionary>
