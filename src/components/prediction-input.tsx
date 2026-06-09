@@ -3,6 +3,7 @@
 
 import { useTransition, useState, useRef, useEffect } from 'react'
 import { savePrediction } from '@/app/(protected)/torneo/actions'
+import { useDict } from '@/components/locale-provider'
 
 type Team = { flag: string; name: string }
 
@@ -109,6 +110,7 @@ export function PredictionInput({
     if (!isNaN(n) && n >= 0 && n <= 99) setter(n)
   }
 
+  const dict = useDict()
   const hasPrediction = prediction !== null
   const showKnockoutSelector =
     isKnockout &&
@@ -121,11 +123,11 @@ export function PredictionInput({
   const isLocked = status === 'locked'
 
   const statusText: string | null = {
-    idle: hasPrediction ? null : 'Tocá ▲ para empezar',
-    partial: 'Completá el otro score',
+    idle: hasPrediction ? null : dict.prediction.tapToStart,
+    partial: dict.prediction.completeOther,
     saving: null,
     saved: null,
-    locked: 'Este partido ya cerró',
+    locked: dict.prediction.locked,
   }[status]
 
   return (
@@ -213,7 +215,7 @@ export function PredictionInput({
             color: 'var(--text-primary)',
           }}
         >
-          <option value="">Ganador en penales...</option>
+          <option value="">{dict.prediction.knockoutWinner}</option>
           <option value={homeTeamId!}>{homeTeam!.flag} {homeTeam!.name}</option>
           <option value={awayTeamId!}>{awayTeam!.flag} {awayTeam!.name}</option>
         </select>
