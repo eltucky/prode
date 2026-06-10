@@ -1,19 +1,20 @@
 'use client'
 
-import { useOptimistic, useTransition } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocale } from '@/components/locale-provider'
 import { setLocaleAction } from '@/app/actions'
 
 export function LocaleSwitcher() {
-  const locale = useLocale()
-  const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale)
-  const [, startTransition] = useTransition()
+  const serverLocale = useLocale()
+  const [displayLocale, setDisplayLocale] = useState(serverLocale)
+
+  useEffect(() => {
+    setDisplayLocale(serverLocale)
+  }, [serverLocale])
 
   function handleClick(l: 'es' | 'en') {
-    startTransition(async () => {
-      setOptimisticLocale(l)
-      await setLocaleAction(l)
-    })
+    setDisplayLocale(l)
+    setLocaleAction(l)
   }
 
   return (
@@ -25,9 +26,9 @@ export function LocaleSwitcher() {
           onClick={() => handleClick(l)}
           className="text-xs font-semibold px-2 py-1 rounded transition-colors uppercase cursor-pointer"
           style={{
-            color: optimisticLocale === l ? 'var(--text-primary)' : 'var(--text-muted)',
-            background: optimisticLocale === l ? 'var(--surface-raised)' : 'transparent',
-            border: optimisticLocale === l ? '1px solid var(--border)' : '1px solid transparent',
+            color: displayLocale === l ? 'var(--text-primary)' : 'var(--text-muted)',
+            background: displayLocale === l ? 'var(--surface-raised)' : 'transparent',
+            border: displayLocale === l ? '1px solid var(--border)' : '1px solid transparent',
           }}
         >
           {l}
