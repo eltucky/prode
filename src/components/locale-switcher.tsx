@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useLocale } from '@/components/locale-provider'
 import { setLocaleAction } from '@/app/actions'
 
@@ -10,13 +10,16 @@ export function LocaleSwitcher() {
   const [displayLocale, setDisplayLocale] = useState(serverLocale)
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   function handleClick(l: 'es' | 'en') {
     if (l === displayLocale || isPending) return
     setDisplayLocale(l)
     startTransition(async () => {
       await setLocaleAction(l)
-      router.refresh()
+      const qs = searchParams.toString()
+      router.replace(qs ? `${pathname}?${qs}` : pathname)
     })
   }
 
