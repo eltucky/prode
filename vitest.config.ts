@@ -18,6 +18,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       'next/server': path.resolve(__dirname, 'node_modules/next/server.js'),
+      'server-only': path.resolve(__dirname, 'src/__mocks__/server-only.ts'),
     },
   },
 })

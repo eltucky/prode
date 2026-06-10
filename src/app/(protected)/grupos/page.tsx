@@ -3,9 +3,13 @@ import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import { SubmitButton } from '@/components/submit-button'
 import { createGroup, joinGroup } from './actions'
+import { getLocale, getDictionary, t } from '@/lib/i18n'
 
 export default async function GruposPage() {
   const session = await auth()
+
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
 
   const memberships = await prisma.groupMember.findMany({
     where: { userId: session!.user!.id },
@@ -28,10 +32,10 @@ export default async function GruposPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-          Mis grupos
+          {dict.grupos.title}
         </h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-          Bienvenido, {session?.user?.name}
+          {t(dict.grupos.welcome, { name: session?.user?.name ?? '' })}
         </p>
       </div>
 
@@ -49,7 +53,7 @@ export default async function GruposPage() {
               </div>
               <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
                 {group._count.members}{' '}
-                {group._count.members === 1 ? 'participante' : 'participantes'}
+                {group._count.members === 1 ? dict.grupos.memberSingular : dict.grupos.memberPlural}
               </div>
             </Link>
           ))}
@@ -61,10 +65,10 @@ export default async function GruposPage() {
         >
           <div className="text-4xl mb-3">🏆</div>
           <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
-            Todavía no pertenecés a ningún grupo
+            {dict.grupos.emptyTitle}
           </p>
           <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-            Creá uno o pedile a alguien el código de invitación
+            {dict.grupos.emptySubtitle}
           </p>
         </div>
       )}
@@ -75,13 +79,13 @@ export default async function GruposPage() {
           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
           <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-            Crear grupo
+            {dict.grupos.createTitle}
           </h2>
           <form action={createGroup} className="flex gap-2">
             <input
               name="name"
               type="text"
-              placeholder="Nombre del grupo"
+              placeholder={dict.grupos.createPlaceholder}
               required
               maxLength={50}
               className={inputClass}
@@ -91,7 +95,7 @@ export default async function GruposPage() {
               className="rounded-lg px-4 py-2 text-sm font-bold shrink-0 transition-colors"
               style={{ background: 'var(--accent)', color: '#000' } as React.CSSProperties}
             >
-              Crear
+              {dict.grupos.createButton}
             </SubmitButton>
           </form>
         </div>
@@ -101,13 +105,13 @@ export default async function GruposPage() {
           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
           <h2 className="font-semibold mb-3" style={{ color: 'var(--text-primary)' }}>
-            Unirse con código
+            {dict.grupos.joinTitle}
           </h2>
           <form action={joinGroup} className="flex gap-2">
             <input
               name="inviteCode"
               type="text"
-              placeholder="Código de invitación"
+              placeholder={dict.grupos.joinPlaceholder}
               required
               className={inputClass}
               style={inputStyle}
@@ -116,7 +120,7 @@ export default async function GruposPage() {
               className="rounded-lg px-4 py-2 text-sm font-bold shrink-0 transition-colors"
               style={{ background: 'var(--accent)', color: '#000' } as React.CSSProperties}
             >
-              Unirse
+              {dict.grupos.joinButton}
             </SubmitButton>
           </form>
         </div>

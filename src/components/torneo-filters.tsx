@@ -5,27 +5,12 @@ import { useState, useEffect } from 'react'
 import { type MatchStage } from '@prisma/client'
 import { type GroupStatus } from '@/lib/group-status'
 import { Skeleton } from '@/components/skeleton'
+import { useDict } from '@/components/locale-provider'
 
 const BADGE_COLORS: Record<GroupStatus, string> = {
   complete:       '#22c55e',
   actionRequired: '#ef4444',
   missed:         '#f59e0b',
-}
-
-const BADGE_LABELS: Record<GroupStatus, string> = {
-  complete:       'Grupo completo',
-  actionRequired: 'Pronósticos pendientes',
-  missed:         'Pronósticos perdidos',
-}
-
-const STAGE_LABELS: Record<MatchStage, string> = {
-  GROUP:         'Fase de Grupos',
-  ROUND_OF_32:   'Ronda de 32',
-  ROUND_OF_16:   'Octavos',
-  QUARTER_FINAL: 'Cuartos',
-  SEMI_FINAL:    'Semifinales',
-  THIRD_PLACE:   'Tercer Puesto',
-  FINAL:         'Final',
 }
 
 function groupFilterHref(stageFilter: MatchStage | undefined, target: string): string {
@@ -57,6 +42,24 @@ export function TorneoFilters({
   groupStatusMap,
   children,
 }: Props) {
+  const dict = useDict()
+
+  const BADGE_LABELS: Record<GroupStatus, string> = {
+    complete:       dict.torneo.badgeComplete,
+    actionRequired: dict.torneo.badgeActionRequired,
+    missed:         dict.torneo.badgeMissed,
+  }
+
+  const STAGE_LABELS: Record<MatchStage, string> = {
+    GROUP:         dict.torneo.stageGroup,
+    ROUND_OF_32:   dict.torneo.stageRound32,
+    ROUND_OF_16:   dict.torneo.stageRound16,
+    QUARTER_FINAL: dict.torneo.stageQuarter,
+    SEMI_FINAL:    dict.torneo.stageSemi,
+    THIRD_PLACE:   dict.torneo.stageThird,
+    FINAL:         dict.torneo.stageFinal,
+  }
+
   const router = useRouter()
   const searchParams = useSearchParams()
   const [isNavigating, setIsNavigating] = useState(false)
@@ -84,7 +87,7 @@ export function TorneoFilters({
             onClick={() => navigate('/torneo')}
             pillClass={pillClass}
           >
-            Todos
+            {dict.torneo.filterAll}
           </Pill>
           {filterableStages.map(stage => {
             const href = `/torneo?etapa=${stage}`
@@ -104,7 +107,7 @@ export function TorneoFilters({
 
       {showingGroupStage && availableGroups.length > 0 && (
         <div className="flex gap-2 flex-wrap items-center pb-2">
-          <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>Grupo:</span>
+          <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>{dict.torneo.filterGroupLabel}</span>
           {(() => {
             const href = stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'
             return (
@@ -113,7 +116,7 @@ export function TorneoFilters({
                 onClick={() => navigate(href)}
                 pillClass={pillClass}
               >
-                Todos
+                {dict.torneo.filterAll}
               </Pill>
             )
           })()}

@@ -3,6 +3,7 @@ import { MatchStage, MatchStatus } from '@prisma/client'
 import { ClientDate } from '@/components/client-date'
 import { PredictionInput } from '@/components/prediction-input'
 import Link from 'next/link'
+import type { Dictionary } from '@/lib/i18n'
 
 type Team = { flag: string; name: string } | null
 
@@ -34,18 +35,18 @@ type Props = {
   showGroupLabel: boolean
   locked: boolean
   isKnockout: boolean
+  dict: Dictionary
 }
 
-const STATUS_BADGE: Record<MatchStatus, { label: string; bg: string; color: string }> = {
-  SCHEDULED:   { label: 'Programado', bg: 'var(--surface-raised)', color: 'var(--text-muted)' },
-  IN_PROGRESS: { label: 'En juego',   bg: '#fbbf2422',             color: '#fbbf24' },
-  FINISHED:    { label: 'Finalizado', bg: '#22c55e1a',             color: 'var(--accent)' },
-  POSTPONED:   { label: 'Postergado', bg: '#ef44441a',             color: '#ef4444' },
-  CANCELLED:   { label: 'Cancelado',  bg: '#ef44441a',             color: '#ef4444' },
-}
+export function MatchCard({ match, prediction, hasSession, showGroupLabel, locked, isKnockout, dict }: Props) {
+  const badge = {
+    SCHEDULED:   { label: dict.match.statusScheduled, bg: 'var(--surface-raised)', color: 'var(--text-muted)' },
+    IN_PROGRESS: { label: dict.match.statusInProgress, bg: '#fbbf2422',            color: '#fbbf24' },
+    FINISHED:    { label: dict.match.statusFinished,   bg: '#22c55e1a',             color: 'var(--accent)' },
+    POSTPONED:   { label: dict.match.statusPostponed,  bg: '#ef44441a',             color: '#ef4444' },
+    CANCELLED:   { label: dict.match.statusCancelled,  bg: '#ef44441a',             color: '#ef4444' },
+  }[match.status]
 
-export function MatchCard({ match, prediction, hasSession, showGroupLabel, locked, isKnockout }: Props) {
-  const badge = STATUS_BADGE[match.status]
   const hasPrediction = prediction !== null
 
   return (
@@ -61,7 +62,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
         <div className="flex flex-col min-w-0">
           {showGroupLabel && match.groupName && (
             <span className="text-[10px] mb-0.5 uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
-              Grupo {match.groupName}
+              {dict.torneo.groupLabel.replace('{name}', match.groupName)}
             </span>
           )}
           <div className="flex items-center gap-3">
@@ -97,16 +98,18 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
           {locked ? (
             prediction ? (
               <div className="flex items-center gap-2 text-sm flex-wrap">
-                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Tu pronóstico:</span>
+                <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{dict.match.yourPrediction}</span>
                 <span className="font-mono font-semibold" style={{ color: 'var(--text-primary)' }}>
                   {prediction.homeScore} - {prediction.awayScore}
                 </span>
                 {isKnockout && prediction.predictedWinnerId && (
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {'(ganador: '}
-                    {prediction.predictedWinnerId === match.homeTeamId
-                      ? match.homeTeam?.name
-                      : match.awayTeam?.name}
+                    {'('}
+                    {dict.match.winner.replace('{name}',
+                      prediction.predictedWinnerId === match.homeTeamId
+                        ? (match.homeTeam?.name ?? '')
+                        : (match.awayTeam?.name ?? '')
+                    )}
                     {')'}
                   </span>
                 )}
@@ -123,7 +126,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
                 )}
               </div>
             ) : (
-              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Sin pronóstico</span>
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>{dict.match.noPrediction}</span>
             )
           ) : hasSession ? (
             <PredictionInput
@@ -139,7 +142,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
             />
           ) : (
             <Link href="/login" className="text-xs" style={{ color: '#3b82f6' }}>
-              Iniciá sesión para hacer tu pronóstico →
+              {dict.match.loginToPredict}
             </Link>
           )}
         </div>

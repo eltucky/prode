@@ -4,10 +4,14 @@ import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { updateEmailNotifications } from './actions'
 import { SubmitButton } from '@/components/submit-button'
+import { getLocale, getDictionary } from '@/lib/i18n'
 
 export default async function PerfilPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
+
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -18,7 +22,7 @@ export default async function PerfilPage() {
   return (
     <div className="max-w-lg mx-auto space-y-4">
       <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-        Perfil
+        {dict.perfil.title}
       </h1>
 
       {/* Hero */}
@@ -55,16 +59,16 @@ export default async function PerfilPage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-          Notificaciones
+          {dict.perfil.notificationsTitle}
         </h2>
         <form action={updateEmailNotifications} className="space-y-4">
           <label className="flex items-start justify-between gap-4 cursor-pointer">
             <div>
               <div className="font-medium text-sm" style={{ color: 'var(--text-primary)' }}>
-                Recordatorios y resumen diario
+                {dict.perfil.notificationsLabel}
               </div>
               <div className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                Te avisamos 2 horas antes de cada partido si todavía no cargaste pronóstico, y te mandamos un resumen de puntos al final del día.
+                {dict.perfil.notificationsDescription}
               </div>
             </div>
             <input
@@ -79,7 +83,7 @@ export default async function PerfilPage() {
             className="w-full rounded-xl py-2.5 text-sm font-bold transition-colors"
             style={{ background: 'var(--accent)', color: '#000' } as React.CSSProperties}
           >
-            Guardar
+            {dict.perfil.saveButton}
           </SubmitButton>
         </form>
       </div>

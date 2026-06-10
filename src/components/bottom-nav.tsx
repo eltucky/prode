@@ -6,17 +6,19 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { signOutAction } from '@/app/actions'
 import { SubmitButton } from '@/components/submit-button'
-
-const TABS = [
-  { href: '/torneo', label: 'Torneo', icon: '🏟️' },
-  { href: '/grupos', label: 'Grupos', icon: '👥' },
-  { href: '/reglas', label: 'Reglas', icon: '📋' },
-  { href: '/perfil', label: 'Perfil', icon: '👤' },
-]
+import { useDict } from '@/components/locale-provider'
 
 export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
+  const dict = useDict()
+
+  const TABS = [
+    { href: '/torneo', label: dict.nav.torneo, icon: '🏟️' },
+    { href: '/grupos', label: dict.nav.grupos, icon: '👥' },
+    { href: '/reglas', label: dict.nav.reglas, icon: '📋' },
+    { href: '/perfil', label: dict.nav.perfil, icon: '👤' },
+  ]
 
   return (
     <>
@@ -48,7 +50,7 @@ export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
               className="flex items-center gap-2 px-4 py-3 text-sm w-full text-left"
               style={{ color: 'var(--text-muted)' } as React.CSSProperties}
             >
-              Salir
+              {dict.nav.signOut}
             </SubmitButton>
           </form>
         </div>
@@ -86,7 +88,7 @@ export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             style={{ color: moreOpen ? 'var(--accent)' : 'var(--text-muted)' }}
           >
             <span className="text-xl leading-none">···</span>
-            <span>Más</span>
+            <span>{dict.nav.more}</span>
           </button>
         </div>
       </nav>

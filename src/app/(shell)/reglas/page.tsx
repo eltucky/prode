@@ -1,60 +1,66 @@
+import { getLocale, getDictionary } from '@/lib/i18n'
+
 export const metadata = {
-  title: 'Reglas de puntuación — Prode Mundial 2026',
+  title: 'Prode Mundial 2026',
 }
 
-export default function ReglasPage() {
+export default async function ReglasPage() {
+  const locale = await getLocale()
+  const dict = await getDictionary(locale)
+  const r = dict.reglas
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
         <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
-          Reglas de puntuación
+          {r.title}
         </h1>
         <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-          Cómo se calculan los puntos por cada partido.
+          {r.subtitle}
         </p>
       </div>
 
-      <Section title="Fase de grupos">
-        <ScoreRow points={5} label="Resultado exacto" description="Acertás los dos marcadores. Ej: pronosticás 2-1 y sale 2-1." highlight />
-        <ScoreRow points={3} label="Resultado correcto + un marcador exacto" description="Acertás quién gana (o que empata) y uno de los dos goles. Ej: pronosticás 2-1, sale 2-0." />
-        <ScoreRow points={2} label="Resultado correcto" description="Acertás quién gana o que empata, pero ningún marcador. Ej: pronosticás 2-1, sale 3-0." />
-        <ScoreRow points={0} label="Resultado incorrecto" description="El equipo que dijiste que ganaba perdió, o dijiste empate y hubo ganador." />
+      <Section title={r.sectionGroups}>
+        <ScoreRow points={5} label={r.exactResult} description={r.exactResultDesc} highlight />
+        <ScoreRow points={3} label={r.correctPlusOne} description={r.correctPlusOneDesc} />
+        <ScoreRow points={2} label={r.correctResult} description={r.correctResultDesc} />
+        <ScoreRow points={0} label={r.wrongResult} description={r.wrongResultDesc} />
       </Section>
 
-      <Section title="Fases eliminatorias" subtitle="Misma puntuación que en grupos para el marcador, más un bonus por el clasificado.">
-        <ScoreRow points={7} label="Resultado exacto + clasificado correcto" description="Ambos marcadores exactos y acertás quién avanza. Máximo posible." highlight />
-        <ScoreRow points={5} label="Resultado exacto sin clasificado correcto" description="Pronosticás empate con marcador exacto (ej: 1-1) pero te equivocás en quién clasifica." />
-        <ScoreRow points={4} label="Resultado correcto + clasificado correcto" description="Acertás el resultado (sin marcadores exactos) y quién avanza." />
-        <ScoreRow points={2} label="Solo resultado correcto" description="Acertás el resultado pero te equivocaste en el clasificado." />
-        <ScoreRow points={0} label="Resultado incorrecto" description="No acertás el resultado. El clasificado no suma." />
+      <Section title={r.sectionKnockout} subtitle={r.sectionKnockoutSubtitle}>
+        <ScoreRow points={7} label={r.exactPlusWinner} description={r.exactPlusWinnerDesc} highlight />
+        <ScoreRow points={5} label={r.exactNoWinner} description={r.exactNoWinnerDesc} />
+        <ScoreRow points={4} label={r.correctPlusWinner} description={r.correctPlusWinnerDesc} />
+        <ScoreRow points={2} label={r.onlyCorrect} description={r.onlyCorrectDesc} />
+        <ScoreRow points={0} label={r.wrongResult} description={r.wrongResultDesc} />
         <p className="text-xs pt-3 border-t mt-2" style={{ color: 'var(--text-muted)', borderColor: 'var(--border)' }}>
-          El marcador se evalúa al final del tiempo reglamentario (90 min). El clasificado puede diferir si el partido se define en prórroga o penales.
+          {r.bonusNote}
         </p>
       </Section>
 
-      <Section title="Resumen rápido">
+      <Section title={r.sectionSummary}>
         <table className="w-full text-sm">
           <thead>
             <tr className="text-left border-b" style={{ borderColor: 'var(--border)' }}>
-              <th className="pb-2 text-xs uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Condición</th>
-              <th className="pb-2 text-xs uppercase tracking-wide text-right" style={{ color: 'var(--text-muted)' }}>Pts</th>
+              <th className="pb-2 text-xs uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>{r.colCondition}</th>
+              <th className="pb-2 text-xs uppercase tracking-wide text-right" style={{ color: 'var(--text-muted)' }}>{r.colPts}</th>
             </tr>
           </thead>
           <tbody style={{ color: 'var(--text-primary)' }}>
             <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
-              <td className="py-2 text-sm" style={{ color: 'var(--text-primary)' }}>Resultado correcto (base)</td>
+              <td className="py-2 text-sm" style={{ color: 'var(--text-primary)' }}>{r.baseResult}</td>
               <td className="py-2 text-right font-mono font-bold" style={{ color: 'var(--accent)' }}>+2</td>
             </tr>
             <tr className="border-b" style={{ borderColor: 'var(--border)' }}>
               <td className="py-2 text-xs pl-3" colSpan={2} style={{ color: 'var(--text-muted)' }}>
-                Los siguientes bonuses solo aplican si primero acertás el resultado
+                {r.bonusesNote}
               </td>
             </tr>
             {[
-              ['Gol del local exacto', '+1'],
-              ['Gol del visitante exacto', '+1'],
-              ['Ambos goles exactos (bonus)', '+1'],
-              ['Clasificado correcto (eliminatorias)', '+2'],
+              [r.homeGoalExact, '+1'],
+              [r.awayGoalExact, '+1'],
+              [r.bothGoalsBonus, '+1'],
+              [r.winnerBonus, '+2'],
             ].map(([label, pts]) => (
               <tr key={label} className="border-b" style={{ borderColor: 'var(--border)' }}>
                 <td className="py-2 text-sm pl-3" style={{ color: 'var(--text-primary)' }}>{label}</td>
@@ -62,7 +68,7 @@ export default function ReglasPage() {
               </tr>
             ))}
             <tr>
-              <td className="py-2 font-semibold">Máximo grupos / eliminatorias</td>
+              <td className="py-2 font-semibold">{r.maxPoints}</td>
               <td className="py-2 text-right font-mono font-bold" style={{ color: 'var(--accent)' }}>5 / 7</td>
             </tr>
           </tbody>

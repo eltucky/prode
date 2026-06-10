@@ -1,17 +1,18 @@
-// src/components/nav-links.tsx
 'use client'
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
-const LINKS = [
-  { href: '/torneo', label: 'Torneo' },
-  { href: '/grupos', label: 'Grupos' },
-  { href: '/reglas', label: 'Reglas' },
-]
+import { useDict } from '@/components/locale-provider'
 
 export function NavLinks({ isSuperAdmin }: { isSuperAdmin: boolean }) {
   const pathname = usePathname()
+  const dict = useDict()
+
+  const LINKS = [
+    { href: '/torneo', label: dict.nav.torneo },
+    { href: '/grupos', label: dict.nav.grupos },
+    { href: '/reglas', label: dict.nav.reglas },
+  ]
 
   return (
     <div className="flex items-center gap-4">

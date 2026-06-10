@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { InviteCopyButton } from '@/components/invite-copy-button'
+import { MockDictProvider } from '@/test-utils/dict-provider'
 
 const mockWriteText = vi.fn().mockResolvedValue(undefined)
 
@@ -10,14 +11,22 @@ beforeEach(() => {
   mockWriteText.mockClear()
 })
 
+function renderButton() {
+  return render(
+    <MockDictProvider>
+      <InviteCopyButton inviteCode="abc123" />
+    </MockDictProvider>
+  )
+}
+
 describe('InviteCopyButton', () => {
   it('renders copy button', () => {
-    render(<InviteCopyButton inviteCode="abc123" />)
+    renderButton()
     expect(screen.getByRole('button', { name: 'Copiar' })).toBeInTheDocument()
   })
 
   it('calls clipboard with full URL on click', async () => {
-    render(<InviteCopyButton inviteCode="abc123" />)
+    renderButton()
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Copiar' }))
     })
@@ -26,7 +35,7 @@ describe('InviteCopyButton', () => {
 
   it('shows ¡Copiado! after copy', async () => {
     vi.useFakeTimers()
-    render(<InviteCopyButton inviteCode="abc123" />)
+    renderButton()
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Copiar' }))
     })
@@ -36,7 +45,7 @@ describe('InviteCopyButton', () => {
 
   it('resets button to Copiar after 2 seconds', async () => {
     vi.useFakeTimers()
-    render(<InviteCopyButton inviteCode="abc123" />)
+    renderButton()
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Copiar' }))
     })
