@@ -69,6 +69,13 @@
     "winner": "winner: {name}",
     "loginToPredict": "Sign in to make your prediction →"
   },
+  "matchDetail": {
+    "back": "← Back to tournament",
+    "loginToSeePrompt": "Log in to see predictions →",
+    "loadedPrediction": "Submitted",
+    "didNotLoad": "No prediction",
+    "noPrediction": "—"
+  },
   "prediction": {
     "tapToStart": "Tap ▲ to start",
     "completeOther": "Complete the other score",

@@ -69,6 +69,13 @@
     "winner": "ganador: {name}",
     "loginToPredict": "Iniciá sesión para hacer tu pronóstico →"
   },
+  "matchDetail": {
+    "back": "← Volver al torneo",
+    "loginToSeePrompt": "Iniciá sesión para ver los pronósticos →",
+    "loadedPrediction": "Cargó",
+    "didNotLoad": "No cargó",
+    "noPrediction": "—"
+  },
   "prediction": {
     "tapToStart": "Tocá ▲ para empezar",
     "completeOther": "Completá el otro score",
