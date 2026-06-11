@@ -5,16 +5,11 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
 import { ClientDate } from '@/components/client-date'
-import { LOCK_THRESHOLD_MS } from '@/lib/group-status'
 import { getLocale, getDictionary, t } from '@/lib/i18n'
 
 const KNOCKOUT_STAGES: MatchStage[] = [
   'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
 ]
-
-function isLocked(scheduledAt: Date): boolean {
-  return Date.now() >= scheduledAt.getTime() - LOCK_THRESHOLD_MS
-}
 
 export default async function MatchDetailPage({
   params,
@@ -37,8 +32,7 @@ export default async function MatchDetailPage({
   if (!match) notFound()
 
   const session = await auth()
-  const locked = isLocked(match.scheduledAt)
-  const showParticipants = locked && match.status !== 'CANCELLED'
+  const showParticipants = match.status !== 'CANCELLED'
   const isKnockout = KNOCKOUT_STAGES.includes(match.stage)
 
   const badge = {
