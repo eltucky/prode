@@ -57,8 +57,11 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
         border: `1px solid ${hasPrediction && !locked ? '#22c55e40' : 'var(--border)'}`,
       }}
     >
-      {/* Header row */}
-      <div className="flex items-center justify-between gap-4">
+      {/* Header row — links to match detail */}
+      <Link
+        href={`/torneo/${match.id}`}
+        className="flex items-center justify-between gap-4"
+      >
         <div className="flex flex-col min-w-0">
           {showGroupLabel && match.groupName && (
             <span className="text-[10px] mb-0.5 uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
@@ -89,8 +92,9 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
           <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
             <ClientDate iso={match.scheduledAt.toISOString()} />
           </span>
+          <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>›</span>
         </div>
-      </div>
+      </Link>
 
       {/* Bottom row: prediction area */}
       {match.status !== 'CANCELLED' && (
