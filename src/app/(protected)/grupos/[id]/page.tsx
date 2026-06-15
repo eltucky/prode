@@ -50,10 +50,10 @@ export default async function GrupoPage({
     'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
   ])
 
-  const [playedPredictions, pendingPredictions] = await Promise.all([
+  const [playedPredictions, pendingPredictions, totalPendingMatchCount] = await Promise.all([
     prisma.prediction.findMany({
       where: { userId: { in: memberIds }, points: { not: null } },
-      select: { userId: true, points: true },
+      select: { userId: true, points: true, match: { select: { stage: true } } },
     }),
     prisma.prediction.findMany({
       where: {
@@ -61,7 +61,10 @@ export default async function GrupoPage({
         points: null,
         match: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } },
       },
-      select: { userId: true, match: { select: { stage: true } } },
+      select: { userId: true },
+    }),
+    prisma.match.count({
+      where: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } },
     }),
   ])
 
@@ -72,11 +75,13 @@ export default async function GrupoPage({
       return {
         user: m.user,
         points: played.reduce((sum, p) => sum + (p.points ?? 0), 0),
-        correctCount: played.filter(p => (p.points ?? 0) > 0).length,
-        pendingPoints: pending.reduce(
+        maxPlayedPoints: played.reduce(
           (sum, p) => sum + (KNOCKOUT_STAGES.has(p.match.stage) ? 7 : 5),
           0
         ),
+        correctCount: played.filter(p => (p.points ?? 0) > 0).length,
+        totalPlayed: played.length,
+        pendingCount: pending.length,
         isCurrentUser: m.userId === session?.user?.id,
       }
     })
@@ -202,12 +207,17 @@ export default async function GrupoPage({
                 </td>
                 <td className="px-4 py-2 text-right font-bold tabular-nums" style={{ color: 'var(--accent)' }}>
                   {entry.points}
+                  <span className="hidden sm:inline font-normal text-xs" style={{ color: 'var(--text-muted)' }}>
+                    {' '}{dict.grupoDetail.tableOf} {entry.maxPlayedPoints}
+                  </span>
                 </td>
                 <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
-                  {entry.pendingPoints}
+                  {entry.pendingCount}
+                  <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {totalPendingMatchCount}</span>
                 </td>
                 <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
                   {entry.correctCount}
+                  <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {entry.totalPlayed}</span>
                 </td>
               </tr>
             ))}
