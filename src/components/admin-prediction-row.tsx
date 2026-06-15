@@ -49,9 +49,9 @@ export function AdminPredictionRow({ prediction, homeTeam, awayTeam, isKnockout 
           min="0"
           max="99"
           required
-          className="w-10 border rounded px-1 py-0.5 text-center text-xs"
+          className="w-10 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-center text-xs"
         />
-        <span className="text-gray-400 text-xs">-</span>
+        <span className="text-zinc-500 text-xs">-</span>
         <input
           type="number"
           name="awayScore"
@@ -60,14 +60,14 @@ export function AdminPredictionRow({ prediction, homeTeam, awayTeam, isKnockout 
           min="0"
           max="99"
           required
-          className="w-10 border rounded px-1 py-0.5 text-center text-xs"
+          className="w-10 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-center text-xs"
         />
         {isKnockout && (
           <select
             name="predictedWinnerId"
             value={winnerId}
             onChange={e => setWinnerId(e.target.value)}
-            className="border rounded px-1 py-0.5 text-xs"
+            className="bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-xs"
           >
             <option value="">Sin ganador</option>
             {homeTeam && <option value={homeTeam.id}>{homeTeam.name}</option>}
@@ -77,7 +77,7 @@ export function AdminPredictionRow({ prediction, homeTeam, awayTeam, isKnockout 
         <button
           type="submit"
           disabled={!isDirty || isPending}
-          className="text-xs bg-gray-800 text-white px-2 py-0.5 rounded hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="text-xs bg-zinc-700 text-zinc-100 px-2 py-0.5 rounded hover:bg-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           ✓
         </button>
@@ -94,19 +94,19 @@ export function AdminPredictionRow({ prediction, homeTeam, awayTeam, isKnockout 
         </button>
       ) : (
         <span className="flex items-center gap-1">
-          <span className="text-xs text-gray-500">¿Borrar?</span>
+          <span className="text-xs text-zinc-500">¿Borrar?</span>
           <button
             type="button"
             onClick={handleDelete}
             disabled={isPending}
-            className="text-xs text-red-600 font-semibold hover:text-red-800 disabled:opacity-40"
+            className="text-xs text-red-400 font-semibold hover:text-red-300 disabled:opacity-40"
           >
             Sí
           </button>
           <button
             type="button"
             onClick={() => setConfirming(false)}
-            className="text-xs text-gray-500 hover:text-gray-700"
+            className="text-xs text-zinc-500 hover:text-zinc-300"
           >
             No
           </button>

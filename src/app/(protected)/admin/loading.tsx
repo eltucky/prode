@@ -6,7 +6,7 @@ export default function AdminLoading() {
       <Skeleton className="h-7 w-20" />
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="bg-white border rounded-xl px-4 py-4 space-y-1.5">
+          <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4 space-y-1.5">
             <Skeleton className="h-3 w-16" />
             <Skeleton className="h-7 w-20" />
             <Skeleton className="h-3 w-14" />

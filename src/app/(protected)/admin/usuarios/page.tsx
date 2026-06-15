@@ -17,49 +17,49 @@ export default async function AdminUsuariosPage() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Usuarios</h1>
-      <p className="text-sm text-gray-500">{users.length} usuarios registrados</p>
+      <p className="text-sm text-zinc-500">{users.length} usuarios registrados</p>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-zinc-800/50 border-b border-zinc-800">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase hidden sm:table-cell">Grupos</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Usuario</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase hidden sm:table-cell">Grupos</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Estado</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-zinc-800">
             {users.map(user => {
               const isSelf = user.id === session?.user?.id
               return (
-                <tr key={user.id} className={user.isBlocked ? 'bg-red-50' : ''}>
+                <tr key={user.id} className={user.isBlocked ? 'bg-red-950/30' : ''}>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {user.image ? (
                         <Image src={user.image} alt={user.name ?? ''} width={28} height={28} className="rounded-full shrink-0" />
                       ) : (
-                        <div className="w-7 h-7 rounded-full bg-gray-200 shrink-0 flex items-center justify-center text-xs text-gray-500">
+                        <div className="w-7 h-7 rounded-full bg-zinc-700 shrink-0 flex items-center justify-center text-xs text-zinc-400">
                           {user.name?.[0] ?? '?'}
                         </div>
                       )}
                       <div className="min-w-0">
                         <div className="font-medium truncate">{user.name}</div>
-                        <div className="text-xs text-gray-400 truncate">{user.email}</div>
+                        <div className="text-xs text-zinc-500 truncate">{user.email}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{user._count.memberships}</td>
+                  <td className="px-4 py-3 text-zinc-400 hidden sm:table-cell">{user._count.memberships}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-1 flex-wrap">
                       {user.isBlocked && (
-                        <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">Bloqueado</span>
+                        <span className="text-xs bg-red-900/40 text-red-400 px-2 py-0.5 rounded-full">Bloqueado</span>
                       )}
                       {user.isSuperAdmin && (
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Super Admin</span>
+                        <span className="text-xs bg-blue-900/40 text-blue-400 px-2 py-0.5 rounded-full">Super Admin</span>
                       )}
                       {!user.isBlocked && !user.isSuperAdmin && (
-                        <span className="text-xs text-gray-400">Activo</span>
+                        <span className="text-xs text-zinc-500">Activo</span>
                       )}
                     </div>
                   </td>
@@ -91,7 +91,7 @@ export default async function AdminUsuariosPage() {
                           </form>
                         </>
                       )}
-                      {isSelf && <span className="text-xs text-gray-300">Vos</span>}
+                      {isSelf && <span className="text-xs text-zinc-500">Vos</span>}
                     </div>
                   </td>
                 </tr>

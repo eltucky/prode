@@ -41,10 +41,10 @@ export default async function AdminPage() {
       <h1 className="text-2xl font-bold">Admin</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {metrics.map(m => (
-          <div key={m.label} className="bg-white border rounded-xl px-4 py-4">
-            <div className="text-xs text-gray-400 mb-1">{m.label}</div>
-            <div className="text-2xl font-bold text-gray-900">{m.value}</div>
-            {m.sub && <div className="text-xs text-gray-400 mt-0.5">{m.sub}</div>}
+          <div key={m.label} className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-4">
+            <div className="text-xs text-zinc-500 mb-1">{m.label}</div>
+            <div className="text-2xl font-bold text-zinc-100">{m.value}</div>
+            {m.sub && <div className="text-xs text-zinc-500 mt-0.5">{m.sub}</div>}
           </div>
         ))}
       </div>
