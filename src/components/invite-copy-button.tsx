@@ -38,7 +38,7 @@ export function InviteCopyButton({ inviteCode }: { inviteCode: string }) {
       <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
         {dict.grupoDetail.inviteTitle}
       </p>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 min-w-0">
         <span
           className="text-sm font-mono truncate flex-1 min-w-0"
           style={{ color: 'var(--text-primary)' }}
