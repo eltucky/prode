@@ -37,6 +37,7 @@
     "tableRank": "#",
     "tableParticipant": "Participant",
     "tablePoints": "Pts",
+    "tablePending": "Remaining",
     "tableCorrect": "Correct",
     "inviteTitle": "Invite friends",
     "copyButton": "Copy",
