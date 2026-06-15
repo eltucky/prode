@@ -122,7 +122,7 @@ export default async function MatchDetailPage({
           </div>
           <div className="flex flex-col items-center shrink-0 gap-1">
             <span className="text-xl font-bold tabular-nums" style={{ color: 'var(--text-primary)' }}>
-              {match.status === 'FINISHED' || match.status === 'IN_PROGRESS'
+              {(match.status === 'FINISHED' || match.status === 'IN_PROGRESS') && match.homeScore !== null && match.awayScore !== null
                 ? `${match.homeScore} - ${match.awayScore}`
                 : 'vs'}
             </span>
