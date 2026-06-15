@@ -6,6 +6,7 @@ import { MatchCard } from '@/components/match-card'
 import { TorneoFilters } from '@/components/torneo-filters'
 import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
 import { getLocale, getDictionary, type Dictionary, t } from '@/lib/i18n'
+import { TorneoScroller } from '@/components/torneo-scroller'
 
 const KNOCKOUT_STAGES: MatchStage[] = [
   'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
@@ -101,8 +102,15 @@ export default async function TorneoPage({
     return acc
   }, {})
 
+  const displayedMatches = stageOrder.flatMap(s => byStage[s] ?? [])
+  const targetMatch =
+    displayedMatches.find(m => m.status === 'IN_PROGRESS') ??
+    displayedMatches.find(m => m.status === 'SCHEDULED')
+  const targetMatchId = targetMatch?.id ?? null
+
   return (
     <div className="space-y-6">
+      <TorneoScroller targetMatchId={targetMatchId} />
       <TorneoFilters
         showStageFilter={showStageFilter}
         filterableStages={filterableStages}

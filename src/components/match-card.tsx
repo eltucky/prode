@@ -51,6 +51,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
 
   return (
     <div
+      id={match.id}
       className="rounded-xl px-4 py-3 space-y-3"
       style={{
         background: 'var(--surface)',
