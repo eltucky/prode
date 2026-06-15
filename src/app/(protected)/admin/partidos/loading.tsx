@@ -7,9 +7,9 @@ export default function AdminPartidosLoading() {
         <Skeleton className="h-7 w-44" />
         <Skeleton className="h-9 w-28 rounded-lg" />
       </div>
-      <div className="bg-white border rounded-xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-zinc-800/50 border-b border-zinc-800">
             <tr>
               {Array.from({ length: 6 }).map((_, i) => (
                 <th key={i} className="px-4 py-3 text-left">
@@ -18,7 +18,7 @@ export default function AdminPartidosLoading() {
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-zinc-800">
             {Array.from({ length: 6 }).map((_, i) => (
               <tr key={i}>
                 <td className="px-4 py-2"><Skeleton className="h-4 w-6" /></td>

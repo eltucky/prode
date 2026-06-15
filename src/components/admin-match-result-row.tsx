@@ -57,7 +57,7 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
           onChange={e => handleHomeChange(e.target.value)}
           min="0"
           placeholder="L"
-          className="w-12 border rounded px-1 py-0.5 text-center text-sm"
+          className="w-12 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-center text-sm"
         />
         <span>-</span>
         <input
@@ -67,13 +67,13 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
           onChange={e => handleAwayChange(e.target.value)}
           min="0"
           placeholder="V"
-          className="w-12 border rounded px-1 py-0.5 text-center text-sm"
+          className="w-12 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-center text-sm"
         />
         <select
           name="status"
           value={matchStatus}
           onChange={e => setMatchStatus(e.target.value as MatchStatus)}
-          className="border rounded px-1 py-0.5 text-xs"
+          className="bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-xs"
         >
           <option value="SCHEDULED">SCHED</option>
           <option value="IN_PROGRESS">LIVE</option>
@@ -84,7 +84,7 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
         <button
           type="submit"
           disabled={disabled}
-          className="bg-gray-800 text-white px-2 py-0.5 rounded text-xs hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-zinc-700 text-zinc-100 px-2 py-0.5 rounded text-xs hover:bg-zinc-600 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           ✓
         </button>
@@ -100,19 +100,19 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
         )}
         {confirming && (
           <span className="flex items-center gap-1">
-            <span className="text-xs text-gray-500">¿Borrar?</span>
+            <span className="text-xs text-zinc-500">¿Borrar?</span>
             <button
               type="button"
               onClick={handleClear}
               disabled={isPending}
-              className="text-xs text-red-600 font-semibold hover:text-red-800 disabled:opacity-40"
+              className="text-xs text-red-400 font-semibold hover:text-red-300 disabled:opacity-40"
             >
               Sí
             </button>
             <button
               type="button"
               onClick={() => setConfirming(false)}
-              className="text-xs text-gray-500 hover:text-gray-700"
+              className="text-xs text-zinc-500 hover:text-zinc-300"
             >
               No
             </button>

@@ -37,29 +37,29 @@ export default async function AdminPartidosPage() {
         </form>
       </div>
 
-      <div className="bg-white border rounded-xl overflow-hidden">
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-zinc-800/50 border-b border-zinc-800">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Partido</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Resultado</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acción</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">#</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Partido</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Fecha</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Resultado</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Estado</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-zinc-800">
             {matches.map(match => (
-              <tr key={match.id} className="hover:bg-gray-50">
-                <td className="px-4 py-2 text-gray-500">{match.matchNumber}</td>
+              <tr key={match.id} className="hover:bg-zinc-800/50">
+                <td className="px-4 py-2 text-zinc-500">{match.matchNumber}</td>
                 <td className="px-4 py-2 font-medium">
-                  <div className="text-xs text-gray-400">{STAGE_LABELS[match.stage]}{match.groupName ? ` · Grupo ${match.groupName}` : ''}</div>
+                  <div className="text-xs text-zinc-500">{STAGE_LABELS[match.stage]}{match.groupName ? ` · Grupo ${match.groupName}` : ''}</div>
                   <div>
                     {match.homeTeam ? `${match.homeTeam.flag} ${match.homeTeam.name}` : 'TBD'} vs {match.awayTeam ? `${match.awayTeam.flag} ${match.awayTeam.name}` : 'TBD'}
                   </div>
                 </td>
-                <td className="px-4 py-2 text-gray-500 text-xs">
+                <td className="px-4 py-2 text-zinc-500 text-xs">
                   <ClientDate iso={match.scheduledAt.toISOString()} />
                 </td>
                 <td className="px-4 py-2">
@@ -67,10 +67,10 @@ export default async function AdminPartidosPage() {
                 </td>
                 <td className="px-4 py-2">
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    match.status === 'FINISHED' ? 'bg-green-100 text-green-700' :
-                    match.status === 'IN_PROGRESS' ? 'bg-yellow-100 text-yellow-700' :
-                    match.status === 'POSTPONED' ? 'bg-red-100 text-red-700' :
-                    'bg-gray-100 text-gray-600'
+                    match.status === 'FINISHED' ? 'bg-green-900/40 text-green-400' :
+                    match.status === 'IN_PROGRESS' ? 'bg-yellow-900/40 text-yellow-400' :
+                    match.status === 'POSTPONED' ? 'bg-red-900/40 text-red-400' :
+                    'bg-zinc-800 text-zinc-400'
                   }`}>{match.status}</span>
                 </td>
                 <td className="px-4 py-2">
