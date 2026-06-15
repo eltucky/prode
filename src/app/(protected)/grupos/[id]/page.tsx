@@ -45,18 +45,43 @@ export default async function GrupoPage({
   const nextGroup = currentIndex < groupIds.length - 1 ? allMemberships[currentIndex + 1].group : null
 
   const memberIds = group.members.map(m => m.userId)
-  const predictions = await prisma.prediction.findMany({
-    where: { userId: { in: memberIds }, points: { not: null } },
-    select: { userId: true, points: true },
-  })
+
+  const KNOCKOUT_STAGES = new Set([
+    'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
+  ])
+
+  const [playedPredictions, pendingPredictions, totalPendingMatchCount] = await Promise.all([
+    prisma.prediction.findMany({
+      where: { userId: { in: memberIds }, points: { not: null } },
+      select: { userId: true, points: true, match: { select: { stage: true } } },
+    }),
+    prisma.prediction.findMany({
+      where: {
+        userId: { in: memberIds },
+        points: null,
+        match: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } },
+      },
+      select: { userId: true },
+    }),
+    prisma.match.count({
+      where: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } },
+    }),
+  ])
 
   const standings = group.members
     .map(m => {
-      const memberPreds = predictions.filter(p => p.userId === m.userId)
+      const played = playedPredictions.filter(p => p.userId === m.userId)
+      const pending = pendingPredictions.filter(p => p.userId === m.userId)
       return {
         user: m.user,
-        points: memberPreds.reduce((sum, p) => sum + (p.points ?? 0), 0),
-        correctCount: memberPreds.filter(p => (p.points ?? 0) > 0).length,
+        points: played.reduce((sum, p) => sum + (p.points ?? 0), 0),
+        maxPlayedPoints: played.reduce(
+          (sum, p) => sum + (KNOCKOUT_STAGES.has(p.match.stage) ? 7 : 5),
+          0
+        ),
+        correctCount: played.filter(p => (p.points ?? 0) > 0).length,
+        totalPlayed: played.length,
+        pendingCount: pending.length,
         isCurrentUser: m.userId === session?.user?.id,
       }
     })
@@ -126,13 +151,19 @@ export default async function GrupoPage({
         <table className="w-full text-sm">
           <thead style={{ background: 'var(--surface-raised)' }}>
             <tr>
-              {[dict.grupoDetail.tableRank, dict.grupoDetail.tableParticipant, dict.grupoDetail.tablePoints, dict.grupoDetail.tableCorrect].map((h, i) => (
+              {[
+                { label: dict.grupoDetail.tableRank, cls: 'text-left w-8' },
+                { label: dict.grupoDetail.tableParticipant, cls: 'text-left' },
+                { label: dict.grupoDetail.tablePoints, cls: 'text-right' },
+                { label: dict.grupoDetail.tablePending, cls: 'text-right hidden sm:table-cell' },
+                { label: dict.grupoDetail.tableCorrect, cls: 'text-right hidden sm:table-cell' },
+              ].map(({ label, cls }) => (
                 <th
-                  key={h}
-                  className={`px-4 py-2 text-xs font-semibold uppercase ${i === 0 ? 'text-left w-8' : i === 1 ? 'text-left' : i === 3 ? 'text-right hidden sm:table-cell' : 'text-right'}`}
+                  key={label}
+                  className={`px-4 py-2 text-xs font-semibold uppercase ${cls}`}
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  {h}
+                  {label}
                 </th>
               ))}
             </tr>
@@ -176,9 +207,17 @@ export default async function GrupoPage({
                 </td>
                 <td className="px-4 py-2 text-right font-bold tabular-nums" style={{ color: 'var(--accent)' }}>
                   {entry.points}
+                  <span className="hidden sm:inline font-normal text-xs" style={{ color: 'var(--text-muted)' }}>
+                    {' '}{dict.grupoDetail.tableOf} {entry.maxPlayedPoints}
+                  </span>
+                </td>
+                <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
+                  {entry.pendingCount}
+                  <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {totalPendingMatchCount}</span>
                 </td>
                 <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
                   {entry.correctCount}
+                  <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {entry.totalPlayed}</span>
                 </td>
               </tr>
             ))}
