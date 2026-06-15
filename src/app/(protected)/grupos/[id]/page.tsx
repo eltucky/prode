@@ -17,20 +17,32 @@ export default async function GrupoPage({
   const locale = await getLocale()
   const dict = await getDictionary(locale)
 
-  const group = await prisma.group.findUnique({
-    where: { id },
-    include: {
-      members: {
-        include: { user: true },
-        orderBy: { joinedAt: 'asc' },
+  const [group, allMemberships] = await Promise.all([
+    prisma.group.findUnique({
+      where: { id },
+      include: {
+        members: {
+          include: { user: true },
+          orderBy: { joinedAt: 'asc' },
+        },
       },
-    },
-  })
+    }),
+    prisma.groupMember.findMany({
+      where: { userId: session!.user!.id },
+      include: { group: true },
+      orderBy: { joinedAt: 'desc' },
+    }),
+  ])
 
   if (!group) notFound()
 
   const isMember = group.members.some(m => m.userId === session?.user?.id)
   if (!isMember) redirect('/grupos')
+
+  const groupIds = allMemberships.map(m => m.groupId)
+  const currentIndex = groupIds.indexOf(id)
+  const prevGroup = currentIndex > 0 ? allMemberships[currentIndex - 1].group : null
+  const nextGroup = currentIndex < groupIds.length - 1 ? allMemberships[currentIndex + 1].group : null
 
   const memberIds = group.members.map(m => m.userId)
   const predictions = await prisma.prediction.findMany({
@@ -57,9 +69,39 @@ export default async function GrupoPage({
           <Link href="/grupos" className="text-sm transition-colors" style={{ color: 'var(--text-muted)' }}>
             {dict.grupoDetail.back}
           </Link>
-          <h1 className="text-xl font-extrabold tracking-tight mt-1" style={{ color: 'var(--text-primary)' }}>
-            {group.name}
-          </h1>
+          <div className="flex items-center gap-2 mt-1">
+            {groupIds.length > 1 && (
+              prevGroup ? (
+                <Link
+                  href={`/grupos/${prevGroup.id}`}
+                  className="text-lg font-bold leading-none transition-opacity hover:opacity-60"
+                  style={{ color: 'var(--text-primary)' }}
+                  title={prevGroup.name}
+                >
+                  ‹
+                </Link>
+              ) : (
+                <span className="text-lg font-bold leading-none opacity-20" style={{ color: 'var(--text-primary)' }}>‹</span>
+              )
+            )}
+            <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+              {group.name}
+            </h1>
+            {groupIds.length > 1 && (
+              nextGroup ? (
+                <Link
+                  href={`/grupos/${nextGroup.id}`}
+                  className="text-lg font-bold leading-none transition-opacity hover:opacity-60"
+                  style={{ color: 'var(--text-primary)' }}
+                  title={nextGroup.name}
+                >
+                  ›
+                </Link>
+              ) : (
+                <span className="text-lg font-bold leading-none opacity-20" style={{ color: 'var(--text-primary)' }}>›</span>
+              )
+            )}
+          </div>
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {group.members.length}{' '}
             {group.members.length === 1 ? dict.grupoDetail.memberSingular : dict.grupoDetail.memberPlural}
