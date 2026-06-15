@@ -66,7 +66,9 @@ export default async function GrupoPage({
           </p>
         </div>
 
-        <InviteCopyButton inviteCode={group.inviteCode} />
+        <div className="w-full sm:w-auto min-w-0">
+          <InviteCopyButton inviteCode={group.inviteCode} />
+        </div>
       </div>
 
       {/* Standings table */}
