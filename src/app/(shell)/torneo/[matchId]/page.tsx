@@ -79,19 +79,35 @@ export default async function MatchDetailPage({
     points: number | null
   }
   let predMap = new Map<string, PredictionRow>()
+  let standingsMap = new Map<string, { points: number; correctCount: number }>()
 
   if (selectedGroup) {
     const memberIds = selectedGroup.members.map(m => m.userId)
-    const preds = await prisma.prediction.findMany({
-      where: { matchId: match.id, userId: { in: memberIds } },
-    })
+    const [preds, playedPredictions] = await Promise.all([
+      prisma.prediction.findMany({
+        where: { matchId: match.id, userId: { in: memberIds } },
+      }),
+      prisma.prediction.findMany({
+        where: { userId: { in: memberIds }, points: { not: null } },
+        select: { userId: true, points: true },
+      }),
+    ])
     predMap = new Map(preds.map(p => [p.userId, p]))
+    for (const member of selectedGroup.members) {
+      const played = playedPredictions.filter(p => p.userId === member.userId)
+      standingsMap.set(member.userId, {
+        points: played.reduce((sum, p) => sum + (p.points ?? 0), 0),
+        correctCount: played.filter(p => (p.points ?? 0) > 0).length,
+      })
+    }
   }
 
   const sortedMembers = selectedGroup
-    ? [...selectedGroup.members].sort((a, b) =>
-        (a.user.name ?? '').localeCompare(b.user.name ?? '')
-      )
+    ? [...selectedGroup.members].sort((a, b) => {
+        const sa = standingsMap.get(a.userId) ?? { points: 0, correctCount: 0 }
+        const sb = standingsMap.get(b.userId) ?? { points: 0, correctCount: 0 }
+        return sb.points - sa.points || sb.correctCount - sa.correctCount
+      })
     : []
 
   const showPredictionScore = match.status === 'IN_PROGRESS' || match.status === 'FINISHED'
