@@ -74,6 +74,8 @@ export function StandingsHistory({ matchHistory, dayHistory, currentUserId, labe
   const frame = history[Math.min(idx, history.length - 1)]
   if (!frame) return null
 
+  const prevFrame = idx > 0 ? history[idx - 1] : null
+
   // Fixed iteration order so DOM elements are stable and CSS transitions fire
   const allUserIds = (history.length > 0 ? history[0] : frame).standings.map(s => s.userId)
 
@@ -137,6 +139,8 @@ export function StandingsHistory({ matchHistory, dayHistory, currentUserId, labe
         {allUserIds.map(userId => {
           const entry = frame.standings.find(s => s.userId === userId)!
           const isMe = userId === currentUserId
+          const prevPoints = prevFrame?.standings.find(s => s.userId === userId)?.points ?? 0
+          const delta = entry.points - prevPoints
           return (
             <div
               key={userId}
@@ -177,6 +181,14 @@ export function StandingsHistory({ matchHistory, dayHistory, currentUserId, labe
               >
                 {entry.name}
               </span>
+              {delta > 0 && (
+                <span
+                  className="text-xs font-semibold px-1.5 py-0.5 rounded-full shrink-0 tabular-nums"
+                  style={{ background: '#22c55e22', color: '#22c55e' }}
+                >
+                  +{delta}
+                </span>
+              )}
               <span
                 className="font-bold tabular-nums text-sm shrink-0"
                 style={{ color: 'var(--accent)' }}
