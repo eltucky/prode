@@ -27,7 +27,9 @@
     "joinPlaceholder": "Invite code",
     "joinButton": "Join",
     "memberSingular": "member",
-    "memberPlural": "members"
+    "memberPlural": "members",
+    "everyoneGroupName": "Everyone",
+    "everyoneGroupLabel": "Overall standings"
   },
   "grupoDetail": {
     "back": "← My groups",
@@ -44,6 +46,11 @@
     "copyButton": "Copy",
     "copied": "Copied!",
     "adminBadge": "Admin"
+  },
+  "grupoTodos": {
+    "back": "← My groups",
+    "subtitle": "All participants",
+    "standingsTitle": "Overall standings"
   },
   "torneo": {
     "stageGroup": "Group Stage",

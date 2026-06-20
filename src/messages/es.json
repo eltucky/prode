@@ -27,7 +27,9 @@
     "joinPlaceholder": "Código de invitación",
     "joinButton": "Unirse",
     "memberSingular": "participante",
-    "memberPlural": "participantes"
+    "memberPlural": "participantes",
+    "everyoneGroupName": "Todos",
+    "everyoneGroupLabel": "Tabla general"
   },
   "grupoDetail": {
     "back": "← Mis grupos",
@@ -44,6 +46,11 @@
     "copyButton": "Copiar",
     "copied": "¡Copiado!",
     "adminBadge": "Admin"
+  },
+  "grupoTodos": {
+    "back": "← Mis grupos",
+    "subtitle": "Todos los participantes",
+    "standingsTitle": "Tabla general de posiciones"
   },
   "torneo": {
     "stageGroup": "Fase de Grupos",
