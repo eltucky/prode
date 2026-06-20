@@ -11,15 +11,18 @@ export default async function GruposPage() {
   const locale = await getLocale()
   const dict = await getDictionary(locale)
 
-  const memberships = await prisma.groupMember.findMany({
-    where: { userId: session!.user!.id },
-    include: {
-      group: {
-        include: { _count: { select: { members: true } } },
+  const [memberships, everyoneCount] = await Promise.all([
+    prisma.groupMember.findMany({
+      where: { userId: session!.user!.id },
+      include: {
+        group: {
+          include: { _count: { select: { members: true } } },
+        },
       },
-    },
-    orderBy: { joinedAt: 'desc' },
-  })
+      orderBy: { joinedAt: 'desc' },
+    }),
+    prisma.user.count({ where: { isBlocked: false } }),
+  ])
 
   const inputClass = "flex-1 rounded-lg px-3 py-2 text-sm focus:outline-none"
   const inputStyle = {
@@ -39,35 +42,46 @@ export default async function GruposPage() {
         </p>
       </div>
 
-      {memberships.length > 0 ? (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {memberships.map(({ group }) => (
-            <Link
-              key={group.id}
-              href={`/grupos/${group.id}`}
-              className="rounded-xl px-5 py-4 block transition-colors hover:brightness-110"
-              style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-            >
-              <div className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
-                {group.name}
-              </div>
-              <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-                {group._count.members}{' '}
-                {group._count.members === 1 ? dict.grupos.memberSingular : dict.grupos.memberPlural}
-              </div>
-            </Link>
-          ))}
-        </div>
-      ) : (
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Link
+          href="/grupos/todos"
+          className="rounded-xl px-5 py-4 block transition-colors hover:brightness-110"
+          style={{ background: 'var(--surface)', border: '1px solid var(--accent)' }}
+        >
+          <div className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+            {dict.grupos.everyoneGroupName}
+          </div>
+          <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+            {everyoneCount}{' '}
+            {everyoneCount === 1 ? dict.grupos.memberSingular : dict.grupos.memberPlural}
+            {' · '}{dict.grupos.everyoneGroupLabel}
+          </div>
+        </Link>
+
+        {memberships.map(({ group }) => (
+          <Link
+            key={group.id}
+            href={`/grupos/${group.id}`}
+            className="rounded-xl px-5 py-4 block transition-colors hover:brightness-110"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+          >
+            <div className="font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
+              {group.name}
+            </div>
+            <div className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+              {group._count.members}{' '}
+              {group._count.members === 1 ? dict.grupos.memberSingular : dict.grupos.memberPlural}
+            </div>
+          </Link>
+        ))}
+      </div>
+
+      {memberships.length === 0 && (
         <div
-          className="rounded-xl p-10 text-center"
+          className="rounded-xl p-8 text-center"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
         >
-          <div className="text-4xl mb-3">🏆</div>
-          <p className="font-medium" style={{ color: 'var(--text-primary)' }}>
-            {dict.grupos.emptyTitle}
-          </p>
-          <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+          <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
             {dict.grupos.emptySubtitle}
           </p>
         </div>
