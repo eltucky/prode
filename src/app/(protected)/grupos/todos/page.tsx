@@ -1,61 +1,20 @@
 import { auth } from '@/auth'
-import { prisma } from '@/lib/db'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getLocale, getDictionary } from '@/lib/i18n'
+import { getCachedTodosStandings } from '@/lib/predictions-cache'
 
 export default async function GruposTodosPage() {
   const session = await auth()
-
   const locale = await getLocale()
   const dict = await getDictionary(locale)
 
-  const KNOCKOUT_STAGES = new Set([
-    'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
-  ])
+  const { standings: rawStandings, totalPendingMatchCount } = await getCachedTodosStandings()
 
-  const allUsers = await prisma.user.findMany({
-    where: { isBlocked: false },
-  })
-
-  const userIds = allUsers.map(u => u.id)
-
-  const [playedPredictions, pendingPredictions, totalPendingMatchCount] = await Promise.all([
-    prisma.prediction.findMany({
-      where: { userId: { in: userIds }, points: { not: null } },
-      select: { userId: true, points: true, match: { select: { stage: true } } },
-    }),
-    prisma.prediction.findMany({
-      where: {
-        userId: { in: userIds },
-        points: null,
-        match: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } },
-      },
-      select: { userId: true },
-    }),
-    prisma.match.count({
-      where: { status: { in: ['SCHEDULED', 'IN_PROGRESS'] } },
-    }),
-  ])
-
-  const standings = allUsers
-    .map(user => {
-      const played = playedPredictions.filter(p => p.userId === user.id)
-      const pending = pendingPredictions.filter(p => p.userId === user.id)
-      return {
-        user,
-        points: played.reduce((sum, p) => sum + (p.points ?? 0), 0),
-        maxPlayedPoints: played.reduce(
-          (sum, p) => sum + (KNOCKOUT_STAGES.has(p.match.stage) ? 7 : 5),
-          0
-        ),
-        correctCount: played.filter(p => (p.points ?? 0) > 0).length,
-        totalPlayed: played.length,
-        pendingCount: pending.length,
-        isCurrentUser: user.id === session?.user?.id,
-      }
-    })
-    .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
+  const standings = rawStandings.map(entry => ({
+    ...entry,
+    isCurrentUser: entry.user.id === session?.user?.id,
+  }))
 
   return (
     <div className="space-y-6">
@@ -67,8 +26,8 @@ export default async function GruposTodosPage() {
           {dict.grupos.everyoneGroupName}
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          {allUsers.length}{' '}
-          {allUsers.length === 1 ? dict.grupoDetail.memberSingular : dict.grupoDetail.memberPlural}
+          {standings.length}{' '}
+          {standings.length === 1 ? dict.grupoDetail.memberSingular : dict.grupoDetail.memberPlural}
           {' · '}{dict.grupoTodos.subtitle}
         </p>
       </div>

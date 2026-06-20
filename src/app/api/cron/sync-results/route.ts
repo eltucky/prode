@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { syncResults } from '@/lib/sync-results'
 
 export const dynamic = 'force-dynamic'
@@ -13,6 +14,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const result = await syncResults()
+    revalidateTag('matches', 'max')
+    revalidateTag('standings-todos', 'max')
     return NextResponse.json({ ok: true, ...result })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
