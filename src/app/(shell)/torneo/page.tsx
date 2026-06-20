@@ -1,4 +1,5 @@
-// src/app/(shell)/torneo/page.tsx
+import { after } from 'next/server'
+import { revalidateTag } from 'next/cache'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
@@ -7,6 +8,8 @@ import { TorneoFilters } from '@/components/torneo-filters'
 import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
 import { getLocale, getDictionary, type Dictionary, t } from '@/lib/i18n'
 import { TorneoScroller } from '@/components/torneo-scroller'
+import { getCachedFilterableStages, getCachedMatches } from '@/lib/matches-cache'
+import { getCachedUserPredictions } from '@/lib/predictions-cache'
 
 const KNOCKOUT_STAGES: MatchStage[] = [
   'ROUND_OF_32', 'ROUND_OF_16', 'QUARTER_FINAL', 'SEMI_FINAL', 'THIRD_PLACE', 'FINAL',
@@ -44,43 +47,35 @@ export default async function TorneoPage({
   const session = await auth()
 
   const STAGE_LABELS = getStageLabels(dict)
-
   const VALID_STAGES = new Set<string>(stageOrder)
   const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
   const showingGroupStage = !stageFilter || stageFilter === 'GROUP'
 
-  // Lazy IN_PROGRESS transition: first visitor after match start triggers the update
-  await prisma.match.updateMany({
-    where: { status: 'SCHEDULED', scheduledAt: { lt: new Date() } },
-    data: { status: 'IN_PROGRESS' },
+  // Run match status update after response is sent — zero TTFB impact.
+  // Fires at most once per 60s because matches are cached; only invalidates
+  // the cache when rows were actually updated.
+  after(async () => {
+    const updated = await prisma.match.updateMany({
+      where: { status: 'SCHEDULED', scheduledAt: { lt: new Date() } },
+      data: { status: 'IN_PROGRESS' },
+    })
+    if (updated.count > 0) revalidateTag('matches', 'seconds')
   })
 
-  // Lightweight query: which stages have at least one defined match
-  const definedStageRows = await prisma.match.findMany({
-    where: { homeTeamId: { not: null }, awayTeamId: { not: null } },
-    select: { stage: true },
-    distinct: ['stage'],
-  })
-  const stagesWithMatches = new Set(definedStageRows.map(r => r.stage))
-  const filterableStages = stageOrder.filter(s => stagesWithMatches.has(s))
+  // Parallel cached queries — skips DB on cache hit
+  const [filterableStages, rawMatches] = await Promise.all([
+    getCachedFilterableStages(),
+    getCachedMatches(stageFilter ?? null),
+  ])
+
+  // unstable_cache serializes Dates to ISO strings — convert back before use
+  const matches = rawMatches.map(m => ({ ...m, scheduledAt: new Date(m.scheduledAt) }))
+
   const showStageFilter = filterableStages.length > 1
 
-  const matches = await prisma.match.findMany({
-    where: {
-      ...(stageFilter ? { stage: stageFilter } : {}),
-      homeTeamId: { not: null },
-      awayTeamId: { not: null },
-    },
-    include: { homeTeam: true, awayTeam: true },
-    orderBy: [{ scheduledAt: 'asc' }, { matchNumber: 'asc' }],
-  })
-
-  const predictions = session?.user?.id ? await prisma.prediction.findMany({
-    where: {
-      userId: session.user.id,
-      matchId: { in: matches.map(m => m.id) },
-    },
-  }) : []
+  const predictions = session?.user?.id
+    ? await getCachedUserPredictions(session.user.id, matches.map(m => m.id))
+    : []
   const predMap = new Map(predictions.map(p => [p.matchId, p]))
 
   const groupMatches = matches.filter(m => m.stage === 'GROUP')
