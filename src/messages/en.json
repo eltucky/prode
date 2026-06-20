@@ -43,7 +43,13 @@
     "inviteTitle": "Invite friends",
     "copyButton": "Copy",
     "copied": "Copied!",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "historyTitle": "Standings over time",
+    "historyPlay": "Play",
+    "historyPause": "Pause",
+    "historyResume": "Resume",
+    "historyPrev": "← Previous day",
+    "historyNext": "Next day →"
   },
   "torneo": {
     "stageGroup": "Group Stage",

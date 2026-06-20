@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { InviteCopyButton } from '@/components/invite-copy-button'
 import { getLocale, getDictionary } from '@/lib/i18n'
+import { StandingsHistory, type DaySnapshot } from '@/components/standings-history'
 
 export default async function GrupoPage({
   params,
@@ -53,7 +54,7 @@ export default async function GrupoPage({
   const [playedPredictions, pendingPredictions, totalPendingMatchCount] = await Promise.all([
     prisma.prediction.findMany({
       where: { userId: { in: memberIds }, points: { not: null } },
-      select: { userId: true, points: true, match: { select: { stage: true } } },
+      select: { userId: true, points: true, match: { select: { stage: true, scheduledAt: true } } },
     }),
     prisma.prediction.findMany({
       where: {
@@ -86,6 +87,31 @@ export default async function GrupoPage({
       }
     })
     .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
+
+  // Build day-by-day history snapshots for animation
+  const allDates = [...new Set(
+    playedPredictions.map(p => p.match.scheduledAt.toISOString().split('T')[0])
+  )].sort()
+
+  const standingsHistory: DaySnapshot[] = allDates.map(date => {
+    const upTo = playedPredictions.filter(
+      p => p.match.scheduledAt.toISOString().split('T')[0] <= date
+    )
+    const snap = group.members
+      .map(m => {
+        const preds = upTo.filter(p => p.userId === m.userId)
+        return {
+          userId: m.userId,
+          name: m.user.name ?? '',
+          image: m.user.image ?? null,
+          points: preds.reduce((s, p) => s + (p.points ?? 0), 0),
+          correctCount: preds.filter(p => (p.points ?? 0) > 0).length,
+        }
+      })
+      .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
+      .map((e, i) => ({ ...e, rank: i + 1 }))
+    return { date, standings: snap }
+  })
 
   return (
     <div className="space-y-6">
@@ -224,6 +250,20 @@ export default async function GrupoPage({
           </tbody>
         </table>
       </div>
+
+      {/* Historical standings animation */}
+      <StandingsHistory
+        history={standingsHistory}
+        currentUserId={session?.user?.id}
+        labels={{
+          title: dict.grupoDetail.historyTitle,
+          play: dict.grupoDetail.historyPlay,
+          pause: dict.grupoDetail.historyPause,
+          resume: dict.grupoDetail.historyResume,
+          prev: dict.grupoDetail.historyPrev,
+          next: dict.grupoDetail.historyNext,
+        }}
+      />
 
       {/* Members list */}
       <div

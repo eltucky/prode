@@ -43,7 +43,13 @@
     "inviteTitle": "Invitar amigos",
     "copyButton": "Copiar",
     "copied": "¡Copiado!",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "historyTitle": "Evolución de posiciones",
+    "historyPlay": "Reproducir",
+    "historyPause": "Pausar",
+    "historyResume": "Continuar",
+    "historyPrev": "← Día anterior",
+    "historyNext": "Día siguiente →"
   },
   "torneo": {
     "stageGroup": "Fase de Grupos",
