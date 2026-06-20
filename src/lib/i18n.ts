@@ -1,4 +1,5 @@
 import 'server-only'
+import { cache } from 'react'
 import { headers } from 'next/headers'
 
 export type Locale = 'es' | 'en'
@@ -12,9 +13,9 @@ const dictionaries = {
 
 export type Dictionary = Awaited<ReturnType<(typeof dictionaries)['es']>>
 
-export async function getDictionary(locale: Locale): Promise<Dictionary> {
+export const getDictionary = cache(async (locale: Locale): Promise<Dictionary> => {
   return dictionaries[locale]() as Promise<Dictionary>
-}
+})
 
 export async function getLocale(): Promise<Locale> {
   const headersList = await headers()
