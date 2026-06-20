@@ -3,7 +3,7 @@
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { assertNotBlocked } from '@/lib/admin'
-import { revalidatePath } from 'next/cache'
+import { revalidateTag } from 'next/cache'
 import { z } from 'zod'
 
 const predictionSchema = z.object({
@@ -45,7 +45,8 @@ export async function savePrediction(formData: FormData) {
     create: { userId: session.user.id, matchId, homeScore, awayScore, predictedWinnerId: predictedWinnerId ?? null },
   })
 
-  revalidatePath('/torneo')
+  revalidateTag(`predictions-${session.user.id}`, 'max')
+  revalidateTag('standings-todos', 'max')
 }
 
 export async function deletePrediction(matchId: string) {
@@ -68,5 +69,6 @@ export async function deletePrediction(matchId: string) {
     where: { userId: session.user.id, matchId },
   })
 
-  revalidatePath('/torneo')
+  revalidateTag(`predictions-${session.user.id}`, 'max')
+  revalidateTag('standings-todos', 'max')
 }
