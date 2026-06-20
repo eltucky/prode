@@ -159,7 +159,7 @@ export default async function GrupoPage({
       mOk.set(p.userId, (mOk.get(p.userId) ?? 0) + ((p.points ?? 0) > 0 ? 1 : 0))
     }
     const first = preds[0].match
-    const label = `${first.homeTeam.flag} ${first.homeScore ?? '?'}-${first.awayScore ?? '?'} ${first.awayTeam.flag}`
+    const label = `${first.homeTeam?.flag ?? ''} ${first.homeScore ?? '?'}-${first.awayScore ?? '?'} ${first.awayTeam?.flag ?? ''}`
     matchHistory.push({ key: matchId, label, standings: makeSnap(mPts, mOk) })
   }
 
