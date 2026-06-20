@@ -45,7 +45,15 @@
     "inviteTitle": "Invite friends",
     "copyButton": "Copy",
     "copied": "Copied!",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "historyTitle": "Standings over time",
+    "historyPlay": "Play",
+    "historyPause": "Pause",
+    "historyResume": "Resume",
+    "historyPrev": "← Previous",
+    "historyNext": "Next →",
+    "historyByMatch": "Per match",
+    "historyByDay": "Per day"
   },
   "grupoTodos": {
     "back": "← My groups",

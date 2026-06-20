@@ -45,7 +45,15 @@
     "inviteTitle": "Invitar amigos",
     "copyButton": "Copiar",
     "copied": "¡Copiado!",
-    "adminBadge": "Admin"
+    "adminBadge": "Admin",
+    "historyTitle": "Evolución de posiciones",
+    "historyPlay": "Reproducir",
+    "historyPause": "Pausar",
+    "historyResume": "Continuar",
+    "historyPrev": "← Anterior",
+    "historyNext": "Siguiente →",
+    "historyByMatch": "Por partido",
+    "historyByDay": "Por día"
   },
   "grupoTodos": {
     "back": "← Mis grupos",
