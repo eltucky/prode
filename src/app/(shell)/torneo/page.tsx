@@ -59,7 +59,7 @@ export default async function TorneoPage({
       where: { status: 'SCHEDULED', scheduledAt: { lt: new Date() } },
       data: { status: 'IN_PROGRESS' },
     })
-    if (updated.count > 0) revalidateTag('matches', 'seconds')
+    if (updated.count > 0) revalidateTag('matches', 'max')
   })
 
   // Parallel cached queries — skips DB on cache hit
