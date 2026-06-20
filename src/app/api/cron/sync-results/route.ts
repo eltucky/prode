@@ -15,6 +15,7 @@ export async function GET(req: NextRequest) {
   try {
     const result = await syncResults()
     revalidateTag('matches', 'max')
+    revalidateTag('standings-todos', 'max')
     return NextResponse.json({ ok: true, ...result })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
