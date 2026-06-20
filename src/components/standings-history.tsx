@@ -13,8 +13,9 @@ export type HistoryEntry = {
   rank: number
 }
 
-export type DaySnapshot = {
-  date: string // 'YYYY-MM-DD'
+export type Snapshot = {
+  key: string      // matchId or ISO date
+  label: string    // pre-formatted display label
   standings: HistoryEntry[]
 }
 
@@ -25,27 +26,24 @@ export type StandingsHistoryLabels = {
   resume: string
   prev: string
   next: string
+  byMatch: string
+  byDay: string
 }
 
 type Props = {
-  history: DaySnapshot[]
+  matchHistory: Snapshot[]
+  dayHistory: Snapshot[]
   currentUserId: string | undefined
   labels: StandingsHistoryLabels
 }
 
-function fmtDate(iso: string, locale: 'es' | 'en'): string {
-  const [, m, d] = iso.split('-').map(Number)
-  const monthsEs = ['', 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
-  const monthsEn = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  const months = locale === 'es' ? monthsEs : monthsEn
-  return `${d} ${months[m]}`
-}
+export function StandingsHistory({ matchHistory, dayHistory, currentUserId, labels }: Props) {
+  const [mode, setMode] = useState<'match' | 'day'>('match')
+  const history = mode === 'match' ? matchHistory : dayHistory
 
-export function StandingsHistory({ history, currentUserId, labels }: Props) {
-  const [idx, setIdx] = useState(history.length > 0 ? history.length - 1 : 0)
+  const lastIdx = history.length > 0 ? history.length - 1 : 0
+  const [idx, setIdx] = useState(lastIdx)
   const [playing, setPlaying] = useState(false)
-  // Detect locale from labels (play label is unique per locale)
-  const locale = labels.play === 'Play' ? 'en' : 'es'
 
   const advance = useCallback(() => {
     setIdx(prev => {
@@ -63,11 +61,21 @@ export function StandingsHistory({ history, currentUserId, labels }: Props) {
     return () => clearInterval(id)
   }, [playing, advance])
 
-  if (history.length < 2) return null
+  const switchMode = (newMode: 'match' | 'day') => {
+    const h = newMode === 'match' ? matchHistory : dayHistory
+    setPlaying(false)
+    setMode(newMode)
+    setIdx(h.length > 0 ? h.length - 1 : 0)
+  }
 
-  const frame = history[idx]
-  // Fixed iteration order so React reuses DOM elements and CSS transitions fire
-  const allUserIds = history[0].standings.map(s => s.userId)
+  const maxLen = Math.max(matchHistory.length, dayHistory.length)
+  if (maxLen < 2) return null
+
+  const frame = history[Math.min(idx, history.length - 1)]
+  if (!frame) return null
+
+  // Fixed iteration order so DOM elements are stable and CSS transitions fire
+  const allUserIds = (history.length > 0 ? history[0] : frame).standings.map(s => s.userId)
 
   const handlePlay = () => {
     if (idx >= history.length - 1) setIdx(0)
@@ -79,16 +87,45 @@ export function StandingsHistory({ history, currentUserId, labels }: Props) {
       className="rounded-xl overflow-hidden"
       style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
     >
-      {/* Header */}
+      {/* Header: title + toggle + current label */}
       <div
-        className="px-4 py-3 border-b flex items-center justify-between"
+        className="px-4 py-3 border-b flex items-center gap-3 flex-wrap"
         style={{ borderColor: 'var(--border)' }}
       >
-        <h2 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
+        <h2 className="font-semibold text-sm shrink-0" style={{ color: 'var(--text-primary)' }}>
           {labels.title}
         </h2>
-        <span className="text-sm font-semibold tabular-nums" style={{ color: 'var(--accent)' }}>
-          {fmtDate(frame.date, locale)}
+        <div
+          className="flex rounded-lg overflow-hidden text-xs font-medium"
+          style={{ border: '1px solid var(--border)' }}
+        >
+          <button
+            onClick={() => switchMode('match')}
+            className="px-2.5 py-1"
+            style={{
+              background: mode === 'match' ? 'var(--accent)' : 'transparent',
+              color: mode === 'match' ? '#fff' : 'var(--text-muted)',
+            }}
+          >
+            {labels.byMatch}
+          </button>
+          <button
+            onClick={() => switchMode('day')}
+            className="px-2.5 py-1"
+            style={{
+              background: mode === 'day' ? 'var(--accent)' : 'transparent',
+              color: mode === 'day' ? '#fff' : 'var(--text-muted)',
+              borderLeft: '1px solid var(--border)',
+            }}
+          >
+            {labels.byDay}
+          </button>
+        </div>
+        <span
+          className="text-sm font-semibold ml-auto"
+          style={{ color: 'var(--accent)' }}
+        >
+          {frame.label}
         </span>
       </div>
 
@@ -169,8 +206,8 @@ export function StandingsHistory({ history, currentUserId, labels }: Props) {
           style={{ accentColor: 'var(--accent)' }}
         />
         <div className="flex justify-between text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
-          <span>{fmtDate(history[0].date, locale)}</span>
-          <span>{fmtDate(history[history.length - 1].date, locale)}</span>
+          <span>{history[0]?.label}</span>
+          <span>{history[history.length - 1]?.label}</span>
         </div>
       </div>
 

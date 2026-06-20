@@ -48,8 +48,10 @@
     "historyPlay": "Reproducir",
     "historyPause": "Pausar",
     "historyResume": "Continuar",
-    "historyPrev": "← Día anterior",
-    "historyNext": "Día siguiente →"
+    "historyPrev": "← Anterior",
+    "historyNext": "Siguiente →",
+    "historyByMatch": "Por partido",
+    "historyByDay": "Por día"
   },
   "torneo": {
     "stageGroup": "Fase de Grupos",

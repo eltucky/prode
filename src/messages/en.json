@@ -48,8 +48,10 @@
     "historyPlay": "Play",
     "historyPause": "Pause",
     "historyResume": "Resume",
-    "historyPrev": "← Previous day",
-    "historyNext": "Next day →"
+    "historyPrev": "← Previous",
+    "historyNext": "Next →",
+    "historyByMatch": "Per match",
+    "historyByDay": "Per day"
   },
   "torneo": {
     "stageGroup": "Group Stage",

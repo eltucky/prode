@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { InviteCopyButton } from '@/components/invite-copy-button'
 import { getLocale, getDictionary } from '@/lib/i18n'
-import { StandingsHistory, type DaySnapshot } from '@/components/standings-history'
+import { StandingsHistory, type Snapshot } from '@/components/standings-history'
 
 export default async function GrupoPage({
   params,
@@ -54,7 +54,21 @@ export default async function GrupoPage({
   const [playedPredictions, pendingPredictions, totalPendingMatchCount] = await Promise.all([
     prisma.prediction.findMany({
       where: { userId: { in: memberIds }, points: { not: null } },
-      select: { userId: true, points: true, match: { select: { stage: true, scheduledAt: true } } },
+      select: {
+        userId: true,
+        points: true,
+        matchId: true,
+        match: {
+          select: {
+            stage: true,
+            scheduledAt: true,
+            homeScore: true,
+            awayScore: true,
+            homeTeam: { select: { flag: true } },
+            awayTeam: { select: { flag: true } },
+          },
+        },
+      },
     }),
     prisma.prediction.findMany({
       where: {
@@ -88,30 +102,90 @@ export default async function GrupoPage({
     })
     .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
 
-  // Build day-by-day history snapshots for animation
-  const allDates = [...new Set(
-    playedPredictions.map(p => p.match.scheduledAt.toISOString().split('T')[0])
-  )].sort()
+  // Build per-match and per-day history snapshots for animation
+  const MONTH_ABBR: Record<string, string[]> = {
+    es: ['', 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
+    en: ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  }
+  const fmtDay = (iso: string) => {
+    const [, m, d] = iso.split('-').map(Number)
+    return `${d} ${MONTH_ABBR[locale][m]}`
+  }
 
-  const standingsHistory: DaySnapshot[] = allDates.map(date => {
-    const upTo = playedPredictions.filter(
-      p => p.match.scheduledAt.toISOString().split('T')[0] <= date
-    )
-    const snap = group.members
-      .map(m => {
-        const preds = upTo.filter(p => p.userId === m.userId)
-        return {
-          userId: m.userId,
-          name: m.user.name ?? '',
-          image: m.user.image ?? null,
-          points: preds.reduce((s, p) => s + (p.points ?? 0), 0),
-          correctCount: preds.filter(p => (p.points ?? 0) > 0).length,
-        }
-      })
-      .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
-      .map((e, i) => ({ ...e, rank: i + 1 }))
-    return { date, standings: snap }
+  // Sort predictions chronologically, then by matchId for determinism
+  const sorted = [...playedPredictions].sort((a, b) => {
+    const dt = a.match.scheduledAt.getTime() - b.match.scheduledAt.getTime()
+    return dt !== 0 ? dt : a.matchId.localeCompare(b.matchId)
   })
+
+  // Helpers to build a snapshot from cumulative maps
+  const makeSnap = (cumPts: Map<string, number>, cumOk: Map<string, number>) =>
+    group.members
+      .map(m => ({
+        userId: m.userId,
+        name: m.user.name ?? '',
+        image: m.user.image ?? null,
+        points: cumPts.get(m.userId) ?? 0,
+        correctCount: cumOk.get(m.userId) ?? 0,
+      }))
+      .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
+      .map((e, i) => ({ userId: e.userId, name: e.name, image: e.image, points: e.points, rank: i + 1 }))
+
+  // Per-match history (one frame per finished match)
+  const matchHistory: Snapshot[] = []
+  const mPts = new Map<string, number>()
+  const mOk = new Map<string, number>()
+  const seenMatches = new Set<string>()
+
+  for (const p of sorted) {
+    if (!seenMatches.has(p.matchId)) seenMatches.add(p.matchId)
+  }
+
+  // Group sorted predictions by matchId, preserving order
+  const matchOrder: string[] = []
+  const byMatch = new Map<string, typeof sorted>()
+  for (const p of sorted) {
+    if (!byMatch.has(p.matchId)) {
+      matchOrder.push(p.matchId)
+      byMatch.set(p.matchId, [])
+    }
+    byMatch.get(p.matchId)!.push(p)
+  }
+
+  for (const matchId of matchOrder) {
+    const preds = byMatch.get(matchId)!
+    for (const p of preds) {
+      mPts.set(p.userId, (mPts.get(p.userId) ?? 0) + (p.points ?? 0))
+      mOk.set(p.userId, (mOk.get(p.userId) ?? 0) + ((p.points ?? 0) > 0 ? 1 : 0))
+    }
+    const first = preds[0].match
+    const label = `${first.homeTeam.flag} ${first.homeScore ?? '?'}-${first.awayScore ?? '?'} ${first.awayTeam.flag}`
+    matchHistory.push({ key: matchId, label, standings: makeSnap(mPts, mOk) })
+  }
+
+  // Per-day history (one frame per day with at least one match)
+  const dayHistory: Snapshot[] = []
+  const dPts = new Map<string, number>()
+  const dOk = new Map<string, number>()
+  const byDay = new Map<string, typeof sorted>()
+  const dayOrder: string[] = []
+
+  for (const p of sorted) {
+    const date = p.match.scheduledAt.toISOString().split('T')[0]
+    if (!byDay.has(date)) {
+      dayOrder.push(date)
+      byDay.set(date, [])
+    }
+    byDay.get(date)!.push(p)
+  }
+
+  for (const date of dayOrder) {
+    for (const p of byDay.get(date)!) {
+      dPts.set(p.userId, (dPts.get(p.userId) ?? 0) + (p.points ?? 0))
+      dOk.set(p.userId, (dOk.get(p.userId) ?? 0) + ((p.points ?? 0) > 0 ? 1 : 0))
+    }
+    dayHistory.push({ key: date, label: fmtDay(date), standings: makeSnap(dPts, dOk) })
+  }
 
   return (
     <div className="space-y-6">
@@ -253,7 +327,8 @@ export default async function GrupoPage({
 
       {/* Historical standings animation */}
       <StandingsHistory
-        history={standingsHistory}
+        matchHistory={matchHistory}
+        dayHistory={dayHistory}
         currentUserId={session?.user?.id}
         labels={{
           title: dict.grupoDetail.historyTitle,
@@ -262,6 +337,8 @@ export default async function GrupoPage({
           resume: dict.grupoDetail.historyResume,
           prev: dict.grupoDetail.historyPrev,
           next: dict.grupoDetail.historyNext,
+          byMatch: dict.grupoDetail.historyByMatch,
+          byDay: dict.grupoDetail.historyByDay,
         }}
       />
 
