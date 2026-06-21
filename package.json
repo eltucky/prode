@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "audit-points": "ts-node --project tsconfig.seed.json scripts/audit-points.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

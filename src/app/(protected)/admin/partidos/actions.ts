@@ -55,10 +55,16 @@ export async function updateMatchResult(formData: FormData) {
 export async function clearMatchResult(matchId: string) {
   await requireSuperAdmin()
   const id = z.string().cuid().parse(matchId)
-  await prisma.match.update({
-    where: { id },
-    data: { homeScore: null, awayScore: null, winnerId: null, status: 'SCHEDULED' },
-  })
+  await prisma.$transaction([
+    prisma.match.update({
+      where: { id },
+      data: { homeScore: null, awayScore: null, winnerId: null, status: 'SCHEDULED' },
+    }),
+    prisma.prediction.updateMany({
+      where: { matchId: id },
+      data: { points: null },
+    }),
+  ])
   revalidatePath('/admin/partidos')
   revalidatePath('/torneo')
 }
