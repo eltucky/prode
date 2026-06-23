@@ -138,10 +138,7 @@ export default async function GrupoPage({
           </p>
         </div>
 
-        <div className="shrink-0 sm:hidden mt-1">
-          <InviteCopyButton inviteCode={group.inviteCode} compact />
-        </div>
-        <div className="hidden sm:block min-w-0">
+        <div className="shrink-0">
           <InviteCopyButton inviteCode={group.inviteCode} />
         </div>
       </div>
