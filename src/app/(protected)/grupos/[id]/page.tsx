@@ -94,8 +94,8 @@ export default async function GrupoPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between flex-wrap gap-4">
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
           <Link href="/grupos" className="text-sm transition-colors" style={{ color: 'var(--text-muted)' }}>
             {dict.grupoDetail.back}
           </Link>
@@ -114,7 +114,7 @@ export default async function GrupoPage({
                 <span className="text-lg font-bold leading-none opacity-20" style={{ color: 'var(--text-primary)' }}>‹</span>
               )
             )}
-            <h1 className="text-xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            <h1 className="text-xl font-extrabold tracking-tight truncate" style={{ color: 'var(--text-primary)' }}>
               {group.name}
             </h1>
             {groupIds.length > 1 && (
@@ -138,7 +138,7 @@ export default async function GrupoPage({
           </p>
         </div>
 
-        <div className="w-full sm:w-auto min-w-0">
+        <div className="shrink-0">
           <InviteCopyButton inviteCode={group.inviteCode} />
         </div>
       </div>

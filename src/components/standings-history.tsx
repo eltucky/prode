@@ -89,14 +89,11 @@ export function StandingsHistory({ matchHistory, dayHistory, currentUserId, labe
       className="rounded-xl overflow-hidden"
       style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
     >
-      {/* Header: title + toggle + current label */}
+      {/* Header: toggle + current label */}
       <div
         className="px-4 py-3 border-b flex items-center gap-3 flex-wrap"
         style={{ borderColor: 'var(--border)' }}
       >
-        <h2 className="font-semibold text-sm shrink-0" style={{ color: 'var(--text-primary)' }}>
-          {labels.title}
-        </h2>
         <div
           className="flex rounded-lg overflow-hidden text-xs font-medium"
           style={{ border: '1px solid var(--border)' }}

@@ -38,22 +38,14 @@ export function InviteCopyButton({ inviteCode }: { inviteCode: string }) {
       <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>
         {dict.grupoDetail.inviteTitle}
       </p>
-      <div className="flex items-center gap-2 min-w-0">
-        <span
-          className="text-sm font-mono truncate flex-1 min-w-0"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          {url || `…/invite/${inviteCode}`}
-        </span>
-        <button
-          onClick={handleCopy}
-          disabled={copied}
-          className="text-xs px-3 py-1.5 rounded-lg shrink-0 font-medium cursor-pointer transition-colors"
-          style={{ background: 'var(--accent)', color: '#000' }}
-        >
-          {copied ? dict.grupoDetail.copied : dict.grupoDetail.copyButton}
-        </button>
-      </div>
+      <button
+        onClick={handleCopy}
+        disabled={copied}
+        className="text-xs px-3 py-1.5 rounded-lg font-medium cursor-pointer transition-colors w-full"
+        style={{ background: 'var(--accent)', color: '#000' }}
+      >
+        {copied ? dict.grupoDetail.copied : dict.grupoDetail.copyButton}
+      </button>
     </div>
   )
 }
