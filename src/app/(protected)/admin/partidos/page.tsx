@@ -21,10 +21,12 @@ export default async function AdminPartidosPage() {
   const session = await auth()
   if (!session?.user?.isSuperAdmin) redirect('/grupos')
 
-  const matches = await prisma.match.findMany({
+  const STATUS_ORDER = { IN_PROGRESS: 0, SCHEDULED: 1, POSTPONED: 2, CANCELLED: 2, FINISHED: 3 }
+
+  const matches = (await prisma.match.findMany({
     include: { homeTeam: true, awayTeam: true },
     orderBy: { matchNumber: 'asc' },
-  })
+  })).sort((a, b) => (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99) || a.matchNumber - b.matchNumber)
 
   return (
     <div className="space-y-6">
