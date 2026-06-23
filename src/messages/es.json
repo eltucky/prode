@@ -53,7 +53,9 @@
     "historyPrev": "← Anterior",
     "historyNext": "Siguiente →",
     "historyByMatch": "Por partido",
-    "historyByDay": "Por día"
+    "historyByDay": "Por día",
+    "tabStandings": "Tabla",
+    "tabHistory": "Historial"
   },
   "grupoTodos": {
     "back": "← Mis grupos",

@@ -4,8 +4,8 @@ import { notFound, redirect } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { InviteCopyButton } from '@/components/invite-copy-button'
-import { getLocale, getDictionary } from '@/lib/i18n'
-import { StandingsHistory, type Snapshot } from '@/components/standings-history'
+import { getDictionary, getLocale } from '@/lib/i18n'
+import { GrupoTabs } from '@/components/grupo-tabs'
 
 export default async function GrupoPage({
   params,
@@ -57,17 +57,7 @@ export default async function GrupoPage({
       select: {
         userId: true,
         points: true,
-        matchId: true,
-        match: {
-          select: {
-            stage: true,
-            scheduledAt: true,
-            homeScore: true,
-            awayScore: true,
-            homeTeam: { select: { flag: true } },
-            awayTeam: { select: { flag: true } },
-          },
-        },
+        match: { select: { stage: true } },
       },
     }),
     prisma.prediction.findMany({
@@ -101,91 +91,6 @@ export default async function GrupoPage({
       }
     })
     .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
-
-  // Build per-match and per-day history snapshots for animation
-  const MONTH_ABBR: Record<string, string[]> = {
-    es: ['', 'ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'],
-    en: ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  }
-  const fmtDay = (iso: string) => {
-    const [, m, d] = iso.split('-').map(Number)
-    return `${d} ${MONTH_ABBR[locale][m]}`
-  }
-
-  // Sort predictions chronologically, then by matchId for determinism
-  const sorted = [...playedPredictions].sort((a, b) => {
-    const dt = a.match.scheduledAt.getTime() - b.match.scheduledAt.getTime()
-    return dt !== 0 ? dt : a.matchId.localeCompare(b.matchId)
-  })
-
-  // Helpers to build a snapshot from cumulative maps
-  const makeSnap = (cumPts: Map<string, number>, cumOk: Map<string, number>) =>
-    group.members
-      .map(m => ({
-        userId: m.userId,
-        name: m.user.name ?? '',
-        image: m.user.image ?? null,
-        points: cumPts.get(m.userId) ?? 0,
-        correctCount: cumOk.get(m.userId) ?? 0,
-      }))
-      .sort((a, b) => b.points - a.points || b.correctCount - a.correctCount)
-      .map((e, i) => ({ userId: e.userId, name: e.name, image: e.image, points: e.points, rank: i + 1 }))
-
-  // Per-match history (one frame per finished match)
-  const matchHistory: Snapshot[] = []
-  const mPts = new Map<string, number>()
-  const mOk = new Map<string, number>()
-  const seenMatches = new Set<string>()
-
-  for (const p of sorted) {
-    if (!seenMatches.has(p.matchId)) seenMatches.add(p.matchId)
-  }
-
-  // Group sorted predictions by matchId, preserving order
-  const matchOrder: string[] = []
-  const byMatch = new Map<string, typeof sorted>()
-  for (const p of sorted) {
-    if (!byMatch.has(p.matchId)) {
-      matchOrder.push(p.matchId)
-      byMatch.set(p.matchId, [])
-    }
-    byMatch.get(p.matchId)!.push(p)
-  }
-
-  for (const matchId of matchOrder) {
-    const preds = byMatch.get(matchId)!
-    for (const p of preds) {
-      mPts.set(p.userId, (mPts.get(p.userId) ?? 0) + (p.points ?? 0))
-      mOk.set(p.userId, (mOk.get(p.userId) ?? 0) + ((p.points ?? 0) > 0 ? 1 : 0))
-    }
-    const first = preds[0].match
-    const label = `${first.homeTeam?.flag ?? ''} ${first.homeScore ?? '?'}-${first.awayScore ?? '?'} ${first.awayTeam?.flag ?? ''}`
-    matchHistory.push({ key: matchId, label, standings: makeSnap(mPts, mOk) })
-  }
-
-  // Per-day history (one frame per day with at least one match)
-  const dayHistory: Snapshot[] = []
-  const dPts = new Map<string, number>()
-  const dOk = new Map<string, number>()
-  const byDay = new Map<string, typeof sorted>()
-  const dayOrder: string[] = []
-
-  for (const p of sorted) {
-    const date = p.match.scheduledAt.toISOString().split('T')[0]
-    if (!byDay.has(date)) {
-      dayOrder.push(date)
-      byDay.set(date, [])
-    }
-    byDay.get(date)!.push(p)
-  }
-
-  for (const date of dayOrder) {
-    for (const p of byDay.get(date)!) {
-      dPts.set(p.userId, (dPts.get(p.userId) ?? 0) + (p.points ?? 0))
-      dOk.set(p.userId, (dOk.get(p.userId) ?? 0) + ((p.points ?? 0) > 0 ? 1 : 0))
-    }
-    dayHistory.push({ key: date, label: fmtDay(date), standings: makeSnap(dPts, dOk) })
-  }
 
   return (
     <div className="space-y-6">
@@ -238,99 +143,11 @@ export default async function GrupoPage({
         </div>
       </div>
 
-      {/* Standings table */}
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-      >
-        <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--border)' }}>
-          <h2 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>
-            {dict.grupoDetail.standingsTitle}
-          </h2>
-        </div>
-        <table className="w-full text-sm">
-          <thead style={{ background: 'var(--surface-raised)' }}>
-            <tr>
-              {[
-                { label: dict.grupoDetail.tableRank, cls: 'text-left w-8' },
-                { label: dict.grupoDetail.tableParticipant, cls: 'text-left' },
-                { label: dict.grupoDetail.tablePoints, cls: 'text-right' },
-                { label: dict.grupoDetail.tablePending, cls: 'text-right hidden sm:table-cell' },
-                { label: dict.grupoDetail.tableCorrect, cls: 'text-right hidden sm:table-cell' },
-              ].map(({ label, cls }) => (
-                <th
-                  key={label}
-                  className={`px-4 py-2 text-xs font-semibold uppercase ${cls}`}
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  {label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {standings.map((entry, idx) => (
-              <tr
-                key={entry.user.id}
-                className="border-t"
-                style={{
-                  borderColor: 'var(--border)',
-                  background: entry.isCurrentUser ? '#22c55e0d' : 'transparent',
-                }}
-              >
-                <td className="px-4 py-2 font-medium" style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
-                <td className="px-4 py-2">
-                  <div className="flex items-center gap-2">
-                    {entry.user.image ? (
-                      <Image
-                        src={entry.user.image}
-                        alt={entry.user.name ?? ''}
-                        width={24}
-                        height={24}
-                        className="rounded-full shrink-0"
-                      />
-                    ) : (
-                      <div
-                        className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-xs font-medium"
-                        style={{ background: 'var(--surface-raised)', color: 'var(--text-muted)' }}
-                      >
-                        {entry.user.name?.[0] ?? '?'}
-                      </div>
-                    )}
-                    <span
-                      className={`truncate text-sm ${entry.isCurrentUser ? 'font-semibold' : ''}`}
-                      style={{ color: 'var(--text-primary)' }}
-                    >
-                      {entry.user.name}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-4 py-2 text-right font-bold tabular-nums" style={{ color: 'var(--accent)' }}>
-                  {entry.points}
-                  <span className="hidden sm:inline font-normal text-xs" style={{ color: 'var(--text-muted)' }}>
-                    {' '}{dict.grupoDetail.tableOf} {entry.maxPlayedPoints}
-                  </span>
-                </td>
-                <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
-                  {entry.pendingCount}
-                  <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {totalPendingMatchCount}</span>
-                </td>
-                <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
-                  {entry.correctCount}
-                  <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {entry.totalPlayed}</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Historical standings animation */}
-      <StandingsHistory
-        matchHistory={matchHistory}
-        dayHistory={dayHistory}
-        currentUserId={session?.user?.id}
-        labels={{
+      <GrupoTabs
+        groupId={id}
+        tabStandingsLabel={dict.grupoDetail.tabStandings}
+        tabHistoryLabel={dict.grupoDetail.tabHistory}
+        historyLabels={{
           title: dict.grupoDetail.historyTitle,
           play: dict.grupoDetail.historyPlay,
           pause: dict.grupoDetail.historyPause,
@@ -340,54 +157,90 @@ export default async function GrupoPage({
           byMatch: dict.grupoDetail.historyByMatch,
           byDay: dict.grupoDetail.historyByDay,
         }}
-      />
-
-      {/* Members list */}
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        currentUserId={session?.user?.id}
       >
-        {group.members.map((member, idx) => (
-          <div
-            key={member.id}
-            className="flex items-center gap-3 px-4 py-3"
-            style={{ borderTop: idx > 0 ? `1px solid var(--border)` : 'none' }}
-          >
-            {member.user.image ? (
-              <Image
-                src={member.user.image}
-                alt={member.user.name ?? ''}
-                width={36}
-                height={36}
-                className="rounded-full shrink-0"
-              />
-            ) : (
-              <div
-                className="w-9 h-9 rounded-full shrink-0 flex items-center justify-center text-sm font-medium"
-                style={{ background: 'var(--surface-raised)', color: 'var(--text-muted)' }}
-              >
-                {member.user.name?.[0] ?? '?'}
-              </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium truncate" style={{ color: 'var(--text-primary)' }}>
-                {member.user.name}
-              </div>
-              <div className="text-xs truncate" style={{ color: 'var(--text-muted)' }}>
-                {member.user.email}
-              </div>
-            </div>
-            {group.ownerId === member.userId && (
-              <span
-                className="text-xs px-2 py-0.5 rounded-full shrink-0"
-                style={{ background: 'var(--surface-raised)', color: 'var(--text-muted)' }}
-              >
-                {dict.grupoDetail.adminBadge}
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
+        {/* Standings table */}
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
+          <table className="w-full text-sm">
+            <thead style={{ background: 'var(--surface-raised)' }}>
+              <tr>
+                {[
+                  { label: dict.grupoDetail.tableRank, cls: 'text-left w-8' },
+                  { label: dict.grupoDetail.tableParticipant, cls: 'text-left' },
+                  { label: dict.grupoDetail.tablePoints, cls: 'text-right' },
+                  { label: dict.grupoDetail.tablePending, cls: 'text-right hidden sm:table-cell' },
+                  { label: dict.grupoDetail.tableCorrect, cls: 'text-right hidden sm:table-cell' },
+                ].map(({ label, cls }) => (
+                  <th
+                    key={label}
+                    className={`px-4 py-2 text-xs font-semibold uppercase ${cls}`}
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    {label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {standings.map((entry, idx) => (
+                <tr
+                  key={entry.user.id}
+                  className="border-t"
+                  style={{
+                    borderColor: 'var(--border)',
+                    background: entry.isCurrentUser ? '#22c55e0d' : 'transparent',
+                  }}
+                >
+                  <td className="px-4 py-2 font-medium" style={{ color: 'var(--text-muted)' }}>{idx + 1}</td>
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      {entry.user.image ? (
+                        <Image
+                          src={entry.user.image}
+                          alt={entry.user.name ?? ''}
+                          width={24}
+                          height={24}
+                          className="rounded-full shrink-0"
+                        />
+                      ) : (
+                        <div
+                          className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-xs font-medium"
+                          style={{ background: 'var(--surface-raised)', color: 'var(--text-muted)' }}
+                        >
+                          {entry.user.name?.[0] ?? '?'}
+                        </div>
+                      )}
+                      <span
+                        className={`truncate text-sm ${entry.isCurrentUser ? 'font-semibold' : ''}`}
+                        style={{ color: 'var(--text-primary)' }}
+                      >
+                        {entry.user.name}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-2 text-right font-bold tabular-nums" style={{ color: 'var(--accent)' }}>
+                    {entry.points}
+                    <span className="hidden sm:inline font-normal text-xs" style={{ color: 'var(--text-muted)' }}>
+                      {' '}{dict.grupoDetail.tableOf} {entry.maxPlayedPoints}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
+                    {entry.pendingCount}
+                    <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {totalPendingMatchCount}</span>
+                  </td>
+                  <td className="px-4 py-2 text-right tabular-nums hidden sm:table-cell" style={{ color: 'var(--text-muted)' }}>
+                    {entry.correctCount}
+                    <span className="text-xs opacity-60"> {dict.grupoDetail.tableOf} {entry.totalPlayed}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </GrupoTabs>
     </div>
   )
 }
