@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useDict } from '@/components/locale-provider'
 
-export function InviteCopyButton({ inviteCode }: { inviteCode: string }) {
+export function InviteCopyButton({ inviteCode, compact = false }: { inviteCode: string; compact?: boolean }) {
   const [copied, setCopied] = useState(false)
   const [url, setUrl] = useState('')
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -28,6 +28,19 @@ export function InviteCopyButton({ inviteCode }: { inviteCode: string }) {
     } catch (err) {
       console.error('Failed to copy invite URL:', err)
     }
+  }
+
+  if (compact) {
+    return (
+      <button
+        onClick={handleCopy}
+        disabled={copied}
+        className="text-xs px-3 py-1.5 rounded-lg shrink-0 font-medium cursor-pointer transition-colors whitespace-nowrap"
+        style={{ background: 'var(--accent)', color: '#000' }}
+      >
+        {copied ? dict.grupoDetail.copied : dict.grupoDetail.copyButton}
+      </button>
+    )
   }
 
   return (
