@@ -106,7 +106,10 @@ export function TorneoFilters({
       )}
 
       {showingGroupStage && availableGroups.length > 0 && (
-        <div className="flex gap-2 flex-wrap items-center pb-2">
+        <div
+          className="sticky top-0 z-10 flex gap-2 flex-wrap items-center py-2 -mx-4 px-4 border-b"
+          style={{ background: 'var(--bg)', borderColor: 'var(--border)' }}
+        >
           <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>{dict.torneo.filterGroupLabel}</span>
           {(() => {
             const href = stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'
