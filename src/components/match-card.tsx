@@ -107,7 +107,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
                 <span className="font-mono font-semibold" style={{ color: 'var(--text-primary)' }}>
                   {prediction.homeScore} - {prediction.awayScore}
                 </span>
-                {isKnockout && prediction.predictedWinnerId && (
+                {isKnockout && prediction.predictedWinnerId && prediction.homeScore === prediction.awayScore && (
                   <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                     {'('}
                     {dict.match.winner.replace('{name}',
