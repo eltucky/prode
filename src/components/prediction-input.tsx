@@ -81,7 +81,7 @@ export function PredictionInput({
       fd.set('matchId', matchId)
       fd.set('homeScore', String(homeScore))
       fd.set('awayScore', String(awayScore))
-      if (winnerId) fd.set('predictedWinnerId', winnerId)
+      if (winnerId && homeScore === awayScore) fd.set('predictedWinnerId', winnerId)
       startTransition(async () => {
         const result = await savePrediction(fd)
         if (result?.error === 'locked') {
