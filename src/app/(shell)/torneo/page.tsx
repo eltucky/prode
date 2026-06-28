@@ -113,6 +113,17 @@ export default async function TorneoPage({
   return (
     <div className="space-y-6">
       <TorneoScroller targetMatchId={targetMatchId} />
+      {!showingGroupStage && (
+        <div
+          className="rounded-xl px-4 py-3 text-sm"
+          style={{ background: '#3b82f61a', border: '1px solid #3b82f640', color: 'var(--text-muted)' }}
+        >
+          {dict.reglas.bonusNote}{' '}
+          <a href="/reglas" className="font-medium underline" style={{ color: 'var(--text-primary)' }}>
+            {dict.torneo.playoffCalloutLink}
+          </a>
+        </div>
+      )}
       <TorneoFilters
         showStageFilter={showStageFilter}
         filterableStages={filterableStages}

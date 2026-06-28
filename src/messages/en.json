@@ -75,7 +75,8 @@
     "filterGroupLabel": "Group:",
     "badgeComplete": "Complete group",
     "badgeActionRequired": "Predictions pending",
-    "badgeMissed": "Predictions missed"
+    "badgeMissed": "Predictions missed",
+    "playoffCalloutLink": "See the rules"
   },
   "match": {
     "statusScheduled": "Scheduled",
