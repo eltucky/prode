@@ -2,6 +2,7 @@ import { prisma } from '@/lib/db'
 import { fetchWorldCupFixtures } from '@/lib/football-api'
 import { MatchStatus } from '@prisma/client'
 import { scoreMatch } from '@/lib/scoring'
+import { advanceBracket } from '@/lib/advance-bracket'
 
 export function mapApiStatusToMatchStatus(apiStatus: string): MatchStatus {
   if (['FT', 'AET', 'PEN'].includes(apiStatus)) return 'FINISHED'
@@ -95,6 +96,7 @@ export async function syncResults(): Promise<{ updated: number; linked: number }
         },
       })
       await scoreMatch(localMatch.id)
+      await advanceBracket(localMatch.id)
       updated++
     }
   }

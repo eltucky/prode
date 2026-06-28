@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { MatchStatus } from '@prisma/client'
 import { z } from 'zod'
 import { scoreMatch } from '@/lib/scoring'
+import { advanceBracket } from '@/lib/advance-bracket'
 
 async function requireSuperAdmin() {
   const session = await auth()
@@ -46,6 +47,7 @@ export async function updateMatchResult(formData: FormData) {
 
   if (status === 'FINISHED') {
     await scoreMatch(matchId)
+    await advanceBracket(matchId)
   }
 
   revalidatePath('/admin/partidos')
