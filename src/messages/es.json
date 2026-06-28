@@ -75,7 +75,8 @@
     "filterGroupLabel": "Grupo:",
     "badgeComplete": "Grupo completo",
     "badgeActionRequired": "Pronósticos pendientes",
-    "badgeMissed": "Pronósticos perdidos"
+    "badgeMissed": "Pronósticos perdidos",
+    "playoffCalloutLink": "Ver las reglas"
   },
   "match": {
     "statusScheduled": "Programado",
