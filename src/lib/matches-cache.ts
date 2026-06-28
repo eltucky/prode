@@ -42,3 +42,27 @@ export const getCachedMatches = unstable_cache(
 )
 
 export type CachedMatch = Awaited<ReturnType<typeof getCachedMatches>>[number]
+
+export const getCachedActiveStage = unstable_cache(
+  async (): Promise<MatchStage> => {
+    const next = await prisma.match.findFirst({
+      where: {
+        status: { in: ['IN_PROGRESS', 'SCHEDULED'] },
+        homeTeamId: { not: null },
+        awayTeamId: { not: null },
+      },
+      orderBy: { scheduledAt: 'asc' },
+      select: { stage: true },
+    })
+    if (next) return next.stage
+    // Tournament finished — return the last stage played
+    const last = await prisma.match.findFirst({
+      where: { homeTeamId: { not: null }, awayTeamId: { not: null } },
+      orderBy: { scheduledAt: 'desc' },
+      select: { stage: true },
+    })
+    return last?.stage ?? 'GROUP'
+  },
+  ['active-stage'],
+  { revalidate: 60, tags: ['matches'] }
+)

@@ -84,7 +84,7 @@ export function TorneoFilters({
         <div className="flex items-center gap-2 flex-wrap">
           <Pill
             active={!stageFilter}
-            onClick={() => navigate('/torneo')}
+            onClick={() => navigate('/torneo?etapa=all')}
             pillClass={pillClass}
           >
             {dict.torneo.filterAll}
@@ -112,7 +112,7 @@ export function TorneoFilters({
         >
           <span className="text-xs mr-1" style={{ color: 'var(--text-muted)' }}>{dict.torneo.filterGroupLabel}</span>
           {(() => {
-            const href = stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo'
+            const href = stageFilter === 'GROUP' ? '/torneo?etapa=GROUP' : '/torneo?etapa=all'
             return (
               <Pill
                 active={!grupoFilter}
