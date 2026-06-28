@@ -1,5 +1,6 @@
 import { after } from 'next/server'
 import { revalidateTag } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/db'
 import { MatchStage } from '@prisma/client'
@@ -8,7 +9,7 @@ import { TorneoFilters } from '@/components/torneo-filters'
 import { computeGroupStatusMap, type GroupStatus, LOCK_THRESHOLD_MS } from '@/lib/group-status'
 import { getLocale, getDictionary, type Dictionary, t } from '@/lib/i18n'
 import { TorneoScroller } from '@/components/torneo-scroller'
-import { getCachedFilterableStages, getCachedMatches } from '@/lib/matches-cache'
+import { getCachedFilterableStages, getCachedMatches, getCachedActiveStage } from '@/lib/matches-cache'
 import { getCachedUserPredictions } from '@/lib/predictions-cache'
 
 const KNOCKOUT_STAGES: MatchStage[] = [
@@ -48,7 +49,13 @@ export default async function TorneoPage({
 
   const STAGE_LABELS = getStageLabels(dict)
   const VALID_STAGES = new Set<string>(stageOrder)
-  const stageFilter = etapa && VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
+
+  if (!etapa) {
+    const activeStage = await getCachedActiveStage()
+    redirect(`/torneo?etapa=${activeStage}`)
+  }
+
+  const stageFilter = VALID_STAGES.has(etapa) ? (etapa as MatchStage) : undefined
   const showingGroupStage = !stageFilter || stageFilter === 'GROUP'
 
   // Run match status update after response is sent — zero TTFB impact.
