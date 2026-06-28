@@ -6,6 +6,8 @@ const baseMatch = {
   homeScore: 2,
   awayScore: 1,
   winnerId: 'home-id',
+  homeTeamId: 'home-id',
+  awayTeamId: 'away-id',
   stage: 'GROUP' as MatchStage,
 }
 
@@ -74,6 +76,8 @@ describe('calculatePoints — rondas eliminatorias', () => {
     homeScore: 1,
     awayScore: 1,
     winnerId: 'home-id',
+    homeTeamId: 'home-id',
+    awayTeamId: 'away-id',
   }
 
   it('agrega +2 si acertó el ganador final (total: 7 pts con resultado exacto)', () => {
@@ -90,10 +94,31 @@ describe('calculatePoints — rondas eliminatorias', () => {
     )).toBe(5)
   })
 
-  it('no agrega +2 si predictedWinnerId es null en eliminatoria', () => {
+  it('no agrega +2 si predictedWinnerId es null y el pronóstico es empate', () => {
     expect(calculatePoints(
       { homeScore: 1, awayScore: 1, predictedWinnerId: null },
       knockoutMatch
+    )).toBe(5)
+  })
+
+  it('agrega +2 si el ganador es implícito por el score (2-1 vs partido 2-1)', () => {
+    expect(calculatePoints(
+      { homeScore: 2, awayScore: 1, predictedWinnerId: null },
+      { ...knockoutMatch, homeScore: 2, awayScore: 1, winnerId: 'home-id' }
+    )).toBe(7)
+  })
+
+  it('no agrega +2 si el ganador implícito no coincide con el real', () => {
+    expect(calculatePoints(
+      { homeScore: 2, awayScore: 1, predictedWinnerId: null },
+      { ...knockoutMatch, homeScore: 1, awayScore: 2, winnerId: 'away-id' }
+    )).toBe(0)
+  })
+
+  it('agrega +2 implícito en no-empate aunque no sea exacto (1-0 vs 2-0, away exact)', () => {
+    expect(calculatePoints(
+      { homeScore: 1, awayScore: 0, predictedWinnerId: null },
+      { ...knockoutMatch, homeScore: 2, awayScore: 0, winnerId: 'home-id' }
     )).toBe(5)
   })
 })

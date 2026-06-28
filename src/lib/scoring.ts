@@ -19,6 +19,8 @@ export function calculatePoints(
     homeScore: number | null
     awayScore: number | null
     winnerId: string | null
+    homeTeamId: string | null
+    awayTeamId: string | null
     stage: MatchStage
   }
 ): number | null {
@@ -35,12 +37,17 @@ export function calculatePoints(
   const base = isExact ? 3 : 2
   let points = base + homeBonus + awayBonus
 
-  if (
-    KNOCKOUT_STAGES.includes(match.stage) &&
-    prediction.predictedWinnerId &&
-    prediction.predictedWinnerId === match.winnerId
-  ) {
-    points += 2
+  if (KNOCKOUT_STAGES.includes(match.stage)) {
+    // For non-draw predictions the winner is implicit from the score.
+    // For draw predictions the user must have selected it explicitly.
+    const impliedWinnerId = prediction.predictedWinnerId
+      ?? (prediction.homeScore > prediction.awayScore ? match.homeTeamId
+        : prediction.awayScore > prediction.homeScore ? match.awayTeamId
+        : null)
+
+    if (impliedWinnerId && impliedWinnerId === match.winnerId) {
+      points += 2
+    }
   }
 
   return points
@@ -53,6 +60,8 @@ export async function scoreMatch(matchId: string): Promise<void> {
       homeScore: true,
       awayScore: true,
       winnerId: true,
+      homeTeamId: true,
+      awayTeamId: true,
       stage: true,
       status: true,
     },
