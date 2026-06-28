@@ -250,7 +250,7 @@ export default async function MatchDetailPage({
                             <span className="text-sm font-mono font-semibold" style={{ color: 'var(--text-primary)' }}>
                               {prediction.homeScore} - {prediction.awayScore}
                             </span>
-                            {isKnockout && prediction.predictedWinnerId && (
+                            {isKnockout && prediction.predictedWinnerId && prediction.homeScore === prediction.awayScore && (
                               <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
                                 {'('}
                                 {t(dict.match.winner, {
