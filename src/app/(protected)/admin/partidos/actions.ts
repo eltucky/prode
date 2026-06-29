@@ -40,9 +40,21 @@ export async function updateMatchResult(formData: FormData) {
 
   const { matchId, homeScore, awayScore, status, winnerId } = parsed.data
 
+  const matchTeams = await prisma.match.findUnique({
+    where: { id: matchId },
+    select: { homeTeamId: true, awayTeamId: true },
+  })
+
+  const computedWinnerId = winnerId
+    ?? (homeScore !== null && awayScore !== null && matchTeams
+      ? homeScore > awayScore ? matchTeams.homeTeamId
+        : awayScore > homeScore ? matchTeams.awayTeamId
+        : null
+      : null)
+
   await prisma.match.update({
     where: { id: matchId },
-    data: { homeScore, awayScore, status: status as MatchStatus, winnerId },
+    data: { homeScore, awayScore, status: status as MatchStatus, winnerId: computedWinnerId },
   })
 
   if (status === 'FINISHED') {

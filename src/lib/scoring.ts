@@ -19,8 +19,6 @@ export function calculatePoints(
     homeScore: number | null
     awayScore: number | null
     winnerId: string | null
-    homeTeamId: string | null
-    awayTeamId: string | null
     stage: MatchStage
   }
 ): number | null {
@@ -29,7 +27,18 @@ export function calculatePoints(
   const actualOutcome = getOutcome(match.homeScore, match.awayScore)
   const predictedOutcome = getOutcome(prediction.homeScore, prediction.awayScore)
 
-  if (actualOutcome !== predictedOutcome) return 0
+  if (actualOutcome !== predictedOutcome) {
+    // In knockout, still award +2 if they predicted draw and picked the right team to advance
+    if (
+      KNOCKOUT_STAGES.includes(match.stage) &&
+      predictedOutcome === 'draw' &&
+      prediction.predictedWinnerId &&
+      prediction.predictedWinnerId === match.winnerId
+    ) {
+      return 2
+    }
+    return 0
+  }
 
   const homeBonus = prediction.homeScore === match.homeScore ? 1 : 0
   const awayBonus = prediction.awayScore === match.awayScore ? 1 : 0
@@ -38,14 +47,11 @@ export function calculatePoints(
   let points = base + homeBonus + awayBonus
 
   if (KNOCKOUT_STAGES.includes(match.stage)) {
-    // For non-draw predictions the winner is implicit from the score.
-    // For draw predictions the user must have selected it explicitly.
-    const impliedWinnerId = prediction.predictedWinnerId
-      ?? (prediction.homeScore > prediction.awayScore ? match.homeTeamId
-        : prediction.awayScore > prediction.homeScore ? match.awayTeamId
-        : null)
-
-    if (impliedWinnerId && impliedWinnerId === match.winnerId) {
+    // Non-draw: outcomes already match so winner is implicitly correct — always +2.
+    // Draw: winner decided by extra time/penalties, needs explicit predictedWinnerId.
+    if (predictedOutcome !== 'draw') {
+      points += 2
+    } else if (prediction.predictedWinnerId && prediction.predictedWinnerId === match.winnerId) {
       points += 2
     }
   }
@@ -60,8 +66,6 @@ export async function scoreMatch(matchId: string): Promise<void> {
       homeScore: true,
       awayScore: true,
       winnerId: true,
-      homeTeamId: true,
-      awayTeamId: true,
       stage: true,
       status: true,
     },
