@@ -118,11 +118,11 @@ describe('calculatePoints — rondas eliminatorias', () => {
     )).toBe(0)
   })
 
-  it('retorna 2 si predijo empate con ganador correcto aunque el outcome sea incorrecto', () => {
+  it('retorna 0 si predijo empate con ganador correcto pero el outcome es incorrecto', () => {
     expect(calculatePoints(
       { homeScore: 1, awayScore: 1, predictedWinnerId: 'away-id' },
       { ...knockoutMatch, homeScore: 0, awayScore: 1, winnerId: 'away-id' }
-    )).toBe(2)
+    )).toBe(0)
   })
 
   it('retorna 0 si predijo empate con ganador incorrecto y outcome incorrecto', () => {
