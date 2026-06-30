@@ -28,15 +28,6 @@ export function calculatePoints(
   const predictedOutcome = getOutcome(prediction.homeScore, prediction.awayScore)
 
   if (actualOutcome !== predictedOutcome) {
-    // In knockout, still award +2 if they predicted draw and picked the right team to advance
-    if (
-      KNOCKOUT_STAGES.includes(match.stage) &&
-      predictedOutcome === 'draw' &&
-      prediction.predictedWinnerId &&
-      prediction.predictedWinnerId === match.winnerId
-    ) {
-      return 2
-    }
     return 0
   }
 
