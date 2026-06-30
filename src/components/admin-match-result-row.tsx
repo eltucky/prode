@@ -4,25 +4,39 @@ import { useTransition, useState } from 'react'
 import { updateMatchResult, clearMatchResult } from '@/app/(protected)/admin/partidos/actions'
 import { MatchStatus } from '@prisma/client'
 
+type Team = { id: string; name: string; flag: string }
+
 type Props = {
   matchId: string
   homeScore: number | null
   awayScore: number | null
+  winnerId: string | null
   status: MatchStatus
+  isKnockout: boolean
+  homeTeam: Team | null
+  awayTeam: Team | null
 }
 
-export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: Props) {
+export function AdminMatchResultRow({ matchId, homeScore, awayScore, winnerId: currentWinnerId, status, isKnockout, homeTeam, awayTeam }: Props) {
   const [isPending, startTransition] = useTransition()
   const savedHome = homeScore?.toString() ?? ''
   const savedAway = awayScore?.toString() ?? ''
 
   const [home, setHome] = useState(savedHome)
   const [away, setAway] = useState(savedAway)
+  const [winnerId, setWinnerId] = useState(currentWinnerId ?? '')
   const [matchStatus, setMatchStatus] = useState<MatchStatus>(status)
   const [confirming, setConfirming] = useState(false)
 
   const hasScores = home !== '' && away !== ''
-  const isDirty = home !== savedHome || away !== savedAway || matchStatus !== status
+  const isDraw = hasScores && parseInt(home, 10) === parseInt(away, 10)
+  const showWinnerSelect = isKnockout && isDraw && !!homeTeam && !!awayTeam
+
+  const isDirty =
+    home !== savedHome ||
+    away !== savedAway ||
+    matchStatus !== status ||
+    (showWinnerSelect && winnerId !== (currentWinnerId ?? ''))
   const disabled = !isDirty || isPending || (matchStatus === 'FINISHED' && !hasScores)
 
   function handleHomeChange(val: string) {
@@ -69,6 +83,18 @@ export function AdminMatchResultRow({ matchId, homeScore, awayScore, status }: P
           placeholder="V"
           className="w-12 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-center text-sm"
         />
+        {showWinnerSelect && (
+          <select
+            name="winnerId"
+            value={winnerId}
+            onChange={e => setWinnerId(e.target.value)}
+            className="bg-zinc-800 border border-zinc-700 text-zinc-100 rounded px-1 py-0.5 text-xs"
+          >
+            <option value="">Penales...</option>
+            <option value={homeTeam!.id}>{homeTeam!.flag} {homeTeam!.name}</option>
+            <option value={awayTeam!.id}>{awayTeam!.flag} {awayTeam!.name}</option>
+          </select>
+        )}
         <select
           name="status"
           value={matchStatus}
