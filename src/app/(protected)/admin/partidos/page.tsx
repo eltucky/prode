@@ -2,7 +2,7 @@ import { auth } from '@/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/db'
 import { triggerSyncAction } from './actions'
-import { MatchStage } from '@prisma/client'
+import { MatchStage, MatchStatus } from '@prisma/client'
 import { ClientDate } from '@/components/client-date'
 import { AdminMatchResultRow } from '@/components/admin-match-result-row'
 import { SubmitButton } from '@/components/submit-button'
@@ -17,6 +17,14 @@ const STAGE_LABELS: Record<MatchStage, string> = {
   FINAL: 'Final',
 }
 
+const STATUS_BADGE: Record<MatchStatus, { label: string; className: string }> = {
+  SCHEDULED:   { label: 'Programado',  className: 'bg-zinc-800 text-zinc-400' },
+  IN_PROGRESS: { label: 'En juego',    className: 'bg-yellow-900/40 text-yellow-400' },
+  FINISHED:    { label: 'Finalizado',  className: 'bg-green-900/40 text-green-400' },
+  POSTPONED:   { label: 'Postergado',  className: 'bg-red-900/40 text-red-400' },
+  CANCELLED:   { label: 'Cancelado',   className: 'bg-red-900/40 text-red-400' },
+}
+
 export default async function AdminPartidosPage() {
   const session = await auth()
   if (!session?.user?.isSuperAdmin) redirect('/grupos')
@@ -29,69 +37,69 @@ export default async function AdminPartidosPage() {
   })).sort((a, b) => (STATUS_ORDER[a.status] ?? 99) - (STATUS_ORDER[b.status] ?? 99) || a.matchNumber - b.matchNumber)
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Admin — Partidos</h1>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-xl font-bold">Admin — Partidos</h1>
         <form action={triggerSyncAction}>
-          <SubmitButton className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700">
-            🔄 Sincronizar resultados
+          <SubmitButton className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 whitespace-nowrap">
+            🔄 Sincronizar
           </SubmitButton>
         </form>
       </div>
 
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-zinc-800/50 border-b border-zinc-800">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">#</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Partido</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Fecha</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Resultado</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Estado</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Acción</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-zinc-800">
-            {matches.map(match => (
-              <tr key={match.id} className="hover:bg-zinc-800/50">
-                <td className="px-4 py-2 text-zinc-500">{match.matchNumber}</td>
-                <td className="px-4 py-2 font-medium">
-                  <div className="text-xs text-zinc-500">{STAGE_LABELS[match.stage]}{match.groupName ? ` · Grupo ${match.groupName}` : ''}</div>
-                  <div>
-                    {match.homeTeam ? `${match.homeTeam.flag} ${match.homeTeam.name}` : 'TBD'} vs {match.awayTeam ? `${match.awayTeam.flag} ${match.awayTeam.name}` : 'TBD'}
+      <div className="space-y-2">
+        {matches.map(match => {
+          const badge = STATUS_BADGE[match.status]
+          return (
+            <div
+              key={match.id}
+              className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 space-y-3"
+            >
+              {/* Match header */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-xs text-zinc-500 mb-0.5">
+                    #{match.matchNumber} · {STAGE_LABELS[match.stage]}
+                    {match.groupName ? ` · Grupo ${match.groupName}` : ''}
                   </div>
-                </td>
-                <td className="px-4 py-2 text-zinc-500 text-xs">
-                  <ClientDate iso={match.scheduledAt.toISOString()} />
-                </td>
-                <td className="px-4 py-2">
-                  {match.homeScore !== null ? `${match.homeScore} - ${match.awayScore}` : '—'}
-                </td>
-                <td className="px-4 py-2">
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    match.status === 'FINISHED' ? 'bg-green-900/40 text-green-400' :
-                    match.status === 'IN_PROGRESS' ? 'bg-yellow-900/40 text-yellow-400' :
-                    match.status === 'POSTPONED' ? 'bg-red-900/40 text-red-400' :
-                    'bg-zinc-800 text-zinc-400'
-                  }`}>{match.status}</span>
-                </td>
-                <td className="px-4 py-2">
-                  <AdminMatchResultRow
-                    key={`${match.id}-${match.homeScore ?? 'null'}-${match.awayScore ?? 'null'}-${match.winnerId ?? 'null'}`}
-                    matchId={match.id}
-                    homeScore={match.homeScore}
-                    awayScore={match.awayScore}
-                    winnerId={match.winnerId}
-                    status={match.status}
-                    isKnockout={match.stage !== 'GROUP'}
-                    homeTeam={match.homeTeam}
-                    awayTeam={match.awayTeam}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  <div className="font-medium text-sm leading-snug">
+                    {match.homeTeam ? `${match.homeTeam.flag} ${match.homeTeam.name}` : 'TBD'}
+                    {' vs '}
+                    {match.awayTeam ? `${match.awayTeam.flag} ${match.awayTeam.name}` : 'TBD'}
+                  </div>
+                  <div className="text-xs text-zinc-500 mt-0.5">
+                    <ClientDate iso={match.scheduledAt.toISOString()} />
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-1 shrink-0">
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${badge.className}`}>
+                    {badge.label}
+                  </span>
+                  {match.homeScore !== null && (
+                    <span className="text-sm font-mono font-semibold text-zinc-300">
+                      {match.homeScore} – {match.awayScore}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Result form */}
+              <div className="border-t border-zinc-800 pt-3">
+                <AdminMatchResultRow
+                  key={`${match.id}-${match.homeScore ?? 'null'}-${match.awayScore ?? 'null'}-${match.winnerId ?? 'null'}`}
+                  matchId={match.id}
+                  homeScore={match.homeScore}
+                  awayScore={match.awayScore}
+                  winnerId={match.winnerId}
+                  status={match.status}
+                  isKnockout={match.stage !== 'GROUP'}
+                  homeTeam={match.homeTeam}
+                  awayTeam={match.awayTeam}
+                />
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
