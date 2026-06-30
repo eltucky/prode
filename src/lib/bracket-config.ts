@@ -6,30 +6,42 @@ export type MatchOutcome = { winner?: BracketSlot; loser?: BracketSlot }
 // Maps each knockout match number → where winner (and loser for semis) advance
 export const knockoutAdvancement: Record<number, MatchOutcome> = {
   // Round of 32 → Round of 16
-  73: { winner: { matchNumber: 89, slot: 'home' } },
-  74: { winner: { matchNumber: 89, slot: 'away' } },
-  75: { winner: { matchNumber: 90, slot: 'home' } },
-  76: { winner: { matchNumber: 90, slot: 'away' } },
-  77: { winner: { matchNumber: 91, slot: 'home' } },
+  // Match 89 (Philadelphia): Winner(74) vs Winner(77)
+  // Match 90 (Houston):      Winner(73) vs Winner(75)
+  // Match 91 (New York NJ):  Winner(76) vs Winner(78)
+  // Match 92 (Mexico City):  Winner(79) vs Winner(80)
+  // Match 93 (Dallas):       Winner(83) vs Winner(84)
+  // Match 94 (Seattle):      Winner(81) vs Winner(82)
+  // Match 95 (Atlanta):      Winner(86) vs Winner(88)
+  // Match 96 (Vancouver):    Winner(85) vs Winner(87)
+  73: { winner: { matchNumber: 90, slot: 'home' } },
+  74: { winner: { matchNumber: 89, slot: 'home' } },
+  75: { winner: { matchNumber: 90, slot: 'away' } },
+  76: { winner: { matchNumber: 91, slot: 'home' } },
+  77: { winner: { matchNumber: 89, slot: 'away' } },
   78: { winner: { matchNumber: 91, slot: 'away' } },
   79: { winner: { matchNumber: 92, slot: 'home' } },
   80: { winner: { matchNumber: 92, slot: 'away' } },
-  81: { winner: { matchNumber: 93, slot: 'home' } },
-  82: { winner: { matchNumber: 93, slot: 'away' } },
-  83: { winner: { matchNumber: 94, slot: 'home' } },
-  84: { winner: { matchNumber: 94, slot: 'away' } },
-  85: { winner: { matchNumber: 95, slot: 'home' } },
-  86: { winner: { matchNumber: 95, slot: 'away' } },
-  87: { winner: { matchNumber: 96, slot: 'home' } },
-  88: { winner: { matchNumber: 96, slot: 'away' } },
+  81: { winner: { matchNumber: 94, slot: 'home' } },
+  82: { winner: { matchNumber: 94, slot: 'away' } },
+  83: { winner: { matchNumber: 93, slot: 'home' } },
+  84: { winner: { matchNumber: 93, slot: 'away' } },
+  85: { winner: { matchNumber: 96, slot: 'home' } },
+  86: { winner: { matchNumber: 95, slot: 'home' } },
+  87: { winner: { matchNumber: 96, slot: 'away' } },
+  88: { winner: { matchNumber: 95, slot: 'away' } },
 
   // Round of 16 → Quarter Finals
+  // Match 97 (QF): Winner(89) vs Winner(90)
+  // Match 98 (QF): Winner(93) vs Winner(94)
+  // Match 99 (QF): Winner(91) vs Winner(92)
+  // Match 100 (QF): Winner(95) vs Winner(96)
   89: { winner: { matchNumber: 97, slot: 'home' } },
   90: { winner: { matchNumber: 97, slot: 'away' } },
-  91: { winner: { matchNumber: 98, slot: 'home' } },
-  92: { winner: { matchNumber: 98, slot: 'away' } },
-  93: { winner: { matchNumber: 99, slot: 'home' } },
-  94: { winner: { matchNumber: 99, slot: 'away' } },
+  91: { winner: { matchNumber: 99, slot: 'home' } },
+  92: { winner: { matchNumber: 99, slot: 'away' } },
+  93: { winner: { matchNumber: 98, slot: 'home' } },
+  94: { winner: { matchNumber: 98, slot: 'away' } },
   95: { winner: { matchNumber: 100, slot: 'home' } },
   96: { winner: { matchNumber: 100, slot: 'away' } },
 
