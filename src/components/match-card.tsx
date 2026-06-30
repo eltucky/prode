@@ -135,7 +135,7 @@ export function MatchCard({ match, prediction, hasSession, showGroupLabel, locke
             )
           ) : hasSession ? (
             <PredictionInput
-              key={prediction ? 'has-pred' : `new-${match.id}`}
+              key={match.id}
               matchId={match.id}
               prediction={prediction}
               homeTeam={match.homeTeam}
