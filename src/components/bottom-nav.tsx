@@ -19,7 +19,6 @@ export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
     { href: '/torneo', matchHref: '/torneo', label: dict.nav.torneo, icon: '🏟️' },
     { href: gruposHref, matchHref: '/grupos', label: dict.nav.grupos, icon: '👥' },
     { href: '/reglas', matchHref: '/reglas', label: dict.nav.reglas, icon: '📋' },
-    { href: '/perfil', matchHref: '/perfil', label: dict.nav.perfil, icon: '👤' },
   ]
 
   return (
