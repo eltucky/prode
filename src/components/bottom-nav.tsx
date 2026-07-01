@@ -7,17 +7,19 @@ import { useState } from 'react'
 import { signOutAction } from '@/app/actions'
 import { SubmitButton } from '@/components/submit-button'
 import { useDict } from '@/components/locale-provider'
+import { useLastGroupHref } from '@/components/use-last-group-href'
 
 export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
   const pathname = usePathname()
   const [moreOpen, setMoreOpen] = useState(false)
   const dict = useDict()
+  const gruposHref = useLastGroupHref()
 
   const TABS = [
-    { href: '/torneo', label: dict.nav.torneo, icon: '🏟️' },
-    { href: '/grupos', label: dict.nav.grupos, icon: '👥' },
-    { href: '/reglas', label: dict.nav.reglas, icon: '📋' },
-    { href: '/perfil', label: dict.nav.perfil, icon: '👤' },
+    { href: '/torneo', matchHref: '/torneo', label: dict.nav.torneo, icon: '🏟️' },
+    { href: gruposHref, matchHref: '/grupos', label: dict.nav.grupos, icon: '👥' },
+    { href: '/reglas', matchHref: '/reglas', label: dict.nav.reglas, icon: '📋' },
+    { href: '/perfil', matchHref: '/perfil', label: dict.nav.perfil, icon: '👤' },
   ]
 
   return (
@@ -62,10 +64,10 @@ export default function BottomNav({ isSuperAdmin }: { isSuperAdmin: boolean }) {
       >
         <div className="flex justify-around items-center py-1 pb-2">
           {TABS.map((tab) => {
-            const isActive = pathname.startsWith(tab.href)
+            const isActive = pathname.startsWith(tab.matchHref)
             return (
               <Link
-                key={tab.href}
+                key={tab.matchHref}
                 href={tab.href}
                 className="flex flex-col items-center gap-0.5 px-3 py-2 min-w-14 text-xs"
                 style={{ color: isActive ? 'var(--accent)' : 'var(--text-muted)' }}
