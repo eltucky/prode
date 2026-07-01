@@ -3,24 +3,26 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useDict } from '@/components/locale-provider'
+import { useLastGroupHref } from '@/components/use-last-group-href'
 
 export function NavLinks({ isSuperAdmin }: { isSuperAdmin: boolean }) {
   const pathname = usePathname()
   const dict = useDict()
+  const gruposHref = useLastGroupHref()
 
   const LINKS = [
-    { href: '/torneo', label: dict.nav.torneo },
-    { href: '/grupos', label: dict.nav.grupos },
-    { href: '/reglas', label: dict.nav.reglas },
+    { href: '/torneo', matchHref: '/torneo', label: dict.nav.torneo },
+    { href: gruposHref, matchHref: '/grupos', label: dict.nav.grupos },
+    { href: '/reglas', matchHref: '/reglas', label: dict.nav.reglas },
   ]
 
   return (
     <div className="flex items-center gap-4">
-      {LINKS.map(({ href, label }) => {
-        const isActive = pathname.startsWith(href)
+      {LINKS.map(({ href, matchHref, label }) => {
+        const isActive = pathname.startsWith(matchHref)
         return (
           <Link
-            key={href}
+            key={matchHref}
             href={href}
             className="text-sm font-medium transition-colors"
             style={{ color: isActive ? 'var(--text-primary)' : 'var(--text-muted)' }}

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { InviteCopyButton } from '@/components/invite-copy-button'
 import { getDictionary, getLocale } from '@/lib/i18n'
 import { GrupoTabs } from '@/components/grupo-tabs'
+import { LastGroupTracker } from '@/components/last-group-tracker'
 
 export default async function GrupoPage({
   params,
@@ -94,6 +95,7 @@ export default async function GrupoPage({
 
   return (
     <div className="space-y-6">
+      <LastGroupTracker groupId={id} />
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <Link href="/grupos" className="text-sm transition-colors" style={{ color: 'var(--text-muted)' }}>
