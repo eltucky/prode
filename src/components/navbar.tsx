@@ -38,22 +38,23 @@ export default async function Navbar() {
           <div className="hidden md:flex items-center gap-4">
             <NavLinks isSuperAdmin={session.user.isSuperAdmin ?? false} />
           </div>
-          {session.user.image && (
-            <Image
-              src={session.user.image}
-              alt={session.user.name ?? ''}
-              width={30}
-              height={30}
-              className="rounded-full border"
-              style={{ borderColor: 'var(--border)' }}
-            />
-          )}
-          <Link
-            href="/perfil"
-            className="hidden md:block text-sm"
-            style={{ color: 'var(--text-muted)' }}
-          >
-            {session.user.name}
+          <Link href="/perfil" className="flex items-center gap-2">
+            {session.user.image && (
+              <Image
+                src={session.user.image}
+                alt={session.user.name ?? ''}
+                width={30}
+                height={30}
+                className="rounded-full border"
+                style={{ borderColor: 'var(--border)' }}
+              />
+            )}
+            <span
+              className="hidden md:block text-sm"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              {session.user.name}
+            </span>
           </Link>
           <form
             action={async () => {
