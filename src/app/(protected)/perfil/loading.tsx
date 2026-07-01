@@ -33,6 +33,19 @@ export default function PerfilLoading() {
         </div>
         <Skeleton className="h-10 w-full rounded-xl" />
       </div>
+
+      {/* Theme card */}
+      <div
+        className="rounded-2xl p-5 space-y-4"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        <Skeleton className="h-4 w-16" />
+        <div className="grid grid-cols-3 gap-2">
+          <Skeleton className="h-10 rounded-xl" />
+          <Skeleton className="h-10 rounded-xl" />
+          <Skeleton className="h-10 rounded-xl" />
+        </div>
+      </div>
     </div>
   )
 }

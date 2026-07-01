@@ -88,3 +88,28 @@ describe('resolveLocale()', () => {
     expect(resolveLocale(undefined, '')).toBe('es')
   })
 })
+
+// ─── Theme resolver ─────────────────────────────────────────────────────────
+
+function resolveTheme(cookieValue: string | undefined): string {
+  if (cookieValue === 'dark' || cookieValue === 'light' || cookieValue === 'pokemon') {
+    return cookieValue
+  }
+  return 'dark'
+}
+
+describe('resolveTheme()', () => {
+  it('returns cookie value when valid', () => {
+    expect(resolveTheme('dark')).toBe('dark')
+    expect(resolveTheme('light')).toBe('light')
+    expect(resolveTheme('pokemon')).toBe('pokemon')
+  })
+
+  it('defaults to dark when cookie is missing', () => {
+    expect(resolveTheme(undefined)).toBe('dark')
+  })
+
+  it('defaults to dark when cookie is invalid', () => {
+    expect(resolveTheme('blue')).toBe('dark')
+  })
+})

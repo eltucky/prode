@@ -107,7 +107,11 @@
     "notificationsTitle": "Notificaciones",
     "notificationsLabel": "Recordatorios y resumen diario",
     "notificationsDescription": "Te avisamos 2 horas antes de cada partido si todavía no cargaste pronóstico, y te mandamos un resumen de puntos al final del día.",
-    "saveButton": "Guardar"
+    "saveButton": "Guardar",
+    "themeTitle": "Tema",
+    "themeDark": "Oscuro",
+    "themeLight": "Claro",
+    "themePokemon": "Pokémon"
   },
   "invite": {
     "invalidTitle": "Link inválido",

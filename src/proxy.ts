@@ -25,8 +25,10 @@ export default auth((req) => {
     req.cookies.get("prode_locale")?.value,
     req.headers.get("accept-language") ?? ""
   );
+  const theme = resolveTheme(req.cookies.get("prode_theme")?.value);
   const headers = new Headers(req.headers);
   headers.set("x-locale", locale);
+  headers.set("x-theme", theme);
   return NextResponse.next({ request: { headers } });
 });
 
@@ -45,4 +47,11 @@ function resolveLocale(
   const code = firstTag.split("-")[0].toLowerCase();
   if (code === "es" || code === "en") return code;
   return "es";
+}
+
+function resolveTheme(cookieValue: string | undefined): string {
+  if (cookieValue === "dark" || cookieValue === "light" || cookieValue === "pokemon") {
+    return cookieValue;
+  }
+  return "dark";
 }

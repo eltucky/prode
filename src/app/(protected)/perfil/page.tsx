@@ -4,7 +4,9 @@ import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { updateEmailNotifications } from './actions'
 import { SubmitButton } from '@/components/submit-button'
+import { ThemeSwitcher } from '@/components/theme-switcher'
 import { getLocale, getDictionary } from '@/lib/i18n'
+import { getTheme } from '@/lib/theme'
 
 export default async function PerfilPage() {
   const session = await auth()
@@ -12,6 +14,7 @@ export default async function PerfilPage() {
 
   const locale = await getLocale()
   const dict = await getDictionary(locale)
+  const theme = await getTheme()
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -86,6 +89,24 @@ export default async function PerfilPage() {
             {dict.perfil.saveButton}
           </SubmitButton>
         </form>
+      </div>
+
+      {/* Tema */}
+      <div
+        className="rounded-2xl p-5"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        <h2 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+          {dict.perfil.themeTitle}
+        </h2>
+        <ThemeSwitcher
+          currentTheme={theme}
+          labels={{
+            dark: dict.perfil.themeDark,
+            light: dict.perfil.themeLight,
+            pokemon: dict.perfil.themePokemon,
+          }}
+        />
       </div>
     </div>
   )
