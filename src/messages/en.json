@@ -107,7 +107,11 @@
     "notificationsTitle": "Notifications",
     "notificationsLabel": "Reminders and daily summary",
     "notificationsDescription": "We notify you 2 hours before each match if you haven't submitted a prediction yet, and send a daily points summary.",
-    "saveButton": "Save"
+    "saveButton": "Save",
+    "themeTitle": "Theme",
+    "themeDark": "Dark",
+    "themeLight": "Light",
+    "themePokemon": "Pokémon"
   },
   "invite": {
     "invalidTitle": "Invalid link",
