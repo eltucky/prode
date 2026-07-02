@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function MatchDetailLoading() {
   return (
     <div className="space-y-6">
+      <PageLoader />
       <Skeleton className="h-4 w-28" />
       <div
         className="rounded-xl px-4 py-4"

@@ -65,3 +65,54 @@ body {
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite linear;
 }
+
+/* Loader de página: pelota girando, o pokemones volando en el tema Pokemon */
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.page-loader-ball {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 2.5rem;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  animation: page-loader-spin 0.9s linear infinite;
+}
+
+[data-theme="pokemon"] .page-loader-ball { display: none; }
+
+.page-loader-mon-track {
+  display: none;
+  position: absolute;
+  left: 0;
+  animation-name: page-loader-fly;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+[data-theme="pokemon"] .page-loader-mon-track { display: block; }
+
+.page-loader-mon-spin {
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 1;
+  animation-name: page-loader-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes page-loader-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes page-loader-fly {
+  from { transform: translateX(-10vw); }
+  to   { transform: translateX(110vw); }
+}

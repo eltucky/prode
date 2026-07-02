@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function ReglasLoading() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      <PageLoader />
       <div className="space-y-1">
         <Skeleton className="h-6 w-52" />
         <Skeleton className="h-4 w-64" />
