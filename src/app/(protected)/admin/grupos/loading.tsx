@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function AdminGruposLoading() {
   return (
     <div className="space-y-4">
+      <PageLoader />
       <Skeleton className="h-7 w-24" />
       <Skeleton className="h-4 w-40" />
       {Array.from({ length: 3 }).map((_, i) => (

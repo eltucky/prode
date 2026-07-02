@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function AdminPartidosLoading() {
   return (
     <div className="space-y-6">
+      <PageLoader />
       <div className="flex items-center justify-between">
         <Skeleton className="h-7 w-44" />
         <Skeleton className="h-9 w-28 rounded-lg" />

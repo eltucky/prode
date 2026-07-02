@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function GruposLoading() {
   return (
     <div className="space-y-6">
+      <PageLoader />
       {/* Title + subtitle */}
       <div className="space-y-1">
         <Skeleton className="h-6 w-32" />

@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function TorneoLoading() {
   return (
     <div className="space-y-6">
+      <PageLoader />
       {/* Group filter pills */}
       <div className="flex gap-2 flex-wrap items-center pb-2">
         <Skeleton className="h-4 w-10" />

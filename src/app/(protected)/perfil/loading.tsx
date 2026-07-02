@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function PerfilLoading() {
   return (
     <div className="max-w-lg mx-auto space-y-4">
+      <PageLoader />
       <Skeleton className="h-6 w-24" />
 
       {/* User card */}

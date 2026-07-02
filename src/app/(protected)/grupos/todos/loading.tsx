@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function GruposTodosLoading() {
   return (
     <div className="space-y-6">
+      <PageLoader />
       <div className="space-y-1">
         <Skeleton className="h-3 w-20" />
         <Skeleton className="h-6 w-24 mt-1" />

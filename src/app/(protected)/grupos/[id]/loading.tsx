@@ -1,8 +1,10 @@
+import { PageLoader } from '@/components/page-loader'
 import { Skeleton } from '@/components/skeleton'
 
 export default function GrupoLoading() {
   return (
     <div className="space-y-6">
+      <PageLoader />
       {/* Header */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div className="space-y-1">
